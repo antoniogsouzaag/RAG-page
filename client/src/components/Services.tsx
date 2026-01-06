@@ -53,8 +53,9 @@ export default function Services() {
             viewport={{ once: true }}
             className={service.colSpan}
           >
-            <Card className="h-full bg-zinc-900/40 border-white/5 backdrop-blur-sm p-8 hover:border-white/20 transition-all duration-300 group relative overflow-hidden">
-              <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+            <Card className="h-full bg-zinc-950/40 border-white/5 backdrop-blur-2xl p-8 hover:border-purple-500/30 transition-all duration-700 group relative overflow-hidden rounded-[2.5rem] hover:scale-[1.02]">
+              <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-700`} />
+              <div className="absolute -inset-[100%] bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
               
               <div className="relative z-10 flex flex-col h-full justify-between">
                 <div>
