@@ -7,16 +7,30 @@ import phoneMockup from "@assets/generated_images/smartphone_app_mockup.png";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-24 pb-12 overflow-hidden">
-      {/* Background Mesh */}
-      <div 
-        className="absolute inset-0 z-0 opacity-40 mix-blend-screen"
-        style={{
-          backgroundImage: `url(${heroBg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      />
+    <section className="relative min-h-screen flex items-center justify-center pt-24 pb-12 overflow-hidden bg-[#020202]">
+      {/* Modern Animated Gradient Background (ShaderGradient Style) */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            rotate: [0, 5, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="absolute -top-[20%] -left-[10%] w-[140%] h-[140%] opacity-40 blur-[120px]"
+          style={{
+            background: `
+              radial-gradient(circle at 20% 30%, #4f46e5 0%, transparent 40%),
+              radial-gradient(circle at 80% 20%, #7c3aed 0%, transparent 40%),
+              radial-gradient(circle at 50% 80%, #2563eb 0%, transparent 50%),
+              radial-gradient(circle at 10% 90%, #9333ea 0%, transparent 40%)
+            `
+          }}
+        />
+      </div>
       
       {/* Floating 3D Elements (Background) */}
       <motion.img 
