@@ -207,7 +207,7 @@ export default function RAGSection() {
           className="mb-24 md:mb-36"
         >
           <div
-            className="relative flex h-[320px] sm:h-[380px] md:h-[450px] w-full items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/50 backdrop-blur-sm p-3 sm:p-6 md:p-10"
+            className="relative flex h-[320px] sm:h-[380px] md:h-[450px] w-full items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/50 backdrop-blur-sm p-3 sm:p-4 md:p-6"
             ref={containerRef}
           >
             <div className="flex size-full max-w-4xl flex-row items-stretch justify-between gap-2 sm:gap-4">

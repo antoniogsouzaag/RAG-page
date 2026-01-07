@@ -49,19 +49,21 @@ export function SpotlightCard({
       <div
         className="pointer-events-none absolute inset-0 transition-opacity duration-500"
         style={{
-          opacity,
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(${spotlightColor}, 0.12), transparent 40%)`,
+          opacity: opacity * 0.6,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(${spotlightColor}, 0.06), transparent 50%)`,
         }}
       />
       {/* Border glow effect */}
       <div
         className="pointer-events-none absolute inset-0 transition-opacity duration-500"
         style={{
-          opacity,
-          background: `radial-gradient(400px circle at ${position.x}px ${position.y}px, rgba(${spotlightColor}, 0.15), transparent 40%)`,
+          opacity: opacity * 0.8,
+          background: `radial-gradient(300px circle at ${position.x}px ${position.y}px, rgba(${spotlightColor}, 0.4), transparent 50%)`,
           mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
           maskComposite: "exclude",
-          padding: "1px",
+          WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+          WebkitMaskComposite: "xor",
+          padding: "2px",
           borderRadius: "inherit",
         }}
       />

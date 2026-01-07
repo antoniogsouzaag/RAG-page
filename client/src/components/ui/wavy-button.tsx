@@ -18,7 +18,7 @@ const buttonVariants = cva(
         success: "bg-green-600 text-white hover:bg-green-500",
         warning: "bg-yellow-400 text-black hover:bg-yellow-300",
         info: "bg-blue-600 text-white hover:bg-blue-500",
-        gradient: "bg-gradient-to-r from-purple-600 to-pink-500 text-white",
+        gradient: "bg-linear-to-r from-purple-600 to-pink-500 text-white",
         link: "text-white underline-offset-4 hover:underline bg-transparent shadow-none",
       },
       size: {
@@ -33,7 +33,7 @@ const buttonVariants = cva(
       radius: {
         default: "rounded-full",
         sm: "rounded-lg",
-        lg: "rounded-[2rem]",
+        lg: "rounded-4xl",
         none: "rounded-none",
       },
     },

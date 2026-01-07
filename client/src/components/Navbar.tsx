@@ -44,7 +44,7 @@ export default function Navbar() {
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
         <button
           onClick={scrollToTop}
-          className="text-3xl font-display font-black tracking-tight bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent hover:to-white transition-all cursor-pointer"
+          className="text-3xl font-display font-black tracking-tight bg-linear-to-r from-white via-white to-white/40 bg-clip-text text-transparent hover:to-white transition-all cursor-pointer"
         >
           AG<span className="text-purple-500">.</span>LABS
         </button>

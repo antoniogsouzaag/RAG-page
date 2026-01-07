@@ -93,6 +93,29 @@ const Masonry = ({
 
   const [containerRef, { width }] = useMeasure();
   const [imagesReady, setImagesReady] = useState(true);
+  const [inView, setInView] = useState(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    observerRef.current = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !inView) {
+          setInView(true);
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px' }
+    );
+
+    observerRef.current.observe(containerRef.current);
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [inView]);
 
   const getInitialPosition = (item: GridItem) => {
     const containerRect = containerRef.current?.getBoundingClientRect();
@@ -124,13 +147,13 @@ const Masonry = ({
   };
 
   const grid = useMemo(() => {
-    if (!width) return [];
+    if (!width) return { items: [], height: 0 };
     const colHeights = new Array(columns).fill(0);
     const gap = 16;
     const totalGaps = (columns - 1) * gap;
     const columnWidth = (width - totalGaps) / columns;
 
-    return items.map(child => {
+    const gridItems = items.map(child => {
       const col = colHeights.indexOf(Math.min(...colHeights));
       const x = col * (columnWidth + gap);
       const height = child.height / 2;
@@ -139,18 +162,20 @@ const Masonry = ({
       colHeights[col] += height + gap;
       return { ...child, x, y, w: columnWidth, h: height };
     });
+
+    return { items: gridItems, height: Math.max(...colHeights) };
   }, [columns, items, width]);
 
-  const hasMounted = useRef(false);
+  const hasAnimated = useRef(false);
 
   useLayoutEffect(() => {
-    if (!imagesReady) return;
+    if (!imagesReady || !grid.items.length || !inView) return;
 
-    grid.forEach((item, index) => {
+    grid.items.forEach((item, index) => {
       const selector = `[data-key="${item.id}"]`;
       const animProps = { x: item.x, y: item.y, width: item.w, height: item.h };
 
-      if (!hasMounted.current) {
+      if (!hasAnimated.current) {
         const start = getInitialPosition(item);
         gsap.fromTo(
           selector,
@@ -160,11 +185,13 @@ const Masonry = ({
             y: start.y,
             width: item.w,
             height: item.h,
+            scale: 1,
             ...(blurToFocus && { filter: 'blur(10px)' })
           },
           {
             opacity: 1,
             ...animProps,
+            scale: 1,
             ...(blurToFocus && { filter: 'blur(0px)' }),
             duration: 0.8,
             ease: 'power3.out',
@@ -181,9 +208,11 @@ const Masonry = ({
       }
     });
 
-    hasMounted.current = true;
+    if (inView) {
+      hasAnimated.current = true;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [grid, imagesReady, stagger, animateFrom, blurToFocus, duration, ease]);
+  }, [grid, imagesReady, inView, stagger, animateFrom, blurToFocus, duration, ease]);
 
   const handleMouseEnter = (id: number) => {
     if (scaleOnHover) {
@@ -205,26 +234,23 @@ const Masonry = ({
     }
   };
 
-  // Calculate the total height based on grid items
-  const totalHeight = useMemo(() => {
-    if (!grid.length) return 600;
-    return Math.max(...grid.map(item => item.y + item.h)) + 16;
-  }, [grid]);
-
   return (
-    <div ref={containerRef} className="relative w-full" style={{ height: totalHeight }}>
-      {grid.map(item => (
+    <div ref={containerRef} className="relative w-full" style={{ height: grid.height || 'auto' }}>
+      {grid.items.map(item => (
         <div
           key={item.id}
           data-key={item.id}
-          className="absolute box-content cursor-pointer"
-          style={{ willChange: 'transform' }}
+          className="absolute cursor-pointer"
+          style={{ 
+            willChange: 'transform, filter, opacity',
+            transformOrigin: 'center center'
+          }}
           onClick={() => item.url && window.open(item.url, '_blank', 'noopener')}
           onMouseEnter={() => handleMouseEnter(item.id)}
           onMouseLeave={() => handleMouseLeave(item.id)}
         >
           <div
-            className="relative w-full h-full rounded-xl shadow-lg overflow-hidden group"
+            className="relative w-full h-full rounded-xl shadow-lg overflow-hidden"
           >
             <img 
               src={item.img}
@@ -234,10 +260,8 @@ const Masonry = ({
               className="w-full h-full object-cover"
             />
             {colorShiftOnHover && (
-              <div className="color-overlay absolute inset-0 rounded-xl bg-linear-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none group-hover:opacity-30 transition-opacity duration-300" />
+              <div className="color-overlay absolute inset-0 rounded-xl bg-linear-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none transition-opacity duration-300" />
             )}
-            {/* Subtle overlay for depth */}
-            <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
         </div>
       ))}

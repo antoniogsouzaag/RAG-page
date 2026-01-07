@@ -126,20 +126,20 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-[calc(100%-2rem)] sm:w-[420px] h-[600px] max-h-[80vh] bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-purple-500/10 z-101 flex flex-col overflow-hidden"
+            className="fixed inset-x-4 bottom-4 sm:inset-x-auto sm:bottom-6 sm:right-6 sm:w-[420px] h-[85vh] sm:h-[600px] sm:max-h-[80vh] bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl shadow-2xl shadow-purple-500/10 z-101 flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-linear-to-r from-purple-500/10 to-cyan-500/10">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-white/10 bg-linear-to-r from-purple-500/10 to-cyan-500/10">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <div className="relative">
                   <div className="w-10 h-10 rounded-xl bg-linear-to-br from-purple-500 to-cyan-500 flex items-center justify-center">
                     <Bot className="w-5 h-5 text-white" />
                   </div>
-                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2-zinc-900" />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-zinc-900" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-white text-sm">Assistente AG LABS</h3>
-                  <p className="text-xs text-white/50">Powered by IA</p>
+                  <p className="text-xs text-white/50">Online agora</p>
                 </div>
               </div>
               <button
@@ -224,12 +224,12 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
                   onKeyDown={handleKeyDown}
                   placeholder="Digite sua mensagem..."
                   disabled={isLoading}
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/30 focus:outline-none focus:border-purple-500/50 focus:ring-purple-500/30 transition-all disabled:opacity-50"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm text-white placeholder-white/30 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/30 transition-all disabled:opacity-50"
                 />
                 <button
                   onClick={sendMessage}
                   disabled={!input.trim() || isLoading}
-                  className="p-3 rounded-xl bg-linear-to-r from-purple-500 to-cyan-500 text-white hover:shadow-lg hover:shadow-purple-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2.5 sm:p-3 rounded-xl bg-linear-to-r from-purple-500 to-cyan-500 text-white hover:shadow-lg hover:shadow-purple-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                   aria-label="Enviar mensagem"
                 >
                   <Send className="w-5 h-5" />

@@ -14,7 +14,7 @@ export default function CTASection() {
       {/* FlickeringGrid Background */}
       <div className="absolute inset-0 z-0">
         <FlickeringGrid
-          className="absolute inset-0 w-full h-full [mask-image:linear-gradient(to_bottom,transparent_0%,white_15%,white_85%,transparent_100%)]"
+          className="absolute inset-0 w-full h-full mask-[linear-gradient(to_bottom,transparent_0%,white_15%,white_85%,transparent_100%)]"
           squareSize={4}
           gridGap={6}
           color="#A855F7"
@@ -24,8 +24,8 @@ export default function CTASection() {
       </div>
       
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-linear-to-b from-black/40 via-transparent to-black/40 z-[1]" />
-      <div className="absolute inset-0 bg-linear-to-r from-black/30 via-transparent to-black/30 z-[1]" />
+      <div className="absolute inset-0 bg-linear-to-b from-black/40 via-transparent to-black/40 z-1" />
+      <div className="absolute inset-0 bg-linear-to-r from-black/30 via-transparent to-black/30 z-1" />
       <div className="absolute top-[60%] left-[70%] -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/15 blur-[150px] rounded-full z-0" />
       
       <div className="container mx-auto max-w-7xl relative z-10">

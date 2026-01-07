@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import Masonry from "@/components/ui/masonry";
-import { PixelHighlight } from "@/components/ui/pixel-highlight";
 
 // Placeholder images - update paths later
 const galleryItems = [
@@ -48,7 +47,7 @@ export default function AppGallery() {
             viewport={{ once: true }}
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6 tracking-tight"
           >
-            Poder <span className="bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent">Generativo</span>
+            Poder <span className="bg-linear-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent">Generativo</span>
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -59,25 +58,6 @@ export default function AppGallery() {
           >
             Criamos imagens, vídeos e conteúdo com modelos de IA como Flux, Nano Banana Pro, Sora e muito mais.
           </motion.p>
-          
-          {/* APP AG LABS Title with PixelHighlight */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="flex justify-center items-center mb-12"
-          >
-            <PixelHighlight
-              text="APP AG LABS"
-              colors="#8A6A18, #BB8A2C, #E3C770"
-              direction="top"
-              speed={70}
-              gap={5}
-              fontSize={12}
-              className="w-full h-32"
-            />
-          </motion.div>
         </div>
 
         {/* Masonry Gallery */}
