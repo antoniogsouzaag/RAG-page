@@ -41,25 +41,25 @@ export default function CTASection() {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-sm font-medium text-purple-400 mb-8"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs sm:text-sm font-medium text-purple-400 mb-6 sm:mb-8"
           >
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
             <span>Vagas Limitadas para Janeiro 2026</span>
           </motion.div>
           
-          <h2 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6 leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold mb-4 sm:mb-6 leading-tight">
             Pronto para{" "}
             <span className="text-gradient">Escalar</span>
-            <br />
-            seu Negócio com IA?
+            <br className="hidden sm:block" />
+            <span className="sm:hidden"> </span>seu Negócio com IA?
           </h2>
           
-          <p className="text-xl md:text-2xl text-white/60 mb-12 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/60 mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed px-2 sm:px-0">
             Agende uma consultoria gratuita de 30 minutos e descubra como podemos automatizar 80% das tarefas repetitivas do seu negócio.
           </p>
           
           {/* Trust badges */}
-          <div className="flex flex-wrap justify-center gap-6 mb-12">
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-8 sm:mb-12">
             {[
               { icon: Clock, text: "Resposta em 24h" },
               { icon: Shield, text: "Dados 100% Seguros" },
@@ -73,8 +73,8 @@ export default function CTASection() {
                 transition={{ delay: 0.2 + index * 0.1 }}
                 className="flex items-center gap-2 text-white/60"
               >
-                <item.icon className="w-5 h-5 text-purple-400" />
-                <span className="text-sm font-medium">{item.text}</span>
+                <item.icon className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+                <span className="text-xs sm:text-sm font-medium">{item.text}</span>
               </motion.div>
             ))}
           </div>
@@ -85,19 +85,19 @@ export default function CTASection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-2 sm:px-0"
           >
-            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
-              <RainbowButton className="h-16 px-10 text-lg w-full sm:w-auto">
-                <Sparkles className="w-5 h-5" />
+            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+              <RainbowButton className="h-14 sm:h-16 px-6 sm:px-10 text-base sm:text-lg w-full">
+                <Sparkles className="w-4 sm:w-5 h-4 sm:h-5" />
                 Agendar Diagnóstico Gratuito
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5 group-hover:translate-x-1 transition-transform" />
               </RainbowButton>
             </a>
             
             <button 
               onClick={openChat}
-              className="group h-16 px-10 text-lg font-medium rounded-lg border border-white/20 hover:border-purple-500/50 bg-white/5 backdrop-blur-md text-white transition-all duration-300 hover:bg-white/10 hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] hover:scale-105"
+              className="group h-14 sm:h-16 px-6 sm:px-10 text-base sm:text-lg font-medium rounded-lg border border-white/20 hover:border-purple-500/50 bg-white/5 backdrop-blur-md text-white transition-all duration-300 hover:bg-white/10 hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] active:scale-95 sm:hover:scale-105"
             >
               Teste a Eficiência Agora
             </button>

@@ -87,6 +87,31 @@
     opacity: 0.4;
   }
 
+  /* Performance optimizations for mobile */
+  @media (max-width: 768px) {
+    .bg-noise {
+      opacity: 0.2;
+    }
+    
+    /* Reduce blur on mobile for better performance */
+    .blur-3xl {
+      filter: blur(40px);
+    }
+    
+    .blur-\[100px\], .blur-\[120px\], .blur-\[150px\] {
+      filter: blur(60px);
+    }
+  }
+
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
   .mesh-gradient {
     background: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
                 radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
@@ -108,8 +133,30 @@
 
 body {
   @apply bg-background text-foreground font-sans overflow-x-hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+/* Improve tap targets on mobile */
+@media (max-width: 768px) {
+  button, a {
+    min-height: 44px;
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {
   @apply font-display tracking-tight;
+}
+
+/* Text gradient utility */
+.text-gradient {
+  @apply bg-linear-to-r from-purple-400 via-pink-500 to-purple-600 bg-clip-text text-transparent;
+}
+
+/* Safe area insets for mobile devices with notches */
+@supports (padding: max(0px)) {
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  }
 }

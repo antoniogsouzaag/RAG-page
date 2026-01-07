@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, Bot, Globe as GlobeIcon, Zap, Layers, Brain, Cpu, Database, Code2, Workflow } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import LightPillar from "@/components/ui/light-pillar";
 import { Globe } from "@/components/ui/globe";
 import { RainbowButton } from "@/components/ui/rainbow-button";
@@ -15,63 +15,11 @@ const stats = [
   { value: 24, suffix: "/7", label: "Disponível" },
 ];
 
-// Floating glass icons configuration - concentrated on the right side
-const floatingIcons = [
-  { Icon: Bot, size: 60, top: "25%", right: "15%", delay: 0, iconColor: "text-purple-400", opacity: 1 },
-  { Icon: Brain, size: 48, top: "45%", right: "22%", delay: 0.3, iconColor: "text-pink-400", opacity: 0.9 },
-  { Icon: Zap, size: 40, top: "65%", right: "13%", delay: 0.6, iconColor: "text-amber-400", opacity: 1 },
-  { Icon: Code2, size: 52, top: "18%", right: "28%", delay: 0.9, iconColor: "text-cyan-400", opacity: 0.6 },
-  { Icon: Database, size: 36, top: "80%", right: "20%", delay: 1.2, iconColor: "text-blue-400", opacity: 0.7 },
-  { Icon: Cpu, size: 44, top: "55%", right: "32%", delay: 0.4, iconColor: "text-violet-400", opacity: 0.5 },
-  { Icon: Workflow, size: 42, top: "35%", right: "38%", delay: 0.7, iconColor: "text-orange-400", opacity: 0.4 },
-  { Icon: Layers, size: 38, top: "70%", right: "35%", delay: 1, iconColor: "text-rose-400", opacity: 0.6 },
-];
-
 export default function Hero() {
   const { openChat } = useChatbot();
   
   return (
-    <section className="relative h-screen flex items-center pt-24 pb-16 overflow-hidden bg-black">
-      {/* Floating Glass Icons */}
-      <div className="absolute inset-0 z-50 pointer-events-none overflow-hidden">
-        {floatingIcons.map(({ Icon, size, top, right, delay, iconColor, opacity }, idx) => (
-          <motion.div
-            key={idx}
-            initial={{ opacity: 0, scale: 0, y: 20 }}
-            animate={{ opacity: opacity, scale: 1, y: 0 }}
-            transition={{ 
-              delay: 0.5 + delay, 
-              duration: 0.8, 
-              type: "spring", 
-              stiffness: 100 
-            }}
-            style={{
-              position: 'absolute',
-              top,
-              right,
-              width: size,
-              height: size,
-            }}
-            className="hidden md:flex"
-          >
-            <motion.div
-              animate={{ 
-                y: [0, -12, 0],
-                rotate: [0, 5, -5, 0],
-              }}
-              transition={{ 
-                duration: 4 + idx * 0.5, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
-              }}
-              className="w-full h-full rounded-2xl bg-white/[0.08] backdrop-blur-lg border border-white/[0.15] flex items-center justify-center shadow-xl"
-            >
-              <Icon className={`w-1/2 h-1/2 ${iconColor}`} />
-            </motion.div>
-          </motion.div>
-        ))}
-      </div>
-
+    <section className="relative min-h-screen flex items-center pt-20 sm:pt-24 pb-12 sm:pb-16 overflow-hidden bg-black">
       {/* Light Pillar Background */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <LightPillar
@@ -111,7 +59,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="text-4xl sm:text-5xl md:text-5xl lg:text-5xl xl:text-6xl font-display font-bold leading-[1.1] tracking-tight mb-6"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-display font-bold leading-[1.1] tracking-tight mb-4 sm:mb-6"
             >
               <span className="text-white">Automatize seu negócio com</span>
               <br />
@@ -125,7 +73,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-base sm:text-lg md:text-lg lg:text-xl text-white/60 leading-relaxed max-w-xl mx-auto xl:mx-0 mb-8"
+              className="text-sm sm:text-base md:text-lg lg:text-xl text-white/60 leading-relaxed max-w-xl mx-auto xl:mx-0 mb-6 sm:mb-8 px-2 sm:px-0"
             >
               Criamos funcionários digitais. Agentes que leem seus documentos e <strong className="text-white">reduzem 80% do trabalho manual</strong>. Atendimento 24/7, zero erros, escala infinita.
             </motion.p>
@@ -135,10 +83,10 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10"
+              className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-8 sm:mb-10 px-2 sm:px-0"
             >
-              <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
-                <RainbowButton className="h-14 px-8 text-base w-full sm:w-auto">
+              <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                <RainbowButton className="h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base w-full">
                   <Sparkles className="w-4 h-4" />
                   Diagnóstico Gratuito
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -147,7 +95,7 @@ export default function Hero() {
 
               <button
                 onClick={openChat}
-                className="group h-14 px-8 text-base font-medium rounded-lg border border-white/20 hover:border-purple-500/50 bg-white/5 backdrop-blur-sm text-white transition-all duration-300 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:scale-105"
+                className="group h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base font-medium rounded-lg border border-white/20 hover:border-purple-500/50 bg-white/5 backdrop-blur-sm text-white transition-all duration-300 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] active:scale-95 sm:hover:scale-105"
               >
                 Teste a Eficiência Agora
               </button>

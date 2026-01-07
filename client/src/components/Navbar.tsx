@@ -59,9 +59,10 @@ export default function Navbar() {
                 e.preventDefault();
                 smoothScrollTo(link.href);
               }}
-              className="text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer"
+              className="relative text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer group"
             >
               {link.name}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-linear-to-r from-purple-500 to-pink-500 transition-all duration-300 group-hover:w-full" />
             </a>
           ))}
           <a href="https://wa.me/5564993259857?text=Quero%20automatizar%20meu%20negócio" target="_blank" rel="noopener noreferrer">

@@ -604,7 +604,7 @@ export default function Services() {
   const standardServices = services.filter(s => !s.featured);
   
   return (
-    <section id="services" className="py-20 md:py-28 px-4 md:px-6 relative overflow-hidden">
+    <section id="services" className="py-16 sm:py-20 md:py-28 px-4 md:px-6 relative overflow-hidden">
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Gradient Orbs */}
@@ -642,7 +642,7 @@ export default function Services() {
 
       <div className="container mx-auto max-w-7xl relative z-10">
         {/* Section Header */}
-        <div className="mb-20 md:mb-24 text-center max-w-4xl mx-auto">
+        <div className="mb-12 sm:mb-16 md:mb-20 lg:mb-24 text-center max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
@@ -668,7 +668,7 @@ export default function Services() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1, type: "spring", stiffness: 100 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-8 leading-[1.1]"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold mb-6 sm:mb-8 leading-[1.1]"
           >
             <span className="text-white">Tecnologia que</span>
             <br />
@@ -682,7 +682,7 @@ export default function Services() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
-            className="text-white/50 text-lg md:text-xl lg:text-2xl leading-relaxed max-w-2xl mx-auto"
+            className="text-white/50 text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed max-w-2xl mx-auto px-2 sm:px-0"
           >
             Soluções sob medida para automatizar processos, escalar operações e multiplicar sua eficiência.
           </motion.p>
@@ -717,17 +717,17 @@ export default function Services() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, type: "spring", stiffness: 80 }}
           viewport={{ once: true }}
-          className="mt-20 md:mt-28"
+          className="mt-12 sm:mt-16 md:mt-20 lg:mt-28"
         >
-          <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-zinc-900/90 via-zinc-950/95 to-zinc-900/90 border border-white/10 backdrop-blur-xl p-8 md:p-10">
+          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-linear-to-br from-zinc-900/90 via-zinc-950/95 to-zinc-900/90 border border-white/10 backdrop-blur-xl p-5 sm:p-8 md:p-10">
             {/* Background Glow */}
             <div className="absolute inset-0 pointer-events-none">
               <div className="absolute top-0 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" />
               <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
             </div>
             
-            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
-              <div className="flex flex-col sm:flex-row items-center gap-6">
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8">
+              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
                 {/* Animated Icons Stack */}
                 <div className="flex -space-x-3">
                   {[
@@ -742,18 +742,18 @@ export default function Services() {
                       transition={{ delay: 0.6 + idx * 0.1, type: "spring" }}
                       viewport={{ once: true }}
                       whileHover={{ scale: 1.1, zIndex: 10 }}
-                      className={`w-12 h-12 rounded-xl bg-linear-to-br ${gradient} flex items-center justify-center border-2 border-zinc-950 shadow-lg cursor-pointer`}
+                      className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-linear-to-br ${gradient} flex items-center justify-center border-2 border-zinc-950 shadow-lg cursor-pointer`}
                     >
-                      <Icon className="w-5 h-5 text-white" />
+                      <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                     </motion.div>
                   ))}
                 </div>
                 
                 <div className="text-center sm:text-left">
-                  <h3 className="text-xl md:text-2xl font-display font-bold text-white mb-1">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-display font-bold text-white mb-1">
                     Projeto personalizado?
                   </h3>
-                  <p className="text-white/50 text-sm md:text-base">
+                  <p className="text-white/50 text-xs sm:text-sm md:text-base">
                     Conte-nos sua necessidade e criaremos a solução ideal
                   </p>
                 </div>
@@ -763,8 +763,9 @@ export default function Services() {
                 href={WHATSAPP_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="w-full lg:w-auto"
               >
-                <RainbowButton className="h-14 px-8 text-base font-semibold">
+                <RainbowButton className="h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base font-semibold w-full">
                   Falar com Especialista
                   <motion.span
                     animate={{ x: [0, 5, 0] }}

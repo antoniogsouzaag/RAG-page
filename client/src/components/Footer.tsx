@@ -3,28 +3,31 @@ import { Instagram, Linkedin, Github } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="py-2 border-t border-white/5 bg-black">
+    <footer className="py-4 sm:py-2 border-t border-white/5 bg-black">
       <div className="container px-4 md:px-6 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-2">
           <div className="flex items-center gap-3">
-            <Link href="/" className="text-xl font-display font-bold text-white hover:text-purple-400 transition-colors">
+            <button 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="text-lg sm:text-xl font-display font-bold text-white hover:text-purple-400 transition-colors cursor-pointer"
+            >
               AG<span className="text-purple-500">.</span>LABS
-            </Link>
-            <span className="text-white/30 text-sm">
+            </button>
+            <span className="text-white/30 text-xs sm:text-sm">
               © 2026
             </span>
           </div>
           
-          <div className="flex items-center gap-6">
-            <Link href="/terms" className="text-white/50 hover:text-white transition-colors text-sm">
+          <div className="flex items-center gap-4 sm:gap-6 order-3 sm:order-2">
+            <Link href="/terms" className="text-white/50 hover:text-white transition-colors text-xs sm:text-sm">
               Termos
             </Link>
-            <Link href="/privacy" className="text-white/50 hover:text-white transition-colors text-sm">
+            <Link href="/privacy" className="text-white/50 hover:text-white transition-colors text-xs sm:text-sm">
               Privacidade
             </Link>
           </div>
           
-          <div className="flex gap-4">
+          <div className="flex gap-4 order-2 sm:order-3">
             <a 
               href="https://www.instagram.com/ag.labstech/" 
               target="_blank" 

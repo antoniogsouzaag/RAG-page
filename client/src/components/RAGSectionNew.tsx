@@ -131,11 +131,11 @@ export default function RAGSection() {
   ];
 
   return (
-    <section id="rag" className="py-24 md:py-40 relative overflow-hidden">
+    <section id="rag" className="py-16 sm:py-24 md:py-40 relative overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-purple-500/5 blur-[150px]" />
-        <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-blue-500/5 blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] rounded-full bg-purple-500/5 blur-[100px] sm:blur-[150px]" />
+        <div className="absolute top-1/4 right-1/4 w-[300px] sm:w-[400px] md:w-[500px] h-[300px] sm:h-[400px] md:h-[500px] rounded-full bg-blue-500/5 blur-[80px] sm:blur-[120px]" />
       </div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-7xl">
@@ -156,8 +156,8 @@ export default function RAGSection() {
           </span>
           
           {/* Título principal com gradiente animado moderno */}
-          <div className="mb-8">
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight">
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight">
               <span className="relative inline-block">
                 <span 
                   className="bg-linear-to-r from-purple-400 via-pink-400 to-violet-400 bg-clip-text text-transparent animate-gradient-x bg-size-[200%_auto]"
@@ -204,10 +204,10 @@ export default function RAGSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="mb-24 md:mb-36"
+          className="mb-16 sm:mb-24 md:mb-36"
         >
           <div
-            className="relative flex h-[320px] sm:h-[380px] md:h-[450px] w-full items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/50 backdrop-blur-sm p-3 sm:p-4 md:p-6"
+            className="relative flex h-[280px] sm:h-[340px] md:h-[450px] w-full items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 bg-zinc-950/50 backdrop-blur-sm p-2 sm:p-4 md:p-6"
             ref={containerRef}
           >
             <div className="flex size-full max-w-4xl flex-row items-stretch justify-between gap-2 sm:gap-4">
@@ -337,10 +337,10 @@ export default function RAGSection() {
           transition={{ duration: 0.8 }}
           className="mb-24 md:mb-36"
         >
-          <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-3 sm:mb-4">
             Antes <span className="text-white/40">vs</span> Depois
           </h3>
-          <p className="text-white/50 text-center mb-12 max-w-lg mx-auto">
+          <p className="text-white/50 text-sm sm:text-base text-center mb-8 sm:mb-12 max-w-lg mx-auto px-2">
             Veja a diferença entre uma IA genérica e uma treinada com seus dados.
           </p>
           
@@ -447,10 +447,10 @@ export default function RAGSection() {
           transition={{ duration: 0.8 }}
           className="mb-24 md:mb-36"
         >
-          <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-5">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4 sm:mb-5">
             Como <span className="bg-linear-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">funciona</span>
           </h3>
-          <p className="text-white/50 text-center mb-12 max-w-md mx-auto">
+          <p className="text-white/50 text-sm sm:text-base text-center mb-8 sm:mb-12 max-w-md mx-auto px-2">
             3 passos simples para ter uma IA que conhece seu negócio.
           </p>
 

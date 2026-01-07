@@ -4,11 +4,17 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 
 const useMedia = (queries: string[], values: number[], defaultValue: number) => {
-  const get = () => values[queries.findIndex(q => matchMedia(q).matches)] ?? defaultValue;
+  const get = () => {
+    if (typeof window === 'undefined') return defaultValue;
+    return values[queries.findIndex(q => matchMedia(q).matches)] ?? defaultValue;
+  };
 
-  const [value, setValue] = useState(get);
+  const [value, setValue] = useState(defaultValue);
 
   useEffect(() => {
+    // Atualiza valor correto após montagem
+    setValue(get());
+    
     const handler = () => setValue(get);
     queries.forEach(q => matchMedia(q).addEventListener('change', handler));
     return () => queries.forEach(q => matchMedia(q).removeEventListener('change', handler));
@@ -246,16 +252,45 @@ const Masonry = ({
     }
   };
 
+  // Verifica se está pronto para renderizar
+  const isReady = imagesReady && width > 0 && grid.items.length > 0;
+
   return (
-    <div ref={containerRef} className="relative w-full" style={{ height: grid.height || 'auto' }}>
-      {grid.items.map(item => (
+    <div 
+      ref={containerRef} 
+      className="relative w-full" 
+      style={{ 
+        height: grid.height || 'auto',
+        minHeight: !isReady ? 400 : undefined
+      }}
+    >
+      {/* Loading skeleton enquanto carrega */}
+      {!isReady && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 w-full p-4">
+            {Array.from({ length: Math.min(items.length || 6, 10) }).map((_, i) => (
+              <div 
+                key={i} 
+                className="bg-zinc-800/50 rounded-xl animate-pulse"
+                style={{ height: 150 + (i % 3) * 50 }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Grid items */}
+      {isReady && grid.items.map(item => (
         <div
           key={item.id}
           data-key={item.id}
           className="absolute cursor-pointer"
           style={{ 
             willChange: 'transform, filter, opacity',
-            transformOrigin: 'center center'
+            transformOrigin: 'center center',
+            opacity: 0, // Começa invisível, GSAP anima para visível
+            left: 0,
+            top: 0
           }}
           onClick={() => item.url && window.open(item.url, '_blank', 'noopener')}
           onMouseEnter={() => handleMouseEnter(item.id)}
@@ -267,7 +302,7 @@ const Masonry = ({
             <img 
               src={item.img}
               alt=""
-              loading="lazy"
+              loading="eager"
               decoding="async"
               className="w-full h-full object-cover"
             />
