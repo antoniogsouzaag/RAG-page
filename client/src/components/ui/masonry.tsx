@@ -92,9 +92,21 @@ const Masonry = ({
   );
 
   const [containerRef, { width }] = useMeasure();
-  const [imagesReady, setImagesReady] = useState(true);
+  const [imagesReady, setImagesReady] = useState(false);
   const [inView, setInView] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const hasLoadedImages = useRef(false);
+
+  // Pré-carregar imagens
+  useEffect(() => {
+    if (hasLoadedImages.current || items.length === 0) return;
+    hasLoadedImages.current = true;
+    
+    const imageUrls = items.map(item => item.img);
+    preloadImages(imageUrls).then(() => {
+      setImagesReady(true);
+    });
+  }, [items]);
 
   useEffect(() => {
     if (!containerRef.current) return;

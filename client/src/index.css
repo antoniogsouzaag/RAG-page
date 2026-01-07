@@ -43,9 +43,15 @@
 
 @layer utilities {
   .rainbow-btn {
-    background: linear-gradient(90deg, #a855f7, #ec4899, #8b5cf6, #a855f7);
+    background: linear-gradient(90deg, #9333ea, #db2777, #7c3aed, #9333ea);
     background-size: 200% 100%;
-    animation: rainbow 6s ease-in-out infinite;
+    animation: rainbow 4s ease-in-out infinite;
+    box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4), 0 0 40px rgba(219, 39, 119, 0.2);
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+  }
+
+  .rainbow-btn:hover {
+    box-shadow: 0 6px 30px rgba(147, 51, 234, 0.5), 0 0 60px rgba(219, 39, 119, 0.35);
   }
 
   @keyframes rainbow {

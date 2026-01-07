@@ -71,15 +71,60 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
       });
 
       if (!response.ok) {
-        throw new Error("Erro na resposta do servidor");
+        throw new Error(`Erro na resposta do servidor: ${response.status}`);
       }
 
-      const data = await response.json();
+      // Tenta ler a resposta como texto primeiro
+      const responseText = await response.text();
+      console.log("Resposta bruta do webhook:", responseText);
+      
+      let content = "";
+      
+      try {
+        // Tenta parsear como JSON
+        const data = JSON.parse(responseText);
+        console.log("Resposta JSON parseada:", data);
+        
+        // Tenta extrair a mensagem de diferentes formatos possíveis
+        if (typeof data === "string") {
+          content = data;
+        } else if (data.response) {
+          content = data.response;
+        } else if (data.message) {
+          content = data.message;
+        } else if (data.output) {
+          content = data.output;
+        } else if (data.text) {
+          content = data.text;
+        } else if (data.content) {
+          content = data.content;
+        } else if (data.reply) {
+          content = data.reply;
+        } else if (data.answer) {
+          content = data.answer;
+        } else if (Array.isArray(data) && data.length > 0) {
+          // Se for um array, pega o primeiro elemento
+          const firstItem = data[0];
+          content = typeof firstItem === "string" 
+            ? firstItem 
+            : firstItem.response || firstItem.message || firstItem.output || firstItem.text || JSON.stringify(firstItem);
+        } else {
+          // Se nada funcionar, stringify o objeto
+          content = JSON.stringify(data);
+        }
+      } catch {
+        // Se não for JSON válido, usa o texto diretamente
+        content = responseText;
+      }
+      
+      if (!content || content.trim() === "" || content === "{}" || content === "[]") {
+        content = "Recebi sua mensagem! Como posso ajudar?";
+      }
       
       const assistantMessage: Message = {
         id: `assistant_${Date.now()}`,
         role: "assistant",
-        content: data.response || data.message || data.output || "Desculpe, não consegui processar sua mensagem. Tente novamente.",
+        content: content,
         timestamp: new Date(),
       };
 

@@ -53,9 +53,9 @@ export default function AppGallery() {
             transition={{ duration: 0.7, delay: idx * 0.2 }}
             className="group relative rounded-[2.5rem] overflow-hidden bg-zinc-950 border border-white/5 shadow-2xl"
           >
-            <div className="aspect-[16/10] overflow-hidden">
+            <div className="aspect-16/10 overflow-hidden">
               {item.type === "video" ? (
-                <div className="w-full h-full bg-gradient-to-br from-zinc-900 via-purple-950 to-black flex items-center justify-center relative">
+                <div className="w-full h-full bg-linear-to-br from-zinc-900 via-purple-950 to-black flex items-center justify-center relative">
                   <motion.div 
                     animate={{ scale: [1, 1.05, 1] }}
                     transition={{ duration: 4, repeat: Infinity }}
@@ -73,7 +73,7 @@ export default function AppGallery() {
               )}
             </div>
             
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
+            <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent opacity-80" />
             
             <div className="absolute bottom-0 left-0 right-0 p-10 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
               <div className="inline-flex px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white/80 mb-4">
