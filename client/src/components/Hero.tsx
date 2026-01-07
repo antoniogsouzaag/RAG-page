@@ -19,9 +19,9 @@ export default function Hero() {
   const { openChat } = useChatbot();
   
   return (
-    <section className="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden bg-black">
+    <section className="relative h-screen flex items-center pt-24 pb-16 overflow-hidden bg-black">
       {/* Light Pillar Background */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 overflow-hidden">
         <LightPillar
           topColor="#2d1f6b"
           bottomColor="#4a3259"
@@ -36,10 +36,10 @@ export default function Hero() {
         />
       </div>
 
-      <div className="container relative z-10 px-4 md:px-6 mx-auto max-w-7xl">
-        <div className="grid xl:grid-cols-[1fr_1fr] gap-8 items-center">
+      <div className="relative z-10 px-4 md:px-6 mx-auto max-w-none w-full h-full flex items-center overflow-visible">
+        <div className="grid w-full xl:grid-cols-2 gap-8 xl:gap-12 items-center overflow-visible">
           {/* Left Column - Content (shows first on mobile) */}
-          <div className="order-1 xl:order-1 text-center xl:text-left xl:-ml-1 2xl:-ml-36">
+          <div className="relative order-1 text-center xl:text-left">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -63,8 +63,8 @@ export default function Hero() {
             >
               <span className="text-white">Automatize seu negócio com</span>
               <br />
-              <span className="text-gradient">
-                <HyperText>Agentes de IA</HyperText>
+              <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+                <HyperText>AGENTES DE IA</HyperText>
               </span>
             </motion.h1>
 
@@ -95,7 +95,7 @@ export default function Hero() {
 
               <button
                 onClick={openChat}
-                className="group h-14 px-8 text-base font-medium rounded-lg border border-white/20 hover:border-white/40 bg-white/5 backdrop-blur-sm text-white transition-all duration-300 hover:bg-white/10"
+                className="group h-14 px-8 text-base font-medium rounded-lg border border-white/20 hover:border-purple-500/50 bg-white/5 backdrop-blur-sm text-white transition-all duration-300 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:scale-105"
               >
                 Teste a Eficiência Agora
               </button>
@@ -110,18 +110,18 @@ export default function Hero() {
               <StatsCount stats={stats} showDividers={true} />
             </motion.div>
           </div>
-
-          {/* Right Column - Globe (shows second on mobile, escapes to right/bottom on desktop) */}
+    
+          {/* Right Column - Globe (shows second on mobile) */}
           <motion.div
-            className="order-2 xl:order-2 relative mt-8 xl:mt-0 xl:translate-x-42 xl:translate-y-68 xl:-mr-38 hidden xl:block"
+            className="relative order-2 mt-8 xl:mt-0 hidden xl:flex items-center justify-center overflow-visible"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.3 }}
           >
-            <div className="relative w-full max-w-md mx-auto xl:max-w-4xl xl:ml-auto">
+            <div className="relative w-full max-w-[1400px] aspect-square flex items-center justify-center overflow-visible translate-x-16 translate-y-48 scale-[1.5]">
               {/* Glow effect behind globe */}
-              <div className="absolute inset-0 bg-purple-500/10 blur-[200px] rounded-full" />
-              <Globe className="relative z-10 scale-100 xl:scale-[2.0]" />
+              <div className="absolute inset-0 bg-purple-500/10 blur-[120px] rounded-full scale-150" />
+              <Globe className="relative z-10 w-full h-full" />
             </div>
           </motion.div>
         </div>

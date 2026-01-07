@@ -97,7 +97,7 @@ export default function CTASection() {
             
             <button 
               onClick={openChat}
-              className="group h-16 px-10 text-lg font-medium rounded-lg border border-white/20 hover:border-white/40 bg-white/5 backdrop-blur-md text-white transition-all hover:bg-white/10"
+              className="group h-16 px-10 text-lg font-medium rounded-lg border border-white/20 hover:border-purple-500/50 bg-white/5 backdrop-blur-md text-white transition-all duration-300 hover:bg-white/10 hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] hover:scale-105"
             >
               Teste a Eficiência Agora
             </button>

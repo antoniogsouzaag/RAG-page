@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Bot, Globe, Layers, Zap, ArrowUpRight } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 
 const services = [
   {
@@ -8,39 +8,53 @@ const services = [
     title: "Agentes de IA",
     description: "Assistentes virtuais inteligentes que trabalham 24/7 para seu negócio.",
     colSpan: "lg:col-span-2",
-    gradient: "from-purple-500/20 to-blue-500/20"
+    spotlightColor: "168, 85, 247" // Purple
   },
   {
     icon: Globe,
     title: "Websites",
     description: "Design de alta conversão focado em performance e SEO.",
     colSpan: "lg:col-span-1",
-    gradient: "from-blue-500/20 to-cyan-500/20"
+    spotlightColor: "59, 130, 246" // Blue
   },
   {
     icon: Layers,
     title: "Sistemas & Apps",
     description: "Soluções SaaS escaláveis e aplicativos mobile nativos.",
     colSpan: "lg:col-span-1",
-    gradient: "from-pink-500/20 to-rose-500/20"
+    spotlightColor: "236, 72, 153" // Pink
   },
   {
     icon: Zap,
     title: "Automações",
     description: "Workflows automatizados que eliminam tarefas repetitivas.",
     colSpan: "lg:col-span-2",
-    gradient: "from-amber-500/20 to-orange-500/20"
+    spotlightColor: "245, 158, 11" // Amber
   }
 ];
 
 export default function Services() {
   return (
-    <section id="services" className="py-24 px-4 md:px-6 container relative">
-      <div className="mb-16">
-        <h2 className="text-3xl md:text-5xl font-display font-bold mb-4">Soluções Completas</h2>
-        <p className="text-muted-foreground text-lg max-w-xl">
+    <section id="services" className="py-24 px-4 md:px-6 relative">
+      <div className="container mx-auto max-w-7xl">
+      <div className="mb-16 text-center">
+        <motion.h2 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-4xl md:text-6xl font-display font-bold mb-4"
+        >
+          Soluções <span className="text-gradient bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">Completas</span>
+        </motion.h2>
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.1 }}
+          className="text-white/60 text-lg max-w-2xl mx-auto"
+        >
           Tecnologia de ponta aplicada para escalar sua operação.
-        </p>
+        </motion.p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -53,30 +67,38 @@ export default function Services() {
             viewport={{ once: true }}
             className={service.colSpan}
           >
-            <Card className="h-full bg-zinc-950/40 border-white/5 backdrop-blur-2xl p-8 hover:border-purple-500/30 transition-all duration-700 group relative overflow-hidden rounded-[2.5rem] hover:scale-[1.02]">
-              <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-700`} />
-              <div className="absolute -inset-[100%] bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+            <div className="relative h-full group">
+              {/* Animated gradient border */}
+              <div className="absolute -inset-[2px] bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
               
-              <div className="relative z-10 flex flex-col h-full justify-between">
-                <div>
-                  <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-6 group-hover:bg-white/10 transition-colors">
-                    <service.icon className="w-6 h-6 text-white" />
+              <SpotlightCard 
+                spotlightColor={service.spotlightColor}
+                className="relative h-full backdrop-blur-2xl bg-black/40 border border-white/10 group-hover:border-white/20 p-8 transition-all duration-500 rounded-[2.5rem] group-hover:shadow-2xl group-hover:shadow-purple-500/20 group-hover:scale-[1.02]"
+              >
+                <div className="relative z-10 flex flex-col h-full justify-between">
+                  <div>
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm flex items-center justify-center mb-6 group-hover:from-white/20 group-hover:to-white/10 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 shadow-lg">
+                      <service.icon className="w-7 h-7 text-white group-hover:scale-110 transition-transform" />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all duration-300">
+                      {service.title}
+                    </h3>
+                    <p className="text-white/60 group-hover:text-white/90 transition-colors duration-300 leading-relaxed">
+                      {service.description}
+                    </p>
                   </div>
-                  <h3 className="text-2xl font-bold mb-3">{service.title}</h3>
-                  <p className="text-muted-foreground group-hover:text-white/80 transition-colors">
-                    {service.description}
-                  </p>
-                </div>
-                
-                <div className="mt-8 flex justify-end">
-                  <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
-                    <ArrowUpRight className="w-5 h-5" />
+                  
+                  <div className="mt-8 flex justify-end">
+                    <div className="w-12 h-12 rounded-full border-2 border-white/20 flex items-center justify-center group-hover:bg-gradient-to-br group-hover:from-purple-500 group-hover:to-pink-500 group-hover:border-transparent transition-all duration-300 group-hover:rotate-45 group-hover:scale-110 shadow-lg">
+                      <ArrowUpRight className="w-5 h-5 group-hover:-rotate-45 transition-transform duration-300" />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
+              </SpotlightCard>
+            </div>
           </motion.div>
         ))}
+      </div>
       </div>
     </section>
   );

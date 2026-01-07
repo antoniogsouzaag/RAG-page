@@ -20,8 +20,8 @@ export default function Home() {
         <Marquee />
         <Services />
         <RAGSectionNew />
-        <AppGalleryNew />
         <CTASection />
+        <AppGalleryNew />
       </main>
 
       <WhatsAppButton />

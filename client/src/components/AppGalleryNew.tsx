@@ -48,7 +48,7 @@ export default function AppGallery() {
             viewport={{ once: true }}
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6 tracking-tight"
           >
-            Poder <span className="text-gradient">Generativo</span>
+            Poder <span className="bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent">Generativo</span>
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}

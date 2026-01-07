@@ -19,7 +19,7 @@ const buttonVariants = cva(
         warning: "bg-yellow-400 text-black hover:bg-yellow-300",
         info: "bg-blue-600 text-white hover:bg-blue-500",
         gradient: "bg-gradient-to-r from-purple-600 to-pink-500 text-white",
-        link: "text-primary underline-offset-4 hover:underline bg-transparent shadow-none",
+        link: "text-white underline-offset-4 hover:underline bg-transparent shadow-none",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:gap-2",

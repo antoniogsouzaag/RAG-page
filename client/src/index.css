@@ -42,6 +42,21 @@
 }
 
 @layer utilities {
+  .rainbow-btn {
+    background: linear-gradient(90deg, #a855f7, #ec4899, #8b5cf6, #a855f7);
+    background-size: 200% 100%;
+    animation: rainbow 6s ease-in-out infinite;
+  }
+
+  @keyframes rainbow {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
   .glass {
     @apply bg-black/40 backdrop-blur-lg border border-white/10;
   }

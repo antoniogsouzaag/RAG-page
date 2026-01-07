@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import WavyButton from "@/components/ui/wavy-button";
 import { Button } from "@/components/ui/button";
 
 export default function Navbar() {
@@ -18,21 +19,35 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Serviços", href: "#services" },
-    { name: "Tecnologia", href: "#tech" },
     { name: "RAG", href: "#rag" },
-    { name: "Showcase", href: "#showcase" },
+    { name: "IA Generativa", href: "#showcase" },
   ];
+
+  const smoothScrollTo = (elementId: string) => {
+    const element = document.querySelector(elementId);
+    if (element) {
+      const offsetTop = element.getBoundingClientRect().top + window.scrollY - 100;
+      window.scrollTo({ top: offsetTop, behavior: "smooth" });
+    }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? "bg-black/40 backdrop-blur-2xl border-b border-white/5 py-3" : "bg-transparent py-6"
+        isScrolled ? "bg-black/40 backdrop-blur-2xl py-3" : "bg-transparent py-6"
       }`}
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-        <Link href="/" className="text-3xl font-display font-black tracking-tighter bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent hover:to-white transition-all cursor-pointer">
+        <button
+          onClick={scrollToTop}
+          className="text-3xl font-display font-black tracking-tight bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent hover:to-white transition-all cursor-pointer"
+        >
           AG<span className="text-purple-500">.</span>LABS
-        </Link>
+        </button>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8">
@@ -40,14 +55,20 @@ export default function Navbar() {
             <a
               key={link.name}
               href={link.href}
-              className="text-sm font-medium text-white/70 hover:text-white transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                smoothScrollTo(link.href);
+              }}
+              className="text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer"
             >
               {link.name}
             </a>
           ))}
-          <Button variant="outline" className="bg-white/5 border-white/10 hover:bg-white/10 text-white rounded-full px-6">
-            Contato
-          </Button>
+          <a href="https://wa.me/5564993259857?text=Quero%20automatizar%20meu%20negócio" target="_blank" rel="noopener noreferrer">
+            <WavyButton variant="link" className="px-6 py-2">
+              Quero Automatizar
+            </WavyButton>
+          </a>
         </div>
 
         {/* Mobile Toggle */}
@@ -73,8 +94,12 @@ export default function Navbar() {
                 <a
                   key={link.name}
                   href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-lg font-medium text-white/80 hover:text-white"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    smoothScrollTo(link.href);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="text-lg font-medium text-white/80 hover:text-white cursor-pointer"
                 >
                   {link.name}
                 </a>
