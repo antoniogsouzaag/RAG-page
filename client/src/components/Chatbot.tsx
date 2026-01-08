@@ -28,6 +28,7 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
   const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const chatRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -41,6 +42,60 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
+  }, [isOpen]);
+
+  // Quando o input recebe foco (ex: teclado mobile abriu), rola as mensagens
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    const onFocus = () => setTimeout(() => scrollToBottom(), 300);
+    el.addEventListener("focus", onFocus);
+    return () => el.removeEventListener("focus", onFocus);
+  }, [scrollToBottom]);
+
+  // Ajuste para dispositivos móveis: observa visualViewport para reposicionar
+  // o chat quando o teclado virtual aparece, evitando ficar escondido.
+  useEffect(() => {
+    const applyViewport = () => {
+      const el = chatRef.current;
+      const vv = (window as any).visualViewport;
+
+      if (!el) return;
+
+      if (vv) {
+        const viewportHeight = vv.height;
+        const offsetTop = vv.offsetTop || 0;
+        // espaço inferior estimado (distância entre visualViewport.bottom e window.innerHeight)
+        const keyboardOverlap = Math.max(0, window.innerHeight - (viewportHeight + offsetTop));
+
+        // calcula nova bottom (mantém mínimo 12px)
+        const bottomPx = Math.max(12, keyboardOverlap + 12);
+
+        // altura máxima do chat considerando header + input (~140px)
+        const reservedForHeaderAndInput = 140;
+        const maxHeightPx = Math.max(200, viewportHeight - reservedForHeaderAndInput);
+
+        el.style.bottom = `${bottomPx}px`;
+        el.style.height = `${Math.min(window.innerHeight - 24, maxHeightPx)}px`;
+      } else {
+        // limpa estilos quando não há visualViewport
+        el.style.bottom = '';
+        el.style.height = '';
+      }
+    };
+
+    // aplica ao abrir
+    if (isOpen) applyViewport();
+
+    (window as any).visualViewport?.addEventListener?.("resize", applyViewport);
+    (window as any).visualViewport?.addEventListener?.("scroll", applyViewport);
+    window.addEventListener("resize", applyViewport);
+
+    return () => {
+      (window as any).visualViewport?.removeEventListener?.("resize", applyViewport);
+      (window as any).visualViewport?.removeEventListener?.("scroll", applyViewport);
+      window.removeEventListener("resize", applyViewport);
+    };
   }, [isOpen]);
 
   const sendMessage = async () => {
@@ -171,6 +226,7 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            ref={chatRef}
             className="fixed inset-x-4 bottom-4 sm:inset-x-auto sm:bottom-6 sm:right-6 sm:w-[420px] h-[85vh] sm:h-[600px] sm:max-h-[80vh] bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl shadow-2xl shadow-purple-500/10 z-101 flex flex-col overflow-hidden"
           >
             {/* Header */}
@@ -292,36 +348,4 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
 }
 
 // Context for global chatbot state
-import { createContext, useContext, ReactNode } from "react";
-
-interface ChatbotContextType {
-  isOpen: boolean;
-  openChat: () => void;
-  closeChat: () => void;
-  toggleChat: () => void;
-}
-
-const ChatbotContext = createContext<ChatbotContextType | undefined>(undefined);
-
-export function ChatbotProvider({ children }: { children: ReactNode }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const openChat = useCallback(() => setIsOpen(true), []);
-  const closeChat = useCallback(() => setIsOpen(false), []);
-  const toggleChat = useCallback(() => setIsOpen((prev) => !prev), []);
-
-  return (
-    <ChatbotContext.Provider value={{ isOpen, openChat, closeChat, toggleChat }}>
-      {children}
-      <Chatbot isOpen={isOpen} onClose={closeChat} />
-    </ChatbotContext.Provider>
-  );
-}
-
-export function useChatbot() {
-  const context = useContext(ChatbotContext);
-  if (context === undefined) {
-    throw new Error("useChatbot must be used within a ChatbotProvider");
-  }
-  return context;
-}
+// Chatbot UI is exported as default from this file.

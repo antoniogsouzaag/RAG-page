@@ -39,6 +39,20 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) return 'vendor-react';
+            if (id.includes('three')) return 'vendor-three';
+            if (id.includes('framer-motion') || id.includes('@motionone')) return 'vendor-motion';
+            if (id.includes('recharts')) return 'vendor-recharts';
+            if (id.includes('gsap')) return 'vendor-gsap';
+            return 'vendor';
+          }
+        }
+      }
+    }
   },
   server: {
     host: "0.0.0.0",

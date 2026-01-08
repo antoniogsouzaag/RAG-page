@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import artImage from "@assets/generated_images/generative_ai_art.png";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
 
@@ -65,10 +65,10 @@ export default function AppGallery() {
                   </motion.div>
                 </div>
               ) : (
-                <img 
-                  src={item.img} 
-                  alt={item.title} 
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+                <OptimizedImage
+                  src={typeof item.img === 'string' ? item.img : '/attached_assets/generated_images/generative_ai_art.png'}
+                  alt={item.title}
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                 />
               )}
             </div>

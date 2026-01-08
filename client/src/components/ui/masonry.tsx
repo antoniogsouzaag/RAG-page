@@ -105,14 +105,14 @@ const Masonry = ({
 
   // Pré-carregar imagens
   useEffect(() => {
-    if (hasLoadedImages.current || items.length === 0) return;
+    if (hasLoadedImages.current || items.length === 0 || !inView) return;
     hasLoadedImages.current = true;
-    
+
     const imageUrls = items.map(item => item.img);
     preloadImages(imageUrls).then(() => {
       setImagesReady(true);
     });
-  }, [items]);
+  }, [items, inView]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -302,8 +302,9 @@ const Masonry = ({
             <img 
               src={item.img}
               alt=""
-              loading="eager"
+              loading="lazy"
               decoding="async"
+              fetchPriority="low"
               className="w-full h-full object-cover"
             />
             {colorShiftOnHover && (

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
-import { useChatbot } from "@/components/Chatbot";
+import { useChatbot } from "@/components/ChatbotContext";
 
 export default function WhatsAppButton() {
   const { openChat } = useChatbot();

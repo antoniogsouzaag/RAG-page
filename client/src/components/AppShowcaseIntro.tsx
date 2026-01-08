@@ -1,4 +1,5 @@
 import { Sparkles } from "@/components/ui/sparkles";
+import { RainbowButton } from "@/components/ui/rainbow-button";
 import { motion } from "framer-motion";
 
 export default function AppShowcaseIntro() {
@@ -71,6 +72,20 @@ export default function AppShowcaseIntro() {
         >
           Criamos imagens, vídeos e conteúdo com modelos de IA como Flux, Nano Banana Pro, Sora e muito mais.
         </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="flex justify-center mt-6"
+        >
+          <a href="https://app.agmusic.cloud/" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+            <RainbowButton className="h-14 sm:h-16 px-6 sm:px-10 text-base sm:text-lg">
+              Começar a Criar
+            </RainbowButton>
+          </a>
+        </motion.div>
       </article>
     </div>
   );

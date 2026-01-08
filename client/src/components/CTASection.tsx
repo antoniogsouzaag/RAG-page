@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Clock, Shield, Zap } from "lucide-react";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { FlickeringGrid } from "@/components/ui/flickering-grid";
-import { useChatbot } from "@/components/Chatbot";
+import { useChatbot } from "@/components/ChatbotContext";
 
 const WHATSAPP_LINK = "https://wa.me/5564993259857?text=Quero%20saber%20mais%20sobre%20o%20Agente%20RAG...";
 

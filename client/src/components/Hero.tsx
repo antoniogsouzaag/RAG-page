@@ -1,11 +1,12 @@
+import React, { Suspense, lazy } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import LightPillar from "@/components/ui/light-pillar";
-import { Globe } from "@/components/ui/globe";
+const Globe = lazy(() => import("@/components/ui/globe").then((m) => ({ default: m.Globe })));
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { HyperText } from "@/components/ui/hyper-text";
 import { StatsCount } from "@/components/ui/stats-count";
-import { useChatbot } from "@/components/Chatbot";
+import { useChatbot } from "@/components/ChatbotContext";
 
 const WHATSAPP_LINK = "https://wa.me/5564993259857?text=Quero%20saber%20mais%20sobre%20o%20Agente%20RAG...";
 
@@ -111,7 +112,7 @@ export default function Hero() {
             </motion.div>
           </div>
     
-          {/* Right Column - Globe (shows second on mobile) */}
+          {/* Right Column - Globe (desktop) */}
           <motion.div
             className="relative order-2 mt-8 xl:mt-0 hidden xl:flex items-center justify-center overflow-visible"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -121,9 +122,20 @@ export default function Hero() {
             <div className="relative w-full max-w-[1400px] aspect-square flex items-center justify-center overflow-visible translate-x-16 translate-y-48 scale-[1.5]">
               {/* Glow effect behind globe */}
               <div className="absolute inset-0 bg-purple-500/10 blur-[120px] rounded-full scale-150" />
-              <Globe className="relative z-10 w-full h-full" />
+              <Suspense fallback={null}>
+                <Globe className="relative z-10 w-full h-full" />
+              </Suspense>
             </div>
           </motion.div>
+
+          {/* Mobile Globe (small, below content) - lazy loaded to avoid adding cost to initial bundle */}
+          <div className="w-full flex justify-center mt-6 xl:hidden order-3">
+            <div className="w-70 h-70 md:w-56 md:h-56 relative">
+              <Suspense fallback={null}>
+                <Globe className="w-full h-full" />
+              </Suspense>
+            </div>
+          </div>
         </div>
       </div>
 

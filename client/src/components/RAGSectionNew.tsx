@@ -236,10 +236,10 @@ export default function RAGSection() {
               </div>
 
               {/* Lado Direito - Chat */}
-              <div className="flex flex-col justify-center py-2">
+              <div className="flex flex-col justify-center py-2 z-10">
                 <div ref={chatRef} className="relative">
                   {/* Chat Window Mockup */}
-                  <div className="w-[120px] sm:w-[180px] md:w-[260px] rounded-lg sm:rounded-2xl border border-white/20 bg-zinc-900/90 backdrop-blur-sm overflow-hidden shadow-2xl">
+                  <div className="w-[120px] sm:w-[180px] md:w-[260px] rounded-lg sm:rounded-2xl border border-white/20 bg-zinc-900/50 backdrop-blur-sm overflow-hidden shadow-2xl">
                     {/* Chat Header */}
                     <div className="px-2 sm:px-3 py-1.5 sm:py-2 border-b border-white/10 bg-zinc-800/50">
                       <div className="flex items-center gap-1.5 sm:gap-2">

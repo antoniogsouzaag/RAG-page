@@ -20,7 +20,27 @@ interface StatsCountProps {
 function AnimatedNumber({ value, suffix = "", prefix = "" }: { value: number; suffix?: string; prefix?: string }) {
   const [displayValue, setDisplayValue] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") return setIsInView(true);
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          obs.disconnect();
+        }
+      },
+      { root: null, rootMargin: "0px", threshold: 0 }
+    );
+
+    obs.observe(el);
+
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!isInView) return;

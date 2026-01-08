@@ -16,14 +16,14 @@ export default function AppIntroTransition() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="text-purple-400/90 text-1xl sm:text-2xl md:text-3xl lg:text-4xl font-bold uppercase tracking-[0.25em] text-center drop-shadow-md"
         >
-          Economize ainda mais tempo
+          Economize mais tempo ainda 
         </motion.p>
       </div>
       
       {/* Main animated text section - center with blur effect */}
       <div className="h-[80vh] flex flex-col justify-center items-center text-center px-4 relative z-10">
         <TextAnimation
-          text="Quer criar criativos, artes, vídeos e narração em segundos?"
+          text="Crie criativos, artes, vídeos e narração em segundos!"
           classname="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl max-w-5xl mx-auto font-display font-bold text-white leading-tight normal-case tracking-tight"
           viewport={{ amount: 0.3, once: true }}
           variants={{
@@ -41,7 +41,7 @@ export default function AppIntroTransition() {
       {/* Left side animated text - slides from left */}
       <div className="h-[80vh] flex items-center text-left px-4 md:px-12 relative z-10">
         <TextAnimation
-          text="Inteligência artificial no seu bolso"
+          text="Tenha o poder da Inteligência artificial no seu bolso"
           direction="left"
           classname="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl max-w-3xl font-semibold text-white normal-case"
           viewport={{ amount: 0.3, once: true }}
@@ -62,7 +62,7 @@ export default function AppIntroTransition() {
       <div className="h-[80vh] flex flex-col justify-center items-center text-center px-4 relative z-10">
         <TextAnimation
           as="p"
-          text="Conheça o APP AG LABS"
+          text="Conheça o nosso APP"
           letterAnime={true}
           classname="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl max-w-4xl mx-auto font-semibold text-white normal-case"
           viewport={{ amount: 0.3, once: true }}

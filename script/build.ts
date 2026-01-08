@@ -1,6 +1,7 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
-import { rm, readFile } from "fs/promises";
+import { rm, readFile, mkdir, readdir, copyFile } from "fs/promises";
+import { join } from "path";
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -37,6 +38,20 @@ async function buildAll() {
 
   console.log("building client...");
   await viteBuild();
+
+  // Copy optimized images (if present) into the final dist public folder so
+  // runtime can reference /attached_assets/generated_images/optimized/*.avif
+  try {
+    const srcDir = join(process.cwd(), "attached_assets", "generated_images", "optimized");
+    const destDir = join(process.cwd(), "dist", "public", "attached_assets", "generated_images", "optimized");
+    // ensure dest exists
+    await mkdir(destDir, { recursive: true });
+    const files = await readdir(srcDir);
+    await Promise.all(files.map((f) => copyFile(join(srcDir, f), join(destDir, f))));
+    console.log("Copied optimized images to dist/public/attached_assets/generated_images/optimized");
+  } catch (e) {
+    // no-op if folder doesn't exist
+  }
 
   console.log("building server...");
   const pkg = JSON.parse(await readFile("package.json", "utf-8"));
