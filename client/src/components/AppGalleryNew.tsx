@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
 import Masonry from "@/components/ui/masonry";
 
 // Placeholder images - update paths later
@@ -29,36 +28,6 @@ export default function AppGallery() {
       <div className="absolute bottom-0 left-0 w-[300px] sm:w-[400px] md:w-[500px] h-[300px] sm:h-[400px] md:h-[500px] bg-blue-600/10 blur-[100px] sm:blur-[150px] -z-10 rounded-full" />
 
       <div className="container mx-auto px-4 md:px-6 max-w-7xl">
-        {/* Header */}
-        <div className="text-center mb-10 sm:mb-12 md:mb-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-500/10 border border-pink-500/20 text-sm font-medium text-pink-400 mb-6"
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>IA Generativa</span>
-          </motion.div>
-          
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-display font-bold mb-4 sm:mb-6 tracking-tight"
-          >
-            Poder <span className="bg-linear-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent">Generativo</span>
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-white/50 text-sm sm:text-base md:text-lg lg:text-xl max-w-3xl mx-auto mb-6 sm:mb-8 px-2 sm:px-0"
-          >
-            Criamos imagens, vídeos e conteúdo com modelos de IA como Flux, Nano Banana Pro, Sora e muito mais.
-          </motion.p>
-        </div>
 
         {/* Masonry Gallery */}
         <motion.div

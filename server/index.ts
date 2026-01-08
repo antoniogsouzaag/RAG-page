@@ -6,6 +6,21 @@ import { createServer } from "http";
 const app = express();
 const httpServer = createServer(app);
 
+// Permitir trust proxy para subdomínio e headers corretos
+app.set('trust proxy', 1);
+
+// CORS para subdomínio (ajuste conforme necessário)
+import cors from 'cors';
+app.use(cors({
+  origin: [
+    'https://rag.aglabs.api.br',
+    'http://rag.aglabs.api.br',
+    'https://www.rag.aglabs.api.br',
+    'http://www.rag.aglabs.api.br'
+  ],
+  credentials: true
+}));
+
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;

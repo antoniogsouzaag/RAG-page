@@ -12,7 +12,6 @@ export default function Privacy() {
   return (
     <div className="min-h-screen bg-black text-white">
       <Navbar />
-      
       <main className="pt-32 pb-20 px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
           <motion.div

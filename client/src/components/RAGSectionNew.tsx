@@ -207,10 +207,10 @@ export default function RAGSection() {
           className="mb-16 sm:mb-24 md:mb-36"
         >
           <div
-            className="relative flex h-[280px] sm:h-[340px] md:h-[450px] w-full items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 bg-zinc-950/50 backdrop-blur-sm p-2 sm:p-4 md:p-6"
+            className="relative flex h-80 sm:h-[380px] md:h-[450px] w-full items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 bg-zinc-950/50 backdrop-blur-sm p-4 sm:p-6 md:p-8"
             ref={containerRef}
           >
-            <div className="flex size-full max-w-4xl flex-row items-stretch justify-between gap-2 sm:gap-4">
+            <div className="flex size-full max-w-4xl flex-row items-stretch justify-between gap-3 sm:gap-4">
               
               {/* Lado Esquerdo - Arquivos */}
               <div className="flex flex-col justify-center gap-3 md:gap-4">
@@ -236,24 +236,24 @@ export default function RAGSection() {
               </div>
 
               {/* Lado Direito - Chat */}
-              <div className="flex flex-col justify-center">
+              <div className="flex flex-col justify-center py-2">
                 <div ref={chatRef} className="relative">
                   {/* Chat Window Mockup */}
-                  <div className="w-[130px] sm:w-[180px] md:w-[260px] rounded-xl sm:rounded-2xl border border-white/20 bg-zinc-900/90 backdrop-blur-sm overflow-hidden shadow-2xl">
+                  <div className="w-[120px] sm:w-[180px] md:w-[260px] rounded-lg sm:rounded-2xl border border-white/20 bg-zinc-900/90 backdrop-blur-sm overflow-hidden shadow-2xl">
                     {/* Chat Header */}
-                    <div className="px-3 py-2 border-b border-white/10 bg-zinc-800/50">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                        <span className="text-xs text-white/70 font-medium">Assistente IA</span>
+                    <div className="px-2 sm:px-3 py-1.5 sm:py-2 border-b border-white/10 bg-zinc-800/50">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-green-400 animate-pulse" />
+                        <span className="text-[9px] sm:text-xs text-white/70 font-medium">Assistente IA</span>
                       </div>
                     </div>
                     
                     {/* Chat Messages */}
-                    <div className="p-3 space-y-3">
+                    <div className="p-2 sm:p-3 space-y-2 sm:space-y-3">
                       {/* User Message */}
                       <div className="flex justify-end">
-                        <div className="bg-purple-500/20 border border-purple-500/30 rounded-xl rounded-tr-sm px-3 py-2 max-w-[90%]">
-                          <p className="text-[10px] md:text-xs text-white/90">
+                        <div className="bg-purple-500/20 border border-purple-500/30 rounded-lg rounded-tr-sm px-2 sm:px-3 py-1.5 sm:py-2 max-w-[90%]">
+                          <p className="text-[8px] sm:text-[10px] md:text-xs text-white/90">
                             Qual o desconto para o produto X?
                           </p>
                         </div>
@@ -261,10 +261,11 @@ export default function RAGSection() {
                       
                       {/* AI Response */}
                       <div className="flex justify-start">
-                        <div className="bg-white/5 border border-white/10 rounded-xl rounded-tl-sm px-3 py-2 max-w-[95%]">
-                          <p className="text-[10px] md:text-xs text-white/80 leading-relaxed">
-                            Conforme documentação da <span className="text-purple-400 font-medium">política comercial (pág. 4)</span>, 
-                            o desconto é de <span className="text-green-400 font-bold">10%</span>.
+                        <div className="bg-white/5 border border-white/10 rounded-lg rounded-tl-sm px-2 sm:px-3 py-1.5 sm:py-2 max-w-[95%]">
+                          <p className="text-[8px] sm:text-[10px] md:text-xs text-white/80 leading-relaxed">
+                            <span className="hidden sm:inline">Conforme documentação da </span>
+                            <span className="text-purple-400 font-medium">política comercial</span><span className="hidden sm:inline"> (pág. 4)</span>, 
+                            desconto de <span className="text-green-400 font-bold">10%</span>.
                           </p>
                         </div>
                       </div>

@@ -58,7 +58,7 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch("https://webhook.agmusic.cloud/webhook/botagmusic", {
+      const response = await fetch("https://webhook.agmusic.cloud/webhook/siteaglabs", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
