@@ -46,9 +46,10 @@ export default defineConfig({
         output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            // Match only the actual react and react-dom packages (avoid matching other packages
-            // that contain the substring "react" in their path)
-            if (/node_modules[/\\](react|react-dom)([/\\]|$)/.test(id)) return 'vendor-react';
+            // Avoid creating a separate `vendor-react` chunk to prevent
+            // circular initialization issues between React and other vendor
+            // chunks when loaded as ES modules in production. Keep React with
+            // the main vendor chunk.
             if (id.includes('three')) return 'vendor-three';
             if (id.includes('framer-motion') || id.includes('@motionone')) return 'vendor-motion';
             if (id.includes('recharts')) return 'vendor-recharts';
