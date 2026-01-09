@@ -37,6 +37,12 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
+// Log all incoming requests (helps debugging in production)
+app.use((req, _res, next) => {
+  log(`${req.method} ${req.path}`, "request");
+  next();
+});
+
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
@@ -81,8 +87,11 @@ app.use((req, res, next) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    res.status(status).json({ message });
-    throw err;
+    // Log the error for diagnostics and respond if headers not sent.
+    console.error(err);
+    if (!res.headersSent) {
+      res.status(status).json({ message });
+    }
   });
 
   // importantly only setup vite in development and after
