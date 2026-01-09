@@ -49,6 +49,9 @@ export default defineConfig({
     emptyOutDir: true,
     // Disable minification during debugging to preserve readable React errors
     minify: false,
+    // Enable sourcemaps so runtime errors map back to original source
+    // (helps decode minified React errors and see original stack frames)
+    sourcemap: true,
     rollupOptions: {
         output: {
         manualChunks(id) {
