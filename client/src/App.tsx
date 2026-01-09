@@ -1,10 +1,10 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-const ChatbotProvider = lazy(() => import("@/components/ChatbotContext").then((m) => ({ default: m.ChatbotProvider })));
+import { ChatbotProvider } from "@/components/ChatbotContext";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Terms from "@/pages/Terms";
@@ -25,12 +25,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Suspense fallback={<>{/* Chatbot loading deferred */}</>}>
-          <ChatbotProvider>
-            <Toaster />
-            <Router />
-          </ChatbotProvider>
-        </Suspense>
+        <ChatbotProvider>
+          <Toaster />
+          <Router />
+        </ChatbotProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
