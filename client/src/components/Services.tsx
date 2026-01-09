@@ -1,9 +1,11 @@
+import React, { Suspense, lazy, memo, useState, useRef, useEffect } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Bot, Globe, Layers, Zap, ArrowRight, Check, Sparkles, TrendingUp, Clock, Shield, MessageSquare, Brain, Cpu, Database, Workflow, Code2 } from "lucide-react";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { RainbowButton } from "@/components/ui/rainbow-button";
-import { useState, useRef, useEffect } from "react";
 import usePrefersReducedMotion from "@/hooks/use-prefers-reduced-motion";
+
+const ServicesBackground = lazy(() => import("./ServicesBackground"));
 
 const WHATSAPP_LINK = "https://wa.me/5564993259857?text=Quero%20saber%20mais%20sobre%20os%20serviços...";
 
@@ -69,7 +71,7 @@ const services = [
 ];
 
 // 3D Tilt Card Component with Enhanced Effects
-function TiltCard({ children, className, intensity = 1 }: { children: React.ReactNode; className?: string; intensity?: number }) {
+const TiltCard = memo(function TiltCard({ children, className, intensity = 1 }: { children: React.ReactNode; className?: string; intensity?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const reduceMotion = usePrefersReducedMotion();
@@ -122,10 +124,10 @@ function TiltCard({ children, className, intensity = 1 }: { children: React.Reac
       {children}
     </motion.div>
   );
-}
+});
 
 // Animated Number Counter
-function AnimatedCounter({ value, delay = 0 }: { value: string; delay?: number }) {
+const AnimatedCounter = memo(function AnimatedCounter({ value, delay = 0 }: { value: string; delay?: number }) {
   const reduceMotion = usePrefersReducedMotion();
 
   if (reduceMotion) return <span>{value}</span>;
@@ -162,10 +164,10 @@ function AnimatedCounter({ value, delay = 0 }: { value: string; delay?: number }
   }, [numericPart, suffix, delay]);
   
   return <span>{displayValue}</span>;
-}
+});
 
 // Glowing Orb Effect
-function GlowingOrb({ gradient, position = "top-right" }: { gradient: string; position?: string }) {
+const GlowingOrb = memo(function GlowingOrb({ gradient, position = "top-right" }: { gradient: string; position?: string }) {
   const positions: Record<string, string> = {
     "top-right": "-top-20 -right-20",
     "bottom-left": "-bottom-20 -left-20",
@@ -178,10 +180,10 @@ function GlowingOrb({ gradient, position = "top-right" }: { gradient: string; po
       <div className={`absolute ${positions[position]} w-24 h-24 bg-linear-to-br ${gradient} rounded-full blur-2xl opacity-30 group-hover:opacity-50 transition-all duration-500`} />
     </>
   );
-}
+});
 
 // Floating Decorative Icons
-function FloatingIcons({ icons, gradient }: { icons: React.ComponentType<{ className?: string }>[]; gradient: string }) {
+const FloatingIcons = memo(function FloatingIcons({ icons, gradient }: { icons: React.ComponentType<{ className?: string }>[]; gradient: string }) {
   const reduceMotion = usePrefersReducedMotion();
 
   if (reduceMotion) {
@@ -229,10 +231,10 @@ function FloatingIcons({ icons, gradient }: { icons: React.ComponentType<{ class
       ))}
     </div>
   );
-}
+});
 
 // Animated Feature List with Stagger
-function FeatureList({ features, gradient }: { features: string[]; gradient: string }) {
+const FeatureList = memo(function FeatureList({ features, gradient }: { features: string[]; gradient: string }) {
   return (
     <ul className="space-y-2">
       {features.map((feature, idx) => (
@@ -255,10 +257,10 @@ function FeatureList({ features, gradient }: { features: string[]; gradient: str
       ))}
     </ul>
   );
-}
+});
 
 // Hero Card Component (Featured Large Card)
-function HeroCard({ service, index }: { service: typeof services[0]; index: number }) {
+const HeroCard = memo(function HeroCard({ service, index }: { service: typeof services[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
   const reduceMotion = usePrefersReducedMotion();
   
@@ -411,10 +413,10 @@ function HeroCard({ service, index }: { service: typeof services[0]; index: numb
       </TiltCard>
     </motion.div>
   );
-}
+});
 
 // Compact Hero Card (No Features Section - for Websites card)
-function CompactHeroCard({ service, index }: { service: typeof services[0]; index: number }) {
+const CompactHeroCard = memo(function CompactHeroCard({ service, index }: { service: typeof services[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
   const reduceMotion = usePrefersReducedMotion();
   
@@ -540,10 +542,10 @@ function CompactHeroCard({ service, index }: { service: typeof services[0]; inde
       </TiltCard>
     </motion.div>
   );
-}
+});
 
 // Standard Card Component
-function StandardCard({ service, index }: { service: typeof services[0]; index: number }) {
+const StandardCard = memo(function StandardCard({ service, index }: { service: typeof services[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
   const reduceMotion = usePrefersReducedMotion();
   
@@ -636,7 +638,7 @@ function StandardCard({ service, index }: { service: typeof services[0]; index: 
       </TiltCard>
     </motion.div>
   );
-}
+});
 
 export default function Services() {
   const featuredServices = services.filter(s => s.featured);
@@ -645,50 +647,20 @@ export default function Services() {
   
   return (
     <section id="services" className="py-16 sm:py-20 md:py-28 px-4 md:px-6 relative overflow-hidden">
-      {/* Enhanced Background Effects */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Gradient Orbs */}
-        {reduceMotion ? (
-          <>
-            <div className="absolute top-1/4 -left-32 w-[360px] h-[360px] bg-linear-to-br from-purple-500/12 via-violet-500/06 to-transparent rounded-full blur-2xl" />
-            <div className="absolute bottom-1/4 -right-32 w-[420px] h-[420px] bg-linear-to-br from-blue-500/10 via-cyan-500/06 to-transparent rounded-full blur-2xl" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] bg-linear-to-br from-pink-500/06 via-purple-500/03 to-transparent rounded-full blur-2xl" />
-          </>
-        ) : (
-          <>
-            <motion.div 
-              animate={{ 
-                scale: [1, 1.2, 1],
-                opacity: [0.1, 0.15, 0.1]
-              }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-linear-to-br from-purple-500/20 via-violet-500/10 to-transparent rounded-full blur-3xl" 
-            />
-            <motion.div 
-              animate={{ 
-                scale: [1, 1.3, 1],
-                opacity: [0.1, 0.18, 0.1]
-              }}
-              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-              className="absolute bottom-1/4 -right-32 w-[600px] h-[600px] bg-linear-to-br from-blue-500/15 via-cyan-500/10 to-transparent rounded-full blur-3xl" 
-            />
-            <motion.div 
-              animate={{ 
-                scale: [1, 1.1, 1],
-                opacity: [0.05, 0.1, 0.05]
-              }}
-              transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-linear-to-br from-pink-500/10 via-purple-500/5 to-transparent rounded-full blur-3xl" 
-            />
-          </>
-        )}
-        
-        {/* Subtle Grid */}
-        <div className="absolute inset-0 opacity-[0.02]" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
-          backgroundSize: '50px 50px'
-        }} />
-      </div>
+      {/* Enhanced Background Effects (lazy-loaded) */}
+      <Suspense fallback={
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 -left-32 w-[360px] h-[360px] bg-linear-to-br from-purple-500/12 via-violet-500/06 to-transparent rounded-full blur-2xl" />
+          <div className="absolute bottom-1/4 -right-32 w-[420px] h-[420px] bg-linear-to-br from-blue-500/10 via-cyan-500/06 to-transparent rounded-full blur-2xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] bg-linear-to-br from-pink-500/06 via-purple-500/03 to-transparent rounded-full blur-2xl" />
+          <div className="absolute inset-0 opacity-[0.02]" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
+            backgroundSize: '50px 50px'
+          }} />
+        </div>
+      }>
+        <ServicesBackground reduceMotion={reduceMotion} />
+      </Suspense>
 
       <div className="container mx-auto max-w-7xl relative z-10">
         {/* Section Header */}

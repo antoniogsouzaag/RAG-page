@@ -129,7 +129,7 @@ export default function Hero() {
           </motion.div>
 
           {/* Mobile Globe (small, below content) - lazy loaded to avoid adding cost to initial bundle */}
-          <div className="w-full flex justify-center mt-6 xl:hidden order-3">
+          <div className="w-full flex justify-center xl:hidden order-3">
             <div className="w-70 h-70 md:w-56 md:h-56 relative">
               <Suspense fallback={null}>
                 <Globe className="w-full h-full" />

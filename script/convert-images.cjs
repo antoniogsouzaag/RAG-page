@@ -14,16 +14,21 @@ async function convertFile(file) {
   const base = path.basename(file, ext);
   const inputPath = path.join(inputDir, file);
 
-  try {
-    await sharp(inputPath)
-      .resize({ width: 1600 })
-      .webp({ quality: 80 })
-      .toFile(path.join(outputDir, `${base}.webp`));
+  // generate multiple widths for responsive images
+  const widths = [320, 640, 960, 1280, 1600];
 
-    await sharp(inputPath)
-      .resize({ width: 1600 })
-      .avif({ quality: 60 })
-      .toFile(path.join(outputDir, `${base}.avif`));
+  try {
+    await Promise.all(widths.map(async (w) => {
+      await sharp(inputPath)
+        .resize({ width: w })
+        .webp({ quality: Math.min(80, Math.round(80 * (w / 1600))) })
+        .toFile(path.join(outputDir, `${base}-${w}.webp`));
+
+      await sharp(inputPath)
+        .resize({ width: w })
+        .avif({ quality: Math.min(60, Math.round(60 * (w / 1600))) })
+        .toFile(path.join(outputDir, `${base}-${w}.avif`));
+    }));
 
     console.log('Converted', file);
   } catch (err) {

@@ -102,66 +102,53 @@ const Masonry = ({
   );
 
   const [containerRef, { width }] = useMeasure();
-  const [imagesReady, setImagesReady] = useState(false);
   const [inView, setInView] = useState(false);
+  const [loadedCount, setLoadedCount] = useState(0);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const hasLoadedImages = useRef(false);
-
-  // Carregamento progressivo: não bloqueia renderização do layout
-  useEffect(() => {
-    if (hasLoadedImages.current || items.length === 0 || !inView) return;
-    hasLoadedImages.current = true;
-
-    const imageUrls = items.map(item => item.img);
-    // prefetch in background but do not block layout
-    preloadImages(imageUrls).then(() => setImagesReady(true));
-    // mark as ready optimistically so items can render while images load
-    setImagesReady(true);
-  }, [items, inView]);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    observerRef.current = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !inView) {
-          setInView(true);
-        }
-      },
-      { threshold: 0.1, rootMargin: '0px' }
-    );
+    observerRef.current = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !inView) {
+        setInView(true);
+      }
+    }, { threshold: 0.1, rootMargin: '0px' });
 
     observerRef.current.observe(containerRef.current);
 
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
+    return () => observerRef.current?.disconnect();
   }, [inView]);
 
   // Simpler CSS-driven masonry based on `column-count` to avoid heavy layout
   const grid = useMemo(() => ({ items, height: 0 }), [items]);
 
   // Track which items entered viewport so we can toggle lightweight CSS animation
-  const [visibleMap] = useState(() => new Map<number, boolean>());
   const itemRefs = useRef<Record<number, HTMLElement | null>>({});
 
   useEffect(() => {
     if (!containerRef.current) return;
     const io = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        const id = Number((entry.target as HTMLElement).dataset.key);
+        const el = entry.target as HTMLElement;
+        const id = Number(el.dataset.key);
         if (!isNaN(id) && entry.isIntersecting) {
-          visibleMap.set(id, true);
-          (entry.target as HTMLElement).classList.add('masonry-item-visible');
+          // add visible class for animation
+          el.classList.add('masonry-item-visible');
+
+          // lazy-load the image inside this item using data-src to avoid re-renders
+          const img = el.querySelector('img[data-src]') as HTMLImageElement | null;
+          if (img && img.dataset.src) {
+            img.src = img.dataset.src;
+            img.removeAttribute('data-src');
+          }
         }
       });
     }, { root: null, threshold: 0.15 });
 
     Object.values(itemRefs.current).forEach(el => { if (el) io.observe(el); });
     return () => io.disconnect();
-  }, [items, containerRef, visibleMap]);
+  }, [items, containerRef]);
 
   const handleMouseEnter = (id: number) => {
     if (!scaleOnHover) return;
@@ -178,8 +165,8 @@ const Masonry = ({
     el.style.transform = '';
   };
 
-  // Verifica se está pronto para renderizar
-  const isReady = imagesReady && grid.items.length > 0;
+  // Verifica se está pronto para renderizar: mostramos o grid quando o container entrar em view
+  const isReady = inView && grid.items.length > 0;
 
   return (
     <div
@@ -214,15 +201,18 @@ const Masonry = ({
             onMouseEnter={() => handleMouseEnter(item.id)}
             onMouseLeave={() => handleMouseLeave(item.id)}
           >
-            <img
-              src={item.img}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              fetchPriority="low"
-              className="w-full block rounded-xl object-cover"
-              style={{ display: 'block' }}
-            />
+              <img
+                // load only when item enters viewport (observer will set `src` from `data-src`)
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                data-src={item.img}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
+                className="w-full block rounded-xl object-cover"
+                style={{ display: 'block' }}
+                onLoad={() => setLoadedCount(c => c + 1)}
+              />
             {colorShiftOnHover && (
               <div className="color-overlay absolute inset-0 rounded-xl bg-linear-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none transition-opacity duration-300" />
             )}

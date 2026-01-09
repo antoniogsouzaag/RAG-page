@@ -97,10 +97,47 @@ app.use((req, res, next) => {
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
   // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(port, () => {
-    log(`serving on port ${port}`);
-  });
+  // Try a small range of fallback ports if the desired port is in use to avoid
+  // crashing (helpful during development or when a process unexpectedly
+  // occupies the port on the host).
+  const basePort = parseInt(process.env.PORT || "5000", 10);
+
+  async function tryListen(startPort: number, attempts = 5) {
+    for (let i = 0; i < attempts; i++) {
+      const p = startPort + i;
+      try {
+        await new Promise<void>((resolve, reject) => {
+          const onError = (err: any) => {
+            httpServer.removeListener("listening", onListen);
+            reject(err);
+          };
+          const onListen = () => {
+            httpServer.removeListener("error", onError);
+            resolve();
+          };
+          httpServer.once("error", onError);
+          httpServer.once("listening", onListen);
+          httpServer.listen(p);
+        });
+        log(`serving on port ${p}`);
+        return;
+      } catch (err: any) {
+        if (err && err.code === "EADDRINUSE") {
+          log(`port ${startPort + i} in use, trying next port...`, "server");
+          // continue loop to try next port
+          continue;
+        }
+        // unknown error, rethrow
+        throw err;
+      }
+    }
+    throw new Error(`Unable to bind to ports ${startPort}-${startPort + attempts - 1}`);
+  }
+
+  try {
+    await tryListen(basePort, 6);
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
 })();
