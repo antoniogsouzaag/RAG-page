@@ -25,7 +25,7 @@ export default function Hero() {
     <section className="relative min-h-screen flex items-center pt-20 sm:pt-24 pb-12 sm:pb-16 overflow-hidden bg-black">
       {/* Light Pillar Background - Only on desktop for performance */}
       {!isMobile && (
-        <Suspense fallback={<div className="absolute inset-0 bg-linear-to-br from-purple-900/20 to-pink-900/20" />}>
+        <Suspense fallback={<div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-900/20 to-pink-900/20"><span className="text-white/60 animate-pulse">Carregando efeito visual...</span></div>}>
           <LightPillar
             topColor="#2d1f6b"
             bottomColor="#4a3259"
@@ -43,7 +43,9 @@ export default function Hero() {
 
       {/* Mobile background fallback */}
       {isMobile && (
-        <div className="absolute inset-0 bg-linear-to-br from-purple-900/20 via-black to-pink-900/20" />
+        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-900/20 via-black to-pink-900/20">
+          <span className="text-white/60 animate-pulse">Carregando visual mobile...</span>
+        </div>
       )}
 
       <div className="relative z-10 px-4 md:px-6 mx-auto max-w-none w-full h-full flex items-center overflow-visible">
@@ -131,7 +133,7 @@ export default function Hero() {
             <div className="relative w-full max-w-[1400px] aspect-square flex items-center justify-center overflow-visible translate-x-16 translate-y-48 scale-[1.5]">
               {/* Glow effect behind globe */}
               <div className="absolute inset-0 bg-purple-500/10 blur-[120px] rounded-full scale-150" />
-              <Suspense fallback={null}>
+              <Suspense fallback={<div className="flex items-center justify-center w-full h-full"><span className="text-white/60 animate-pulse">Carregando globo...</span></div>}>
                 <Globe className="relative z-10 w-full h-full" />
               </Suspense>
             </div>
@@ -140,7 +142,7 @@ export default function Hero() {
           {/* Mobile Globe (small, below content) - lazy loaded to avoid adding cost to initial bundle */}
           <div className="w-full flex justify-center xl:hidden order-3">
             <div className="w-70 h-70 md:w-56 md:h-56 relative">
-              <Suspense fallback={null}>
+              <Suspense fallback={<div className="flex items-center justify-center w-full h-full"><span className="text-white/60 animate-pulse">Carregando globo mobile...</span></div>}>
                 <Globe className="w-full h-full" />
               </Suspense>
             </div>
