@@ -194,7 +194,7 @@ const Masonry = ({
           <div
             key={item.id}
             data-key={item.id}
-            ref={(el) => (itemRefs.current[item.id] = el)}
+            ref={(el) => { itemRefs.current[item.id] = el; }}
             className={`mb-4 break-inside-avoid relative cursor-pointer overflow-hidden rounded-xl shadow-lg transform transition-opacity duration-600 opacity-0`}
             style={{ willChange: 'transform, opacity, filter' }}
             onClick={() => item.url && window.open(item.url, '_blank', 'noopener')}

@@ -33,7 +33,7 @@ export default function AppGallery() {
       <div className="grid md:grid-cols-2 gap-10">
         {[
           { 
-            img: artImage, 
+            img: '/attached_assets/generated_images/generative_ai_art.png',
             title: "Flux Architecture", 
             desc: "Ultra-realistic visual asset generation for high-end branding.",
             tag: "Visuals"
