@@ -42,6 +42,8 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    // Disable minification during debugging to preserve readable React errors
+    minify: false,
     rollupOptions: {
         output: {
         manualChunks(id) {
