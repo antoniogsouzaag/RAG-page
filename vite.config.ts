@@ -32,6 +32,11 @@ export default defineConfig({
       react: path.resolve(import.meta.dirname, "node_modules", "react"),
       "react-dom": path.resolve(import.meta.dirname, "node_modules", "react-dom"),
     },
+    // Ensure only one copy of React is bundled
+    dedupe: ["react", "react-dom"],
+  },
+  optimizeDeps: {
+    include: ["react", "react-dom"],
   },
   css: {
     postcss: {
