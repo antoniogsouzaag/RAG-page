@@ -3,6 +3,7 @@ import { Bot, Globe, Layers, Zap, ArrowRight, Check, Sparkles, TrendingUp, Clock
 import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { useState, useRef, useEffect } from "react";
+import usePrefersReducedMotion from "@/hooks/use-prefers-reduced-motion";
 
 const WHATSAPP_LINK = "https://wa.me/5564993259857?text=Quero%20saber%20mais%20sobre%20os%20serviços...";
 
@@ -71,7 +72,16 @@ const services = [
 function TiltCard({ children, className, intensity = 1 }: { children: React.ReactNode; className?: string; intensity?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  
+  const reduceMotion = usePrefersReducedMotion();
+
+  if (reduceMotion) {
+    return (
+      <div ref={ref} className={className}>
+        {children}
+      </div>
+    );
+  }
+
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   
@@ -116,6 +126,10 @@ function TiltCard({ children, className, intensity = 1 }: { children: React.Reac
 
 // Animated Number Counter
 function AnimatedCounter({ value, delay = 0 }: { value: string; delay?: number }) {
+  const reduceMotion = usePrefersReducedMotion();
+
+  if (reduceMotion) return <span>{value}</span>;
+
   const [displayValue, setDisplayValue] = useState("0");
   const numericPart = value.replace(/[^0-9]/g, '');
   const suffix = value.replace(/[0-9]/g, '');
@@ -168,6 +182,28 @@ function GlowingOrb({ gradient, position = "top-right" }: { gradient: string; po
 
 // Floating Decorative Icons
 function FloatingIcons({ icons, gradient }: { icons: React.ComponentType<{ className?: string }>[]; gradient: string }) {
+  const reduceMotion = usePrefersReducedMotion();
+
+  if (reduceMotion) {
+    return (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {icons.map((Icon, idx) => (
+          <div
+            key={idx}
+            style={{
+              position: "absolute",
+              right: `${10 + idx * 20}%`,
+              bottom: `${15 + idx * 12}%`,
+            }}
+            className={`w-14 h-14 rounded-2xl bg-linear-to-br ${gradient} flex items-center justify-center opacity-30`}
+          >
+            <Icon className="w-7 h-7 text-white" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {icons.map((Icon, idx) => (
@@ -177,7 +213,7 @@ function FloatingIcons({ icons, gradient }: { icons: React.ComponentType<{ class
           whileInView={{ opacity: 0.12, scale: 1 }}
           transition={{ delay: 0.5 + idx * 0.2, duration: 0.5 }}
           viewport={{ once: true }}
-          animate={{ 
+          animate={{
             y: [0, -8, 0],
             rotate: [0, 3, -3, 0]
           }}
@@ -224,6 +260,7 @@ function FeatureList({ features, gradient }: { features: string[]; gradient: str
 // Hero Card Component (Featured Large Card)
 function HeroCard({ service, index }: { service: typeof services[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
+  const reduceMotion = usePrefersReducedMotion();
   
   return (
     <motion.div
@@ -263,7 +300,7 @@ function HeroCard({ service, index }: { service: typeof services[0]; index: numb
           >
             <motion.div
               animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+              transition={{ duration: 2, repeat: reduceMotion ? 0 : Infinity, repeatDelay: reduceMotion ? 0 : 3 }}
             >
               <Sparkles className="w-4 h-4 text-purple-300" />
             </motion.div>
@@ -351,7 +388,7 @@ function HeroCard({ service, index }: { service: typeof services[0]; index: numb
                   Solicitar Demonstração
                   <motion.span
                     animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
+                    transition={{ duration: 1.5, repeat: reduceMotion ? 0 : Infinity }}
                   >
                     <ArrowRight className="w-4 h-4" />
                   </motion.span>
@@ -379,6 +416,7 @@ function HeroCard({ service, index }: { service: typeof services[0]; index: numb
 // Compact Hero Card (No Features Section - for Websites card)
 function CompactHeroCard({ service, index }: { service: typeof services[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
+  const reduceMotion = usePrefersReducedMotion();
   
   return (
     <motion.div
@@ -418,7 +456,7 @@ function CompactHeroCard({ service, index }: { service: typeof services[0]; inde
           >
             <motion.div
               animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+              transition={{ duration: 2, repeat: reduceMotion ? 0 : Infinity, repeatDelay: reduceMotion ? 0 : 3 }}
             >
               <Sparkles className="w-3.5 h-3.5 text-blue-300" />
             </motion.div>
@@ -507,6 +545,7 @@ function CompactHeroCard({ service, index }: { service: typeof services[0]; inde
 // Standard Card Component
 function StandardCard({ service, index }: { service: typeof services[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
+  const reduceMotion = usePrefersReducedMotion();
   
   return (
     <motion.div
@@ -562,7 +601,7 @@ function StandardCard({ service, index }: { service: typeof services[0]; index: 
               <div className="flex items-center gap-1.5">
                 <motion.div
                   animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={{ duration: 2, repeat: reduceMotion ? 0 : Infinity }}
                 >
                   <TrendingUp className="w-3.5 h-3.5" style={{ color: `rgb(${service.spotlightColor})` }} />
                 </motion.div>
@@ -602,36 +641,47 @@ function StandardCard({ service, index }: { service: typeof services[0]; index: 
 export default function Services() {
   const featuredServices = services.filter(s => s.featured);
   const standardServices = services.filter(s => !s.featured);
+  const reduceMotion = usePrefersReducedMotion();
   
   return (
     <section id="services" className="py-16 sm:py-20 md:py-28 px-4 md:px-6 relative overflow-hidden">
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Gradient Orbs */}
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.2, 1],
-            opacity: [0.1, 0.15, 0.1]
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-linear-to-br from-purple-500/20 via-violet-500/10 to-transparent rounded-full blur-3xl" 
-        />
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.3, 1],
-            opacity: [0.1, 0.18, 0.1]
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-1/4 -right-32 w-[600px] h-[600px] bg-linear-to-br from-blue-500/15 via-cyan-500/10 to-transparent rounded-full blur-3xl" 
-        />
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.1, 1],
-            opacity: [0.05, 0.1, 0.05]
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-linear-to-br from-pink-500/10 via-purple-500/5 to-transparent rounded-full blur-3xl" 
-        />
+        {reduceMotion ? (
+          <>
+            <div className="absolute top-1/4 -left-32 w-[360px] h-[360px] bg-linear-to-br from-purple-500/12 via-violet-500/06 to-transparent rounded-full blur-2xl" />
+            <div className="absolute bottom-1/4 -right-32 w-[420px] h-[420px] bg-linear-to-br from-blue-500/10 via-cyan-500/06 to-transparent rounded-full blur-2xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] bg-linear-to-br from-pink-500/06 via-purple-500/03 to-transparent rounded-full blur-2xl" />
+          </>
+        ) : (
+          <>
+            <motion.div 
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.1, 0.15, 0.1]
+              }}
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-linear-to-br from-purple-500/20 via-violet-500/10 to-transparent rounded-full blur-3xl" 
+            />
+            <motion.div 
+              animate={{ 
+                scale: [1, 1.3, 1],
+                opacity: [0.1, 0.18, 0.1]
+              }}
+              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+              className="absolute bottom-1/4 -right-32 w-[600px] h-[600px] bg-linear-to-br from-blue-500/15 via-cyan-500/10 to-transparent rounded-full blur-3xl" 
+            />
+            <motion.div 
+              animate={{ 
+                scale: [1, 1.1, 1],
+                opacity: [0.05, 0.1, 0.05]
+              }}
+              transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-linear-to-br from-pink-500/10 via-purple-500/5 to-transparent rounded-full blur-3xl" 
+            />
+          </>
+        )}
         
         {/* Subtle Grid */}
         <div className="absolute inset-0 opacity-[0.02]" style={{
@@ -651,13 +701,13 @@ export default function Services() {
           >
             <motion.span 
               animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              transition={{ duration: 2, repeat: reduceMotion ? 0 : Infinity }}
               className="w-2.5 h-2.5 rounded-full bg-linear-to-r from-purple-400 to-pink-400" 
             />
             <span className="text-sm font-medium text-white/80 tracking-wide">Nossas Soluções</span>
             <motion.span 
               animate={{ rotate: [0, 15, -15, 0] }}
-              transition={{ duration: 3, repeat: Infinity }}
+              transition={{ duration: 3, repeat: reduceMotion ? 0 : Infinity }}
             >
               <Sparkles className="w-4 h-4 text-purple-400" />
             </motion.span>
@@ -769,7 +819,7 @@ export default function Services() {
                   Falar com Especialista
                   <motion.span
                     animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
+                    transition={{ duration: 1.5, repeat: reduceMotion ? 0 : Infinity }}
                   >
                     <ArrowRight className="w-5 h-5" />
                   </motion.span>

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { gsap } from 'gsap';
 
 const useMedia = (queries: string[], values: number[], defaultValue: number) => {
   const get = () => {
     if (typeof window === 'undefined') return defaultValue;
-    return values[queries.findIndex(q => matchMedia(q).matches)] ?? defaultValue;
+    const idx = queries.findIndex(q => matchMedia(q).matches);
+    return values[idx] ?? defaultValue;
   };
 
   const [value, setValue] = useState(defaultValue);
@@ -14,12 +14,14 @@ const useMedia = (queries: string[], values: number[], defaultValue: number) => 
   useEffect(() => {
     // Atualiza valor correto após montagem
     setValue(get());
-    
-    const handler = () => setValue(get);
-    queries.forEach(q => matchMedia(q).addEventListener('change', handler));
-    return () => queries.forEach(q => matchMedia(q).removeEventListener('change', handler));
+
+    const handlers: MediaQueryList[] = queries.map(q => matchMedia(q));
+    const onChange = () => setValue(get());
+
+    handlers.forEach(mq => mq.addEventListener('change', onChange));
+    return () => handlers.forEach(mq => mq.removeEventListener('change', onChange));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queries]);
+  }, [queries.join('|'), values.join('|')]);
 
   return value;
 };
@@ -41,7 +43,9 @@ const useMeasure = () => {
   return [ref, size] as const;
 };
 
+// lightweight image preloader (kept for optional prefetching)
 const preloadImages = async (urls: string[]) => {
+  if (!urls || !urls.length) return;
   await Promise.all(
     urls.map(
       src =>
@@ -103,15 +107,16 @@ const Masonry = ({
   const observerRef = useRef<IntersectionObserver | null>(null);
   const hasLoadedImages = useRef(false);
 
-  // Pré-carregar imagens
+  // Carregamento progressivo: não bloqueia renderização do layout
   useEffect(() => {
     if (hasLoadedImages.current || items.length === 0 || !inView) return;
     hasLoadedImages.current = true;
 
     const imageUrls = items.map(item => item.img);
-    preloadImages(imageUrls).then(() => {
-      setImagesReady(true);
-    });
+    // prefetch in background but do not block layout
+    preloadImages(imageUrls).then(() => setImagesReady(true));
+    // mark as ready optimistically so items can render while images load
+    setImagesReady(true);
   }, [items, inView]);
 
   useEffect(() => {
@@ -135,184 +140,97 @@ const Masonry = ({
     };
   }, [inView]);
 
-  const getInitialPosition = (item: GridItem) => {
-    const containerRect = containerRef.current?.getBoundingClientRect();
-    if (!containerRect) return { x: item.x, y: item.y };
+  // Simpler CSS-driven masonry based on `column-count` to avoid heavy layout
+  const grid = useMemo(() => ({ items, height: 0 }), [items]);
 
-    let direction = animateFrom;
-    if (animateFrom === 'random') {
-      const dirs: ('top' | 'bottom' | 'left' | 'right')[] = ['top', 'bottom', 'left', 'right'];
-      direction = dirs[Math.floor(Math.random() * dirs.length)];
-    }
+  // Track which items entered viewport so we can toggle lightweight CSS animation
+  const [visibleMap] = useState(() => new Map<number, boolean>());
+  const itemRefs = useRef<Record<number, HTMLElement | null>>({});
 
-    switch (direction) {
-      case 'top':
-        return { x: item.x, y: -200 };
-      case 'bottom':
-        return { x: item.x, y: window.innerHeight + 200 };
-      case 'left':
-        return { x: -200, y: item.y };
-      case 'right':
-        return { x: window.innerWidth + 200, y: item.y };
-      case 'center':
-        return {
-          x: containerRect.width / 2 - item.w / 2,
-          y: containerRect.height / 2 - item.h / 2
-        };
-      default:
-        return { x: item.x, y: item.y + 100 };
-    }
-  };
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = Number((entry.target as HTMLElement).dataset.key);
+        if (!isNaN(id) && entry.isIntersecting) {
+          visibleMap.set(id, true);
+          (entry.target as HTMLElement).classList.add('masonry-item-visible');
+        }
+      });
+    }, { root: null, threshold: 0.15 });
 
-  const grid = useMemo(() => {
-    if (!width) return { items: [], height: 0 };
-    const colHeights = new Array(columns).fill(0);
-    const gap = 16;
-    const totalGaps = (columns - 1) * gap;
-    const columnWidth = (width - totalGaps) / columns;
-
-    const gridItems = items.map(child => {
-      const col = colHeights.indexOf(Math.min(...colHeights));
-      const x = col * (columnWidth + gap);
-      const height = child.height / 2;
-      const y = colHeights[col];
-
-      colHeights[col] += height + gap;
-      return { ...child, x, y, w: columnWidth, h: height };
-    });
-
-    return { items: gridItems, height: Math.max(...colHeights) };
-  }, [columns, items, width]);
-
-  const hasAnimated = useRef(false);
-
-  useLayoutEffect(() => {
-    if (!imagesReady || !grid.items.length || !inView) return;
-
-    grid.items.forEach((item, index) => {
-      const selector = `[data-key="${item.id}"]`;
-      const animProps = { x: item.x, y: item.y, width: item.w, height: item.h };
-
-      if (!hasAnimated.current) {
-        const start = getInitialPosition(item);
-        gsap.fromTo(
-          selector,
-          {
-            opacity: 0,
-            x: start.x,
-            y: start.y,
-            width: item.w,
-            height: item.h,
-            scale: 1,
-            ...(blurToFocus && { filter: 'blur(10px)' })
-          },
-          {
-            opacity: 1,
-            ...animProps,
-            scale: 1,
-            ...(blurToFocus && { filter: 'blur(0px)' }),
-            duration: 0.8,
-            ease: 'power3.out',
-            delay: index * stagger
-          }
-        );
-      } else {
-        gsap.to(selector, {
-          ...animProps,
-          duration,
-          ease,
-          overwrite: 'auto'
-        });
-      }
-    });
-
-    if (inView) {
-      hasAnimated.current = true;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [grid, imagesReady, inView, stagger, animateFrom, blurToFocus, duration, ease]);
+    Object.values(itemRefs.current).forEach(el => { if (el) io.observe(el); });
+    return () => io.disconnect();
+  }, [items, containerRef, visibleMap]);
 
   const handleMouseEnter = (id: number) => {
-    if (scaleOnHover) {
-      gsap.to(`[data-key="${id}"]`, {
-        scale: hoverScale,
-        duration: 0.3,
-        ease: 'power2.out'
-      });
-    }
+    if (!scaleOnHover) return;
+    const el = itemRefs.current[id];
+    if (!el) return;
+    el.style.transform = `scale(${hoverScale})`;
+    el.style.transition = 'transform 0.28s cubic-bezier(.22,.9,.32,1)';
   };
 
   const handleMouseLeave = (id: number) => {
-    if (scaleOnHover) {
-      gsap.to(`[data-key="${id}"]`, {
-        scale: 1,
-        duration: 0.3,
-        ease: 'power2.out'
-      });
-    }
+    if (!scaleOnHover) return;
+    const el = itemRefs.current[id];
+    if (!el) return;
+    el.style.transform = '';
   };
 
   // Verifica se está pronto para renderizar
-  const isReady = imagesReady && width > 0 && grid.items.length > 0;
+  const isReady = imagesReady && grid.items.length > 0;
 
   return (
-    <div 
-      ref={containerRef} 
-      className="relative w-full" 
-      style={{ 
-        height: grid.height || 'auto',
-        minHeight: !isReady ? 400 : undefined
-      }}
+    <div
+      ref={containerRef}
+      className="relative w-full"
+      style={{ minHeight: !isReady ? 300 : undefined }}
     >
       {/* Loading skeleton enquanto carrega */}
       {!isReady && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 w-full p-4">
-            {Array.from({ length: Math.min(items.length || 6, 10) }).map((_, i) => (
-              <div 
-                key={i} 
-                className="bg-zinc-800/50 rounded-xl animate-pulse"
-                style={{ height: 150 + (i % 3) * 50 }}
-              />
+        <div className="w-full p-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {Array.from({ length: Math.min(items.length || 6, 8) }).map((_, i) => (
+              <div key={i} className="bg-zinc-800/50 rounded-xl animate-pulse" style={{ height: 120 + (i % 3) * 40 }} />
             ))}
           </div>
         </div>
       )}
-      
-      {/* Grid items */}
-      {isReady && grid.items.map(item => (
-        <div
-          key={item.id}
-          data-key={item.id}
-          className="absolute cursor-pointer"
-          style={{ 
-            willChange: 'transform, filter, opacity',
-            transformOrigin: 'center center',
-            opacity: 0, // Começa invisível, GSAP anima para visível
-            left: 0,
-            top: 0
-          }}
-          onClick={() => item.url && window.open(item.url, '_blank', 'noopener')}
-          onMouseEnter={() => handleMouseEnter(item.id)}
-          onMouseLeave={() => handleMouseLeave(item.id)}
-        >
+
+      {/* CSS-driven Masonry */}
+      <div
+        className="w-full"
+        style={{ columnCount: columns, columnGap: 16, transition: 'column-count 0.25s ease' }}
+      >
+        {items.map(item => (
           <div
-            className="relative w-full h-full rounded-xl shadow-lg overflow-hidden"
+            key={item.id}
+            data-key={item.id}
+            ref={(el) => (itemRefs.current[item.id] = el)}
+            className={`mb-4 break-inside-avoid relative cursor-pointer overflow-hidden rounded-xl shadow-lg transform transition-opacity duration-600 opacity-0`}
+            style={{ willChange: 'transform, opacity, filter' }}
+            onClick={() => item.url && window.open(item.url, '_blank', 'noopener')}
+            onMouseEnter={() => handleMouseEnter(item.id)}
+            onMouseLeave={() => handleMouseLeave(item.id)}
           >
-            <img 
+            <img
               src={item.img}
               alt=""
               loading="lazy"
               decoding="async"
               fetchPriority="low"
-              className="w-full h-full object-cover"
+              className="w-full block rounded-xl object-cover"
+              style={{ display: 'block' }}
             />
             {colorShiftOnHover && (
               <div className="color-overlay absolute inset-0 rounded-xl bg-linear-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none transition-opacity duration-300" />
             )}
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+
+      <style>{`\n        .masonry-item-visible { opacity: 1 !important; transform: translateY(0) !important; transition: opacity .5s ease, transform .5s cubic-bezier(.22,.9,.32,1); }\n        .break-inside-avoid { break-inside: avoid-column; }\n        .w-full img { width: 100%; }\n      `}</style>
     </div>
   );
 };
