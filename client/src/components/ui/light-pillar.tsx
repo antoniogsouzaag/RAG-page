@@ -43,14 +43,33 @@ const LightPillar = ({
   const timeRef = useRef(0);
   const [webGLSupported, setWebGLSupported] = useState(true);
 
-  // Check WebGL support
+  // Check WebGL support and mobile performance
   useEffect(() => {
     const canvas = document.createElement('canvas');
     const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
     if (!gl) {
       setWebGLSupported(false);
       console.warn('WebGL is not supported in this browser');
+      return;
     }
+
+    // Check for mobile devices and reduce performance expectations
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      // Reduce pixel ratio for mobile performance
+      const context = gl as WebGLRenderingContext;
+      const debugInfo = context.getExtension('WEBGL_debug_renderer_info');
+      if (debugInfo) {
+        const renderer = context.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+        // If it's a low-end mobile GPU, disable WebGL
+        if (renderer && (renderer.includes('Mali') || renderer.includes('Adreno') || renderer.includes('PowerVR'))) {
+          setWebGLSupported(false);
+          return;
+        }
+      }
+    }
+
+    setWebGLSupported(true);
   }, []);
 
   useEffect(() => {
@@ -69,12 +88,13 @@ const LightPillar = ({
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({
-        antialias: false,
+        antialias: false, // Disable antialiasing for performance
         alpha: true,
         powerPreference: 'high-performance',
-        precision: 'lowp',
+        precision: 'lowp', // Use low precision for better performance
         stencil: false,
-        depth: false
+        depth: false,
+        failIfMajorPerformanceCaveat: true // Fail if performance would be poor
       });
     } catch (error) {
       console.error('Failed to create WebGL renderer:', error);
@@ -83,6 +103,7 @@ const LightPillar = ({
     }
 
     renderer.setSize(width, height);
+    // Reduce pixel ratio for better performance, especially on mobile
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;

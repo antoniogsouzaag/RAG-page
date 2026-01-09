@@ -1,7 +1,8 @@
 import React, { Suspense, lazy } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
-import LightPillar from "@/components/ui/light-pillar";
+import { useIsMobile } from "@/hooks/use-mobile";
+const LightPillar = lazy(() => import("@/components/ui/light-pillar"));
 const Globe = lazy(() => import("@/components/ui/globe").then((m) => ({ default: m.Globe })));
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { HyperText } from "@/components/ui/hyper-text";
@@ -18,24 +19,32 @@ const stats = [
 
 export default function Hero() {
   const { openChat } = useChatbot();
+  const isMobile = useIsMobile();
   
   return (
     <section className="relative min-h-screen flex items-center pt-20 sm:pt-24 pb-12 sm:pb-16 overflow-hidden bg-black">
-      {/* Light Pillar Background */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <LightPillar
-          topColor="#2d1f6b"
-          bottomColor="#4a3259"
-          intensity={0.5}
-          rotationSpeed={0.1}
-          glowAmount={0.01}
-          pillarWidth={6.0}
-          pillarHeight={0.25}
-          noiseIntensity={0.5}
-          mixBlendMode="screen"
-          pillarRotation={55}
-        />
-      </div>
+      {/* Light Pillar Background - Only on desktop for performance */}
+      {!isMobile && (
+        <Suspense fallback={<div className="absolute inset-0 bg-linear-to-br from-purple-900/20 to-pink-900/20" />}>
+          <LightPillar
+            topColor="#2d1f6b"
+            bottomColor="#4a3259"
+            intensity={0.5}
+            rotationSpeed={0.1}
+            glowAmount={0.01}
+            pillarWidth={6.0}
+            pillarHeight={0.25}
+            noiseIntensity={0.5}
+            mixBlendMode="screen"
+            pillarRotation={55}
+          />
+        </Suspense>
+      )}
+
+      {/* Mobile background fallback */}
+      {isMobile && (
+        <div className="absolute inset-0 bg-linear-to-br from-purple-900/20 via-black to-pink-900/20" />
+      )}
 
       <div className="relative z-10 px-4 md:px-6 mx-auto max-w-none w-full h-full flex items-center overflow-visible">
         <div className="grid w-full xl:grid-cols-2 gap-8 xl:gap-12 items-center overflow-visible">

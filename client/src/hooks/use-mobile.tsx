@@ -4,6 +4,7 @@ const MOBILE_BREAKPOINT = 768
 
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(() => {
+    // Check if window is available (SSR safe)
     if (typeof window === "undefined") return undefined
     return window.innerWidth < MOBILE_BREAKPOINT
   })
@@ -12,18 +13,20 @@ export function useIsMobile() {
     if (typeof window === "undefined") return
 
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-    const onChange = () => setIsMobile(mql.matches)
+    const onChange = React.useCallback(() => {
+      setIsMobile(mql.matches)
+    }, [])
 
-    // Add listener with fallback for older browsers (Safari)
+    // Set initial state
+    setIsMobile(mql.matches)
+
+    // Add listener with modern API, fallback to older API
     if (typeof mql.addEventListener === "function") {
       mql.addEventListener("change", onChange)
     } else if (typeof mql.addListener === "function") {
       // @ts-ignore - older API
       mql.addListener(onChange)
     }
-
-    // Ensure state is correct on mount
-    setIsMobile(mql.matches)
 
     return () => {
       if (typeof mql.removeEventListener === "function") {

@@ -101,6 +101,26 @@
     .blur-\[100px\], .blur-\[120px\], .blur-\[150px\] {
       filter: blur(60px);
     }
+
+    /* Disable heavy animations on mobile */
+    .animate-pulse {
+      animation: none;
+    }
+
+    /* Reduce backdrop blur on mobile */
+    .backdrop-blur-xl {
+      backdrop-filter: blur(8px);
+    }
+
+    .backdrop-blur-md {
+      backdrop-filter: blur(4px);
+    }
+
+    /* Optimize transforms for mobile */
+    * {
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
   }
 
   /* Reduce motion for users who prefer it */

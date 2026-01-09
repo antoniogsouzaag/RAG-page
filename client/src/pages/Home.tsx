@@ -1,13 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import { useLocation } from "wouter";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Marquee from "@/components/Marquee";
 import Services from "@/components/Services";
-import RAGSectionNew from "@/components/RAGSectionNew";
-import AppIntroTransition from "@/components/AppIntroTransition";
-import AppShowcaseIntro from "@/components/AppShowcaseIntro";
-import AppGalleryNew from "@/components/AppGalleryNew";
+const RAGSectionNew = lazy(() => import("@/components/RAGSectionNew"));
+const AppIntroTransition = lazy(() => import("@/components/AppIntroTransition"));
+const AppShowcaseIntro = lazy(() => import("@/components/AppShowcaseIntro"));
+const AppGalleryNew = lazy(() => import("@/components/AppGalleryNew"));
 import CTASection from "@/components/CTASection";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import Footer from "@/components/Footer";
@@ -37,13 +37,21 @@ export default function Home() {
         <Hero />
         <Marquee />
         <Services />
-        <RAGSectionNew />
+        <Suspense fallback={<div className="h-96 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div></div>}>
+          <RAGSectionNew />
+        </Suspense>
         <CTASection />
         {/* Generous spacing before app showcase */}
         <div className="h-24 md:h-32 lg:h-40" />
-        <AppIntroTransition />
-        <AppShowcaseIntro />
-        <AppGalleryNew />
+        <Suspense fallback={<div className="h-64 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div></div>}>
+          <AppIntroTransition />
+        </Suspense>
+        <Suspense fallback={<div className="h-64 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div></div>}>
+          <AppShowcaseIntro />
+        </Suspense>
+        <Suspense fallback={<div className="h-96 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div></div>}>
+          <AppGalleryNew />
+        </Suspense>
       </main>
       <WhatsAppButton />
       <Footer />

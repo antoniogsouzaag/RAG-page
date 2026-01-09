@@ -1,27 +1,36 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import createGlobe, { COBEOptions } from "cobe";
 import { useMotionValue, useSpring } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const MOVEMENT_DAMPING = 1400;
 
+// Detect if we're on a mobile device
+const isMobile = typeof window !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
 const GLOBE_CONFIG: COBEOptions = {
-  width: 1400,
-  height: 1400,
+  width: isMobile ? 800 : 1400,
+  height: isMobile ? 800 : 1400,
   onRender: () => {},
-  devicePixelRatio: 2,
+  devicePixelRatio: isMobile ? 1 : 2,
   phi: 0,
   theta: 0.3,
   dark: 1,
   diffuse: 0.4,
-  mapSamples: 16000,
+  mapSamples: isMobile ? 8000 : 16000, // Reduce samples on mobile
   mapBrightness: 1.2,
   baseColor: [0.3, 0.3, 0.3],
   markerColor: [0.6, 0.3, 1],
   glowColor: [0.4, 0.2, 0.8],
-  markers: [
+  markers: isMobile ? [
+    // Reduce markers on mobile for performance
+    { location: [19.076, 72.8777], size: 0.1 },
+    { location: [39.9042, 116.4074], size: 0.08 },
+    { location: [-23.5505, -46.6333], size: 0.1 },
+    { location: [40.7128, -74.006], size: 0.1 },
+  ] : [
     { location: [14.5995, 120.9842], size: 0.03 },
     { location: [19.076, 72.8777], size: 0.1 },
     { location: [23.8103, 90.4125], size: 0.05 },
@@ -82,13 +91,13 @@ export function Globe({
 
     const globe = createGlobe(canvasRef.current!, {
       ...config,
-      width: width * 2,
-      height: width * 2,
+      width: width * (isMobile ? 1 : 2),
+      height: width * (isMobile ? 1 : 2),
       onRender: (state) => {
-        if (!pointerInteracting.current) phi += 0.002;
+        if (!pointerInteracting.current) phi += isMobile ? 0.001 : 0.002; // Slower rotation on mobile
         state.phi = phi + rs.get();
-        state.width = width * 2;
-        state.height = width * 2;
+        state.width = width * (isMobile ? 1 : 2);
+        state.height = width * (isMobile ? 1 : 2);
       },
     });
 
@@ -117,15 +126,19 @@ export function Globe({
         )}
         ref={canvasRef}
         onPointerDown={(e) => {
-          pointerInteracting.current = e.clientX;
-          updatePointerInteraction(e.clientX);
+          // Disable interaction on mobile for performance
+          if (!isMobile) {
+            pointerInteracting.current = e.clientX;
+            updatePointerInteraction(e.clientX);
+          }
         }}
-        onPointerUp={() => updatePointerInteraction(null)}
-        onPointerOut={() => updatePointerInteraction(null)}
-        onMouseMove={(e) => updateMovement(e.clientX)}
+        onPointerUp={() => !isMobile && updatePointerInteraction(null)}
+        onPointerOut={() => !isMobile && updatePointerInteraction(null)}
+        onMouseMove={(e) => !isMobile && updateMovement(e.clientX)}
         onTouchMove={(e) =>
-          e.touches[0] && updateMovement(e.touches[0].clientX)
+          !isMobile && e.touches[0] && updateMovement(e.touches[0].clientX)
         }
+        style={{ touchAction: isMobile ? 'none' : 'auto' }}
       />
     </div>
   );
