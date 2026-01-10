@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, memo, useState, useRef, useEffect } from "react";
+import React, { Suspense, lazy, memo, useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Bot, Globe, Layers, Zap, ArrowRight, Check, Sparkles, TrendingUp, Clock, Shield, MessageSquare, Brain, Cpu, Database, Workflow, Code2 } from "lucide-react";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
@@ -71,15 +71,48 @@ const services = [
   }
 ];
 
-// 3D Tilt Card Component with Enhanced Effects
+// 3D Tilt Card Component with Enhanced Effects - Fixed to not call hooks conditionally
 const TiltCard = memo(function TiltCard({ children, className, intensity = 1 }: { children: React.ReactNode; className?: string; intensity?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const reduceMotion = usePrefersReducedMotion();
   const isMobile = useIsMobile();
+  
+  // Always call hooks unconditionally
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  
+  const springConfig = useMemo(() => ({ stiffness: 400, damping: 30 }), []);
+  const rotateXTransform = useTransform(y, [-0.5, 0.5], [10 * intensity, -10 * intensity]);
+  const rotateYTransform = useTransform(x, [-0.5, 0.5], [-10 * intensity, 10 * intensity]);
+  const rotateX = useSpring(rotateXTransform, springConfig);
+  const rotateY = useSpring(rotateYTransform, springConfig);
+  const scale = useSpring(isHovered ? 1.02 : 1, springConfig);
+  
+  // Memoize disabled state
+  const isDisabled = reduceMotion || isMobile;
 
-  // Disable tilt and heavy motion on mobile or when the user prefers reduced motion
-  if (reduceMotion || isMobile) {
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (isDisabled || !ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const xPos = (e.clientX - rect.left) / rect.width - 0.5;
+    const yPos = (e.clientY - rect.top) / rect.height - 0.5;
+    x.set(xPos);
+    y.set(yPos);
+  }, [isDisabled, x, y]);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsHovered(false);
+    x.set(0);
+    y.set(0);
+  }, [x, y]);
+  
+  const handleMouseEnter = useCallback(() => {
+    if (!isDisabled) setIsHovered(true);
+  }, [isDisabled]);
+
+  // Render simple div when disabled
+  if (isDisabled) {
     return (
       <div ref={ref} className={className}>
         {children}
@@ -87,34 +120,11 @@ const TiltCard = memo(function TiltCard({ children, className, intensity = 1 }: 
     );
   }
 
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  
-  const springConfig = { stiffness: 400, damping: 30 };
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [10 * intensity, -10 * intensity]), springConfig);
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-10 * intensity, 10 * intensity]), springConfig);
-  const scale = useSpring(isHovered ? 1.02 : 1, springConfig);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const xPos = (e.clientX - rect.left) / rect.width - 0.5;
-    const yPos = (e.clientY - rect.top) / rect.height - 0.5;
-    x.set(xPos);
-    y.set(yPos);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    x.set(0);
-    y.set(0);
-  };
-
   return (
     <motion.div
       ref={ref}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{
         rotateX,
@@ -129,26 +139,34 @@ const TiltCard = memo(function TiltCard({ children, className, intensity = 1 }: 
   );
 });
 
-// Animated Number Counter
+// Animated Number Counter - Fixed hooks called unconditionally
 const AnimatedCounter = memo(function AnimatedCounter({ value, delay = 0 }: { value: string; delay?: number }) {
   const reduceMotion = usePrefersReducedMotion();
   const isMobile = useIsMobile();
-
-  if (reduceMotion || isMobile) return <span>{value}</span>; 
-
-  const [displayValue, setDisplayValue] = useState("0");
-  const numericPart = value.replace(/[^0-9]/g, '');
-  const suffix = value.replace(/[0-9]/g, '');
+  
+  // Parse values outside of conditional
+  const numericPart = useMemo(() => value.replace(/[^0-9]/g, ''), [value]);
+  const suffix = useMemo(() => value.replace(/[0-9]/g, ''), [value]);
+  const target = useMemo(() => parseInt(numericPart) || 0, [numericPart]);
+  
+  const [displayValue, setDisplayValue] = useState(value);
+  const isDisabled = reduceMotion || isMobile;
   
   useEffect(() => {
-    const target = parseInt(numericPart) || 0;
+    // Skip animation if disabled
+    if (isDisabled) {
+      setDisplayValue(value);
+      return;
+    }
+    
     const duration = 1500;
     const startTime = Date.now() + delay * 1000;
+    let rafId: number;
     
     const animate = () => {
       const now = Date.now();
       if (now < startTime) {
-        requestAnimationFrame(animate);
+        rafId = requestAnimationFrame(animate);
         return;
       }
       
@@ -160,12 +178,16 @@ const AnimatedCounter = memo(function AnimatedCounter({ value, delay = 0 }: { va
       setDisplayValue(current.toString() + suffix);
       
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        rafId = requestAnimationFrame(animate);
       }
     };
     
-    requestAnimationFrame(animate);
-  }, [numericPart, suffix, delay]);
+    rafId = requestAnimationFrame(animate);
+    
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [target, suffix, delay, isDisabled, value]);
   
   return <span>{displayValue}</span>;
 });

@@ -378,7 +378,10 @@ const LightPillar = ({
     return (
       <div
         className={`w-full h-full absolute top-0 left-0 flex items-center justify-center bg-black/10 text-gray-500 text-sm ${className}`}
-        style={{ mixBlendMode: mixBlendMode as React.CSSProperties['mixBlendMode'] }}
+        style={{ 
+          mixBlendMode: mixBlendMode as React.CSSProperties['mixBlendMode'],
+          contain: 'strict'
+        }}
       >
         WebGL not supported
       </div>
@@ -389,7 +392,11 @@ const LightPillar = ({
     <div 
       ref={containerRef} 
       className={`w-full h-full absolute top-0 left-0 ${className}`} 
-      style={{ mixBlendMode: mixBlendMode as React.CSSProperties['mixBlendMode'] }} 
+      style={{ 
+        mixBlendMode: mixBlendMode as React.CSSProperties['mixBlendMode'],
+        contain: 'strict',
+        willChange: 'contents'
+      }} 
     />
   );
 };

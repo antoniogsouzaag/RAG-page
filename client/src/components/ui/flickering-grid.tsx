@@ -14,15 +14,18 @@ interface FlickeringGridProps {
   maxOpacity?: number;
 }
 
+// Throttle animation to 30fps max to reduce CPU usage and flickering
+const FRAME_INTERVAL = 1000 / 30;
+
 export function FlickeringGrid({
   squareSize = 2,
   gridGap = 6,
-  flickerChance = 0.05,
+  flickerChance = 0.02, // Reduced from 0.05 for smoother animation
   color = "rgb(0, 0, 0)",
   width,
   height,
   className,
-  maxOpacity = 0.2,
+  maxOpacity = 0.15, // Reduced from 0.2
 }: FlickeringGridProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -125,11 +128,22 @@ export function FlickeringGrid({
     updateCanvasSize();
 
     let lastTime = 0;
+    let lastFrameTime = 0;
+    
     const animate = (time: number) => {
+      // Skip if not in view - don't even request next frame
       if (!isInView) {
         animationFrameId = requestAnimationFrame(animate);
         return;
       }
+
+      // Throttle to FRAME_INTERVAL (30fps)
+      const timeSinceLastFrame = time - lastFrameTime;
+      if (timeSinceLastFrame < FRAME_INTERVAL) {
+        animationFrameId = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrameTime = time;
 
       const deltaTime = (time - lastTime) / 1000;
       lastTime = time;

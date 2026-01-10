@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useId, useState } from "react";
-import { motion, useAnimation } from "framer-motion";
+import { useEffect, useId, useState, useRef, useMemo, memo } from "react";
+import { motion } from "framer-motion";
 
 interface SparklesProps {
   className?: string;
@@ -23,7 +23,10 @@ interface Particle {
   opacityDuration: number;
 }
 
-export function Sparkles({
+// Limit max particles for performance
+const MAX_PARTICLES = 150;
+
+function SparklesComponent({
   className = "",
   size = 1.2,
   density = 400,
@@ -33,13 +36,16 @@ export function Sparkles({
   opacitySpeed = 0.8,
   hovered = true,
 }: SparklesProps) {
-  const [particles, setParticles] = useState<Particle[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
   const id = useId();
 
-  useEffect(() => {
-    const particleCount = density;
+  // Limit particle count for performance
+  const particleCount = useMemo(() => Math.min(density, MAX_PARTICLES), [density]);
+  
+  // Memoize particles to prevent regeneration
+  const particles = useMemo(() => {
     const newParticles: Particle[] = [];
-
     for (let i = 0; i < particleCount; i++) {
       newParticles.push({
         id: i,
@@ -51,11 +57,26 @@ export function Sparkles({
         opacityDuration: Math.random() * 1 + opacitySpeed,
       });
     }
+    return newParticles;
+  }, [particleCount, size, speed, opacitySpeed]);
 
-    setParticles(newParticles);
-  }, [density, size, speed, opacitySpeed]);
+  // Use IntersectionObserver to pause animation when not in view
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+    
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
 
-  const getDirectionAnimation = () => {
+  const directionAnimation = useMemo(() => {
     switch (direction) {
       case "top":
         return { y: [0, -30], x: 0 };
@@ -68,14 +89,17 @@ export function Sparkles({
       default:
         return { y: [0, -30], x: 0 };
     }
-  };
+  }, [direction]);
+
+  // Don't render particles if not in view
+  const shouldAnimate = hovered && isInView;
 
   return (
-    <div className={className} style={{ position: "relative" }}>
+    <div ref={containerRef} className={className} style={{ position: "relative", contain: "layout style paint" }}>
       {particles.map((particle) => (
         <motion.div
           key={`${id}-${particle.id}`}
-          className="absolute rounded-full"
+          className="absolute rounded-full will-change-transform"
           style={{
             left: `${particle.x}%`,
             top: `${particle.y}%`,
@@ -85,17 +109,17 @@ export function Sparkles({
           }}
           initial={{ opacity: 0 }}
           animate={
-            hovered
+            shouldAnimate
               ? {
                   opacity: [0, 1, 0],
-                  ...getDirectionAnimation(),
+                  ...directionAnimation,
                 }
               : { opacity: 0 }
           }
           transition={{
             duration: particle.duration,
             delay: particle.delay,
-            repeat: Infinity,
+            repeat: shouldAnimate ? Infinity : 0,
             repeatType: "loop",
             ease: "easeOut",
           }}
@@ -105,4 +129,5 @@ export function Sparkles({
   );
 }
 
+export const Sparkles = memo(SparklesComponent);
 export default Sparkles;

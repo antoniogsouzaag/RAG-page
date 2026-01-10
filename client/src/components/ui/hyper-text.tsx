@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -27,15 +27,16 @@ export function HyperTextComponent({
   },
   animateOnLoad = true,
 }: HyperTextProps) {
-  const [displayText, setDisplayText] = useState(children.split(""));
+  const initialText = useMemo(() => children.split(""), [children]);
+  const [displayText, setDisplayText] = useState(initialText);
   const [trigger, setTrigger] = useState(false);
-  const iterations = useRef(0);
+  const iterationsRef = useRef(0);
   const isFirstRender = useRef(true);
 
-  const triggerAnimation = () => {
-    iterations.current = 0;
+  const triggerAnimation = useCallback(() => {
+    iterationsRef.current = 0;
     setTrigger(true);
-  };
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -44,17 +45,17 @@ export function HyperTextComponent({
         isFirstRender.current = false;
         return;
       }
-      if (iterations.current < children.length) {
+      if (iterationsRef.current < children.length) {
         setDisplayText((t) =>
           t.map((l, i) =>
             l === " "
               ? l
-              : i <= iterations.current
+              : i <= iterationsRef.current
                 ? children[i]
                 : alphabets[getRandomInt(26)]
           )
         );
-        iterations.current = iterations.current + 0.1;
+        iterationsRef.current = iterationsRef.current + 0.1;
       } else {
         setTrigger(false);
         clearInterval(interval);

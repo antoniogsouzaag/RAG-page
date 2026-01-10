@@ -99,7 +99,7 @@ function Hero() {
               </Suspense>
 
               {/* Animated globe (lazy) positioned for mobile - moved down-right with transparency */}
-              <div className="absolute right-[-20%] top-[40%] w-80 h-80 sm:w-96 sm:h-96 z-10 pointer-events-none opacity-30" aria-hidden>
+              <div className="absolute right-[-30%] top-[30%] w-100 h-100 sm:w-96 sm:h-96 z-10 pointer-events-none opacity-30" aria-hidden>
                 <div className="absolute inset-0 bg-purple-500/15 blur-[80px] rounded-full" />
                 <Suspense fallback={null}>
                   <Globe className="w-full h-full" />

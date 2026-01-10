@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
+import { useEffect, useRef, useState, memo } from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface Stat {
@@ -99,3 +99,5 @@ export function StatsCount({ stats, className, showDividers = true }: StatsCount
     </div>
   );
 }
+
+export default memo(StatsCount);

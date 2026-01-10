@@ -42,6 +42,15 @@
 }
 
 @layer utilities {
+  /* Performance optimizations for animations */
+  .will-change-transform {
+    will-change: transform;
+  }
+  
+  .will-change-opacity {
+    will-change: opacity;
+  }
+  
   /* GPU-accelerated rainbow button animation */
   .rainbow-btn {
     background: linear-gradient(90deg, #9333ea, #db2777, #7c3aed, #9333ea);
@@ -51,6 +60,7 @@
     transition: box-shadow 0.3s ease, transform 0.2s ease;
     will-change: background-position;
     contain: layout style paint;
+    transform: translateZ(0); /* Force GPU layer */
   }
 
   .rainbow-btn:hover {
