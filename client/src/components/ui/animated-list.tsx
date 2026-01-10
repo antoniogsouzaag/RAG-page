@@ -6,28 +6,34 @@ import React, {
   useMemo,
   useState,
   useRef,
+  useCallback,
 } from "react";
-import { AnimatePresence, motion, MotionProps } from "framer-motion";
+import { AnimatePresence, motion, MotionProps, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
 
-export const AnimatedListItem = React.memo(function AnimatedListItem({ children }: { children: React.ReactNode }) {
-  const isMobile = useIsMobile();
+// Item individual com animação baseada em inView
+export const AnimatedListItem = React.memo(function AnimatedListItem({ 
+  children,
+  delay = 0,
+  index,
+}: { 
+  children: React.ReactNode;
+  delay?: number;
+  index: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { amount: 0.5, once: false });
   
-  const animations: MotionProps = useMemo(() => ({
-    initial: { opacity: 0, y: -20, scale: 0.95 },
-    animate: { opacity: 1, y: 0, scale: 1 },
-    exit: { opacity: 0, scale: 0.95 },
-    transition: { 
-      type: "spring", 
-      stiffness: 300, 
-      damping: 30,
-      duration: isMobile ? 0.3 : undefined
-    },
-  }), [isMobile]);
-
   return (
-    <motion.div {...animations} className="mx-auto w-full">
+    <motion.div
+      ref={ref}
+      data-index={index}
+      initial={{ scale: 0.7, opacity: 0 }}
+      animate={inView ? { scale: 1, opacity: 1 } : { scale: 0.7, opacity: 0 }}
+      transition={{ duration: 0.3, delay, ease: "easeOut" }}
+      layout="position"
+      className="mx-auto w-full"
+    >
       {children}
     </motion.div>
   );
@@ -42,22 +48,21 @@ export interface AnimatedListProps extends ComponentPropsWithoutRef<"div"> {
 export const AnimatedList = React.memo(
   ({ children, className, delay = 1000, loop = true, ...props }: AnimatedListProps) => {
     const [index, setIndex] = useState(0);
-    const [isInView, setIsInView] = useState(false);
-    const isMobile = useIsMobile();
     const containerRef = useRef<HTMLDivElement>(null);
+    const [isVisible, setIsVisible] = useState(false);
     
     const childrenArray = useMemo(
       () => React.Children.toArray(children),
       [children]
     );
 
-    // Track visibility with state instead of ref for proper reactivity
+    // Track container visibility
     useEffect(() => {
       if (!containerRef.current) return;
       
       const observer = new IntersectionObserver(
         ([entry]) => {
-          setIsInView(entry.isIntersecting);
+          setIsVisible(entry.isIntersecting);
         },
         { threshold: 0.1 }
       );
@@ -66,25 +71,24 @@ export const AnimatedList = React.memo(
       return () => observer.disconnect();
     }, []);
 
-    // Animation timer - only runs when in view
+    // Animation timer - only runs when visible
     useEffect(() => {
-      if (!isInView) return; // Don't start timer if not in view
-      
-      const actualDelay = isMobile ? delay * 0.7 : delay;
+      if (!isVisible) return;
       
       const timeout = setTimeout(() => {
-        if (index < childrenArray.length - 1) {
-          setIndex((prevIndex) => prevIndex + 1);
-        } else if (loop) {
-          // Reset after showing all items
-          setIndex(0);
-        }
-      }, actualDelay);
+        setIndex((prevIndex) => {
+          // Se chegou ao final e loop está ativo, volta ao início
+          if (prevIndex >= childrenArray.length - 1) {
+            return loop ? 0 : prevIndex;
+          }
+          return prevIndex + 1;
+        });
+      }, delay);
 
       return () => clearTimeout(timeout);
-    }, [index, delay, childrenArray.length, loop, isMobile, isInView]);
+    }, [index, delay, childrenArray.length, loop, isVisible]);
 
-    // Mostrar itens na ordem correta (de cima para baixo)
+    // Items to show - sempre mostra do início até o índice atual
     const itemsToShow = useMemo(() => {
       return childrenArray.slice(0, index + 1);
     }, [index, childrenArray]);
@@ -95,9 +99,13 @@ export const AnimatedList = React.memo(
         className={cn("flex flex-col items-center gap-4", className)}
         {...props}
       >
-        <AnimatePresence mode="sync">
-          {itemsToShow.map((item) => (
-            <AnimatedListItem key={(item as React.ReactElement).key}>
+        <AnimatePresence mode="popLayout">
+          {itemsToShow.map((item, i) => (
+            <AnimatedListItem 
+              key={`${index >= childrenArray.length - 1 && loop ? 'loop-' : ''}${(item as React.ReactElement).key || i}`}
+              delay={0.05 * i}
+              index={i}
+            >
               {item}
             </AnimatedListItem>
           ))}

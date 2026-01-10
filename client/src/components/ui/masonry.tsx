@@ -1,85 +1,59 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, memo, useCallback } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { gsap } from 'gsap';
 
+// Hook para detectar colunas baseado em media queries
 const useMedia = (queries: string[], values: number[], defaultValue: number) => {
-  // Get initial value synchronously to avoid layout shift
-  const getInitial = () => {
+  const get = () => {
     if (typeof window === 'undefined') return defaultValue;
     const idx = queries.findIndex(q => matchMedia(q).matches);
     return values[idx] ?? defaultValue;
   };
 
-  const [value, setValue] = useState(getInitial);
+  const [value, setValue] = useState(get);
 
   useEffect(() => {
-    const handlers: MediaQueryList[] = queries.map(q => matchMedia(q));
-    const onChange = () => {
-      const idx = queries.findIndex(q => matchMedia(q).matches);
-      setValue(values[idx] ?? defaultValue);
-    };
-
-    handlers.forEach(mq => mq.addEventListener('change', onChange));
-    return () => handlers.forEach(mq => mq.removeEventListener('change', onChange));
+    const handler = () => setValue(get);
+    queries.forEach(q => matchMedia(q).addEventListener('change', handler));
+    return () => queries.forEach(q => matchMedia(q).removeEventListener('change', handler));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queries.join('|'), values.join('|')]);
+  }, [queries]);
 
   return value;
 };
 
+// Hook para medir o container
+const useMeasure = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ width: 0, height: 0 });
 
+  useLayoutEffect(() => {
+    if (!ref.current) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setSize({ width, height });
+    });
+    ro.observe(ref.current);
+    return () => ro.disconnect();
+  }, []);
 
-// Simplified image component for masonry items - with stable loading
-const MasonryImage = memo(function MasonryImage({ 
-  src, 
-  alt = "",
-  className = "",
-  height,
-  onLoad
-}: { 
-  src: string; 
-  alt?: string; 
-  className?: string;
-  height: number;
-  onLoad?: () => void;
-}) {
-  const [loaded, setLoaded] = useState(false);
-  
-  const handleLoad = useCallback(() => {
-    setLoaded(true);
-    onLoad?.();
-  }, [onLoad]);
+  return [ref, size] as const;
+};
 
-  return (
-    <div 
-      className="relative w-full overflow-hidden"
-      style={{ 
-        minHeight: loaded ? 'auto' : `${height}px`,
-      }}
-    >
-      {/* Skeleton placeholder */}
-      {!loaded && (
-        <div 
-          className="absolute inset-0 bg-zinc-800/50 animate-pulse rounded-xl"
-          style={{ height: `${height}px` }}
-        />
-      )}
-      <img
-        src={src}
-        alt={alt}
-        loading="lazy"
-        decoding="async"
-        fetchPriority="low"
-        onLoad={handleLoad}
-        className={`${className} ${loaded ? 'opacity-100' : 'opacity-0'}`}
-        style={{ 
-          transition: 'opacity 0.3s ease-out',
-          minHeight: loaded ? 'auto' : `${height}px`,
-        }}
-      />
-    </div>
+// Preload images
+const preloadImages = async (urls: string[]) => {
+  await Promise.all(
+    urls.map(
+      src =>
+        new Promise<void>(resolve => {
+          const img = new Image();
+          img.src = src;
+          img.onload = img.onerror = () => resolve();
+        })
+    )
   );
-});
+};
 
 interface MasonryItem {
   id: number;
@@ -88,158 +62,200 @@ interface MasonryItem {
   url?: string;
 }
 
+interface GridItem extends MasonryItem {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 interface MasonryProps {
   items: MasonryItem[];
+  ease?: string;
+  duration?: number;
+  stagger?: number;
+  animateFrom?: 'top' | 'bottom' | 'left' | 'right' | 'center' | 'random';
   scaleOnHover?: boolean;
   hoverScale?: number;
+  blurToFocus?: boolean;
   colorShiftOnHover?: boolean;
 }
 
 const Masonry = ({
   items,
+  ease = 'power3.out',
+  duration = 0.6,
+  stagger = 0.05,
+  animateFrom = 'bottom',
   scaleOnHover = true,
   hoverScale = 0.95,
+  blurToFocus = true,
   colorShiftOnHover = false
 }: MasonryProps) => {
   const columns = useMedia(
-    ['(min-width:1500px)', '(min-width:1000px)', '(min-width:600px)'],
-    [5, 4, 3],
-    2
+    ['(min-width:1500px)', '(min-width:1000px)', '(min-width:600px)', '(min-width:400px)'],
+    [5, 4, 3, 2],
+    1
   );
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  // Store column count on mount to prevent layout shifts
-  const initialColumnsRef = useRef<number | null>(null);
-  
-  // Lock column count after initial render to prevent reorganization during scroll
-  useEffect(() => {
-    if (initialColumnsRef.current === null) {
-      initialColumnsRef.current = columns;
+  const [containerRef, { width }] = useMeasure();
+  const [imagesReady, setImagesReady] = useState(false);
+  const hasMounted = useRef(false);
+
+  const getInitialPosition = useCallback((item: GridItem) => {
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    if (!containerRect) return { x: item.x, y: item.y };
+
+    let direction = animateFrom;
+    if (animateFrom === 'random') {
+      const dirs: Array<'top' | 'bottom' | 'left' | 'right'> = ['top', 'bottom', 'left', 'right'];
+      direction = dirs[Math.floor(Math.random() * dirs.length)];
     }
-  }, [columns]);
 
-  // Memoize items to prevent unnecessary re-renders
-  const masonryItems = useMemo(() => items, [items]);
-
-  // Track which items entered viewport so we can toggle lightweight CSS animation
-  const itemRefs = useRef<Record<number, HTMLElement | null>>({});
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const observedItemsRef = useRef<Set<number>>(new Set());
+    switch (direction) {
+      case 'top':
+        return { x: item.x, y: -200 };
+      case 'bottom':
+        return { x: item.x, y: window.innerHeight + 200 };
+      case 'left':
+        return { x: -200, y: item.y };
+      case 'right':
+        return { x: window.innerWidth + 200, y: item.y };
+      case 'center':
+        return {
+          x: containerRect.width / 2 - item.w / 2,
+          y: containerRect.height / 2 - item.h / 2
+        };
+      default:
+        return { x: item.x, y: item.y + 100 };
+    }
+  }, [animateFrom, containerRef]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
-    
-    // Create single observer instance for all items
-    observerRef.current = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const el = entry.target as HTMLElement;
-          // Use requestAnimationFrame to batch DOM updates
-          requestAnimationFrame(() => {
-            el.classList.add('masonry-item-visible');
-          });
-          // Unobserve after visible to reduce overhead
-          observerRef.current?.unobserve(el);
-        }
-      });
-    }, { root: null, threshold: 0.01, rootMargin: '200px' });
+    preloadImages(items.map(i => i.img)).then(() => setImagesReady(true));
+  }, [items]);
 
-    // Observe all items after a frame to ensure refs are populated
-    requestAnimationFrame(() => {
-      Object.entries(itemRefs.current).forEach(([id, el]) => { 
-        if (el && !observedItemsRef.current.has(Number(id))) {
-          observerRef.current?.observe(el);
-          observedItemsRef.current.add(Number(id));
-        }
-      });
+  // Calcular o grid com posições absolutas
+  const grid = useMemo<GridItem[]>(() => {
+    if (!width) return [];
+    const colHeights = new Array(columns).fill(0);
+    const gap = 16;
+    const totalGaps = (columns - 1) * gap;
+    const columnWidth = (width - totalGaps) / columns;
+
+    return items.map(child => {
+      const col = colHeights.indexOf(Math.min(...colHeights));
+      const x = col * (columnWidth + gap);
+      const height = child.height / 2;
+      const y = colHeights[col];
+
+      colHeights[col] += height + gap;
+      return { ...child, x, y, w: columnWidth, h: height };
+    });
+  }, [columns, items, width]);
+
+  // Calcular altura total do container
+  const containerHeight = useMemo(() => {
+    if (grid.length === 0) return 0;
+    return Math.max(...grid.map(item => item.y + item.h));
+  }, [grid]);
+
+  // Animação GSAP
+  useLayoutEffect(() => {
+    if (!imagesReady || !width) return;
+
+    grid.forEach((item, index) => {
+      const selector = `[data-key="${item.id}"]`;
+      const animProps = { x: item.x, y: item.y, width: item.w, height: item.h };
+
+      if (!hasMounted.current) {
+        const start = getInitialPosition(item);
+        gsap.fromTo(
+          selector,
+          {
+            opacity: 0,
+            x: start.x,
+            y: start.y,
+            width: item.w,
+            height: item.h,
+            ...(blurToFocus && { filter: 'blur(10px)' })
+          },
+          {
+            opacity: 1,
+            ...animProps,
+            ...(blurToFocus && { filter: 'blur(0px)' }),
+            duration: 0.8,
+            ease: 'power3.out',
+            delay: index * stagger
+          }
+        );
+      } else {
+        gsap.to(selector, {
+          ...animProps,
+          duration,
+          ease,
+          overwrite: 'auto'
+        });
+      }
     });
 
-    return () => {
-      observerRef.current?.disconnect();
-    };
-  }, [masonryItems.length]); // Only re-run when items count changes
+    hasMounted.current = true;
+  }, [grid, imagesReady, stagger, blurToFocus, duration, ease, getInitialPosition, width]);
 
-  const handleMouseEnter = useCallback((id: number) => {
-    if (!scaleOnHover) return;
-    const el = itemRefs.current[id];
-    if (!el) return;
-    el.style.transform = `scale(${hoverScale})`;
-  }, [scaleOnHover, hoverScale]);
+  const handleMouseEnter = useCallback((id: number, element: HTMLElement) => {
+    if (scaleOnHover) {
+      gsap.to(`[data-key="${id}"]`, {
+        scale: hoverScale,
+        duration: 0.3,
+        ease: 'power2.out'
+      });
+    }
+    if (colorShiftOnHover) {
+      const overlay = element.querySelector('.color-overlay');
+      if (overlay) gsap.to(overlay, { opacity: 0.3, duration: 0.3 });
+    }
+  }, [scaleOnHover, hoverScale, colorShiftOnHover]);
 
-  const handleMouseLeave = useCallback((id: number) => {
-    if (!scaleOnHover) return;
-    const el = itemRefs.current[id];
-    if (!el) return;
-    el.style.transform = '';
-  }, [scaleOnHover]);
-
-  // Use locked column count or current if not locked yet
-  const stableColumns = initialColumnsRef.current ?? columns;
+  const handleMouseLeave = useCallback((id: number, element: HTMLElement) => {
+    if (scaleOnHover) {
+      gsap.to(`[data-key="${id}"]`, {
+        scale: 1,
+        duration: 0.3,
+        ease: 'power2.out'
+      });
+    }
+    if (colorShiftOnHover) {
+      const overlay = element.querySelector('.color-overlay');
+      if (overlay) gsap.to(overlay, { opacity: 0, duration: 0.3 });
+    }
+  }, [scaleOnHover, colorShiftOnHover]);
 
   return (
-    <div
-      ref={containerRef}
+    <div 
+      ref={containerRef} 
       className="relative w-full"
+      style={{ height: containerHeight || 'auto' }}
     >
-      {/* CSS-driven Masonry with stable column count */}
-      <div
-        className="w-full"
-        style={{ 
-          columnCount: stableColumns, 
-          columnGap: 16,
-          // Prevent layout recalculation
-          contain: 'layout style',
-        }}
-      >
-        {masonryItems.map(item => (
+      {grid.map(item => (
+        <div
+          key={item.id}
+          data-key={item.id}
+          className="absolute box-content cursor-pointer"
+          style={{ willChange: 'transform, width, height, opacity' }}
+          onClick={() => item.url && window.open(item.url, '_blank', 'noopener')}
+          onMouseEnter={e => handleMouseEnter(item.id, e.currentTarget)}
+          onMouseLeave={e => handleMouseLeave(item.id, e.currentTarget)}
+        >
           <div
-            key={item.id}
-            data-key={item.id}
-            ref={(el) => { itemRefs.current[item.id] = el; }}
-            className="mb-4 break-inside-avoid relative cursor-pointer overflow-hidden rounded-xl shadow-lg masonry-item"
-            style={{ 
-              contain: 'layout paint', 
-              // Reserve space to prevent layout shifts
-              minHeight: `${item.height}px`,
-            }}
-            onClick={() => item.url && window.open(item.url, '_blank', 'noopener')}
-            onMouseEnter={() => handleMouseEnter(item.id)}
-            onMouseLeave={() => handleMouseLeave(item.id)}
+            className="relative w-full h-full bg-cover bg-center rounded-xl shadow-lg overflow-hidden"
+            style={{ backgroundImage: `url(${item.img})` }}
           >
-              <MasonryImage
-                src={item.img}
-                alt=""
-                height={item.height}
-                className="w-full block rounded-xl object-cover"
-              />
             {colorShiftOnHover && (
-              <div className="color-overlay absolute inset-0 rounded-xl bg-linear-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none transition-opacity duration-300" />
+              <div className="color-overlay absolute inset-0 rounded-xl bg-gradient-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none" />
             )}
           </div>
-        ))}
-      </div>
-
-      <style>{`
-        .masonry-item { 
-          opacity: 0; 
-          transform: translate3d(0, 12px, 0); 
-          transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-          contain: layout style paint;
-          will-change: opacity, transform;
-        }
-        .masonry-item-visible { 
-          opacity: 1 !important; 
-          transform: none !important;
-          will-change: auto;
-          contain: layout style;
-          transition: transform 0.28s cubic-bezier(0.22, 0.9, 0.32, 1);
-        }
-        .break-inside-avoid { break-inside: avoid-column; }
-        .w-full img { width: 100%; display: block; }
-        @media (prefers-reduced-motion: reduce) {
-          .masonry-item { opacity: 1; transform: none; transition: none; }
-        }
-      `}</style>
+        </div>
+      ))}
     </div>
   );
 };
