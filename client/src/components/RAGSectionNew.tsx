@@ -159,8 +159,8 @@ function RAGSection() {
         <motion.div
           initial={shouldAnimate ? { opacity: 0, y: 30 } : false}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: isMobile ? 0.2 : 0.8 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: isMobile ? 0.2 : 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-20 md:mb-32"
         >
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-sm font-medium text-purple-400 mb-10">
@@ -217,8 +217,8 @@ function RAGSection() {
         <motion.div
           initial={shouldAnimate ? { opacity: 0, y: 40 } : false}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: isMobile ? 0.2 : 0.8, delay: isMobile ? 0 : 0.2 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: isMobile ? 0.2 : 0.7, delay: isMobile ? 0 : 0.15, ease: [0.22, 1, 0.36, 1] }}
           className="mb-16 sm:mb-24 md:mb-36"
         >
           <div
@@ -351,8 +351,8 @@ function RAGSection() {
         <motion.div
           initial={shouldAnimate ? { opacity: 0, y: 40 } : false}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: isMobile ? 0.2 : 0.8 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: isMobile ? 0.2 : 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="mb-24 md:mb-36"
         >
           <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-3 sm:mb-4">
@@ -461,8 +461,8 @@ function RAGSection() {
         <motion.div
           initial={shouldAnimate ? { opacity: 0, y: 40 } : false}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: isMobile ? 0.2 : 0.8 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: isMobile ? 0.2 : 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="mb-24 md:mb-36"
         >
           <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4 sm:mb-5">
@@ -502,8 +502,8 @@ function RAGSection() {
         <motion.div
           initial={shouldAnimate ? { opacity: 0, y: 40 } : false}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: isMobile ? 0.2 : 0.8 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: isMobile ? 0.2 : 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="pt-8"
         >
           <div className="text-center mb-14">
@@ -525,8 +525,8 @@ function RAGSection() {
                 key={index}
                 initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: shouldAnimate ? index * 0.1 : 0, duration: isMobile ? 0.15 : 0.5 }}
+                viewport={{ once: true, margin: "-30px" }}
+                transition={{ delay: shouldAnimate ? index * 0.08 : 0, duration: isMobile ? 0.15 : 0.5, ease: [0.22, 1, 0.36, 1] }}
               >
                 <SpotlightCard 
                   className="h-full p-6"

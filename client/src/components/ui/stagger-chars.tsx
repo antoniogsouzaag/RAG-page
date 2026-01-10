@@ -132,13 +132,14 @@ const StaggerChars = React.memo<StaggerCharsProps>(
     const stackVariants: Variants = {
       initial: ({ isEven }: { index: number; isEven: boolean }) =>
         prefersReducedMotion
-          ? { y: "0%" }
-          : { y: getInitialY(direction, isEven) },
+          ? { y: "0%", opacity: 1 }
+          : { y: getInitialY(direction, isEven), opacity: 1 },
       hover: ({ index, isEven }: { index: number; isEven: boolean }) =>
         prefersReducedMotion
-          ? { y: "0%" }
+          ? { y: "0%", opacity: 1 }
           : {
               y: getTargetY(direction, isEven),
+              opacity: 1,
               transition: {
                 duration,
                 delay: index * delay,
@@ -147,8 +148,15 @@ const StaggerChars = React.memo<StaggerCharsProps>(
             },
       exit: ({ isEven }: { index: number; isEven: boolean }) =>
         prefersReducedMotion
-          ? { y: "0%" }
-          : { y: getInitialY(direction, isEven) },
+          ? { y: "0%", opacity: 1 }
+          : { 
+              y: getInitialY(direction, isEven), 
+              opacity: 1,
+              transition: {
+                duration: duration * 0.5,
+                ease: easing,
+              },
+            },
     };
 
     const handleHoverStart = () => {

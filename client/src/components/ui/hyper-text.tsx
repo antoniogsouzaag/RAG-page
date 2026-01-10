@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useEffect, useRef, useState, useMemo, useCallback } from "react";
-import { AnimatePresence, motion, Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import usePrefersReducedMotion from "@/hooks/use-prefers-reduced-motion";
@@ -10,7 +10,6 @@ interface HyperTextProps {
   children: string;
   className?: string;
   duration?: number;
-  framerProps?: Variants;
   animateOnLoad?: boolean;
 }
 
@@ -22,11 +21,6 @@ export function HyperTextComponent({
   children,
   className,
   duration = 150,
-  framerProps = {
-    initial: { opacity: 0, y: -10 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: 3 },
-  },
   animateOnLoad = true,
 }: HyperTextProps) {
   const isMobile = useIsMobile();
@@ -80,10 +74,10 @@ export function HyperTextComponent({
   }, [children, duration, trigger, animateOnLoad, shouldAnimate, initialText]);
 
   // Simple render for mobile - no animation, just text
-  // Use inline to preserve text gradient clipping from parent
+  // Use inline-block to preserve text gradient clipping from parent
   if (!shouldAnimate) {
     return (
-      <span className={cn("inline", className)}>
+      <span className={cn("inline-block", className)}>
         {children.toUpperCase()}
       </span>
     );
@@ -91,20 +85,20 @@ export function HyperTextComponent({
 
   return (
     <span
-      className={cn("inline-flex overflow-hidden", className)}
+      className={cn("inline-flex flex-wrap", className)}
       onMouseEnter={triggerAnimation}
     >
-      <AnimatePresence mode="wait">
-        {displayText.map((letter, i) => (
-          <motion.span
-            key={i}
-            className={cn(letter === " " ? "w-2" : "")}
-            {...framerProps}
-          >
-            {letter.toUpperCase()}
-          </motion.span>
-        ))}
-      </AnimatePresence>
+      {displayText.map((letter, i) => (
+        <motion.span
+          key={`${i}-${letter}`}
+          className={cn(letter === " " ? "w-2" : "")}
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 1 }}
+          style={{ display: 'inline-block' }}
+        >
+          {letter.toUpperCase()}
+        </motion.span>
+      ))}
     </span>
   );
 }

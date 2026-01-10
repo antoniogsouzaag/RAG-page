@@ -98,7 +98,7 @@ function Hero() {
   }), [skipAnimations]);
   
   return (
-    <section className="relative min-h-screen flex items-center pt-20 sm:pt-24 pb-12 sm:pb-16 overflow-hidden bg-black">
+    <section className="relative h-screen flex items-center justify-center overflow-hidden bg-black">
       {/* Light Pillar Background - Only on desktop for performance */}
       {!isMobile && (
         <Suspense fallback={null}>
@@ -135,7 +135,7 @@ function Hero() {
         </>
       )}
 
-      <div className="relative z-10 px-4 md:px-6 mx-auto max-w-none w-full h-full flex items-center overflow-visible">
+      <div className="relative z-10 px-4 md:px-6 mx-auto max-w-7xl w-full flex items-center overflow-visible py-16 sm:py-20">
         <div className="grid w-full xl:grid-cols-2 gap-8 xl:gap-12 items-center overflow-visible">
           {/* Left Column - Content (shows first on mobile) */}
           <div className="relative order-1 text-center xl:text-left">
@@ -159,9 +159,9 @@ function Hero() {
             >
               <span className="text-white">Automatize seu negócio com</span>
               <br />
-              <span className="bg-linear-to-r from-purple-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
-                <HyperText>AGENTES DE IA</HyperText>
-              </span>
+              <HyperText className="bg-linear-to-r from-purple-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+                AGENTES DE IA
+              </HyperText>
             </h1>
 
             {/* Subtitle - Improved copy */}
