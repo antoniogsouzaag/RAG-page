@@ -103,6 +103,23 @@
       filter: blur(60px);
     }
 
+    /* Mobile pillar background fallback (lightweight) */
+    .mobile-pillar-bg {
+      background: linear-gradient(180deg, rgba(48,24,96,0.25), rgba(219,39,119,0.18));
+      filter: blur(18px);
+      mix-blend-mode: screen;
+    }
+
+    /* Slow spin for lightweight SVG globe on mobile */
+    @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .animate-spin-slow {
+      animation: spin-slow 10s linear infinite;
+    }
+
     /* Disable heavy animations on mobile */
     .animate-pulse {
       animation: none;

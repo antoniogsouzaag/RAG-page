@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useHighPerfWebGL } from "@/hooks/use-high-perf";
 const LightPillar = lazy(() => import("@/components/ui/light-pillar"));
 const Globe = lazy(() => import("@/components/ui/globe").then((m) => ({ default: m.Globe })));
 import { RainbowButton } from "@/components/ui/rainbow-button";
@@ -20,6 +21,7 @@ const stats = [
 export default function Hero() {
   const { openChat } = useChatbot();
   const isMobile = useIsMobile();
+  const isHighPerf = useHighPerfWebGL();
   
   return (
     <section className="relative min-h-screen flex items-center pt-20 sm:pt-24 pb-12 sm:pb-16 overflow-hidden bg-black">
@@ -41,15 +43,60 @@ export default function Hero() {
         </Suspense>
       )}
 
-      {/* Mobile background fallback: use optimized static image for performance */}
+      {/* Mobile pillar/globe — use WebGL effects on capable devices; otherwise show lightweight CSS fallback */}
       {isMobile && (
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/attached_assets/generated_images/optimized/dark_mesh_gradient_background.avif')" }}
-        >
-          {/* subtle overlay to keep contrast for text */}
-          <div className="absolute inset-0 bg-black/30" />
-        </div>
+        <>
+          {isHighPerf ? (
+            <>
+              {/* WebGL LightPillar (lazy) */}
+              <Suspense fallback={<div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-purple-900/20 to-pink-900/20"><span className="text-white/60 animate-pulse">Carregando efeito visual...</span></div>}>
+                <LightPillar
+                  topColor="#2d1f6b"
+                  bottomColor="#4a3259"
+                  intensity={0.45}
+                  rotationSpeed={0.08}
+                  glowAmount={0.008}
+                  pillarWidth={5.5}
+                  pillarHeight={0.25}
+                  noiseIntensity={0.45}
+                  mixBlendMode="screen"
+                  pillarRotation={55}
+                />
+              </Suspense>
+
+              {/* Animated globe (lazy) positioned in corner */}
+              <div className="absolute right-4 bottom-8 w-28 h-28 md:w-36 md:h-36 pointer-events-none" aria-hidden>
+                <Suspense fallback={<div className="w-full h-full flex items-center justify-center"><span className="text-white/60 animate-pulse">Carregando globo...</span></div>}>
+                  <Globe className="w-full h-full" />
+                </Suspense>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* CSS pillar fallback to preserve visual identity */}
+              <div className="absolute inset-0 mobile-pillar-bg">
+                <div className="absolute inset-0 bg-black/28" />
+              </div>
+
+              {/* SVG globe fallback (lightweight) */}
+              <div className="absolute right-4 bottom-8 w-24 h-24 pointer-events-none mobile-globe" aria-hidden>
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                  <defs>
+                    <linearGradient id="g1" x1="0" x2="1">
+                      <stop offset="0" stopColor="#6b21a8" />
+                      <stop offset="1" stopColor="#db2777" />
+                    </linearGradient>
+                  </defs>
+                  <g fill="none" stroke="url(#g1)" strokeWidth="1.5" className="animate-spin-slow">
+                    <circle cx="50" cy="50" r="22" opacity="0.95" />
+                    <ellipse cx="50" cy="50" rx="28" ry="10" transform="rotate(20 50 50)" opacity="0.8" />
+                    <ellipse cx="50" cy="50" rx="28" ry="10" transform="rotate(-20 50 50)" opacity="0.6" />
+                  </g>
+                </svg>
+              </div>
+            </>
+          )}
+        </>
       )}
 
       <div className="relative z-10 px-4 md:px-6 mx-auto max-w-none w-full h-full flex items-center overflow-visible">
