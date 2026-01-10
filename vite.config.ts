@@ -5,9 +5,14 @@ import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import { metaImagesPlugin } from "./vite-plugin-meta-images";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      // Enable faster refresh in development
+      fastRefresh: true,
+    }),
     runtimeErrorOverlay(),
     tailwindcss(),
     metaImagesPlugin(),
@@ -42,33 +47,73 @@ export default defineConfig({
     postcss: {
       plugins: [],
     },
+    // Minify CSS in production
+    devSourcemap: !isProduction,
   },
   root: path.resolve(import.meta.dirname, "client"),
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
-    // Disable minification during debugging to preserve readable React errors
-    minify: false,
-    // Enable sourcemaps so runtime errors map back to original source
-    // (helps decode minified React errors and see original stack frames)
-    sourcemap: true,
+    // Production optimizations
+    minify: isProduction ? "terser" : false,
+    sourcemap: !isProduction,
+    // Target modern browsers for smaller bundles
+    target: "es2020",
+    // Optimize chunk size
+    chunkSizeWarningLimit: 600,
+    // Terser options for maximum compression
+    terserOptions: isProduction ? {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ["console.log", "console.info", "console.debug"],
+        passes: 2,
+      },
+      mangle: {
+        safari10: true,
+      },
+      format: {
+        comments: false,
+      },
+    } : undefined,
     rollupOptions: {
-        output: {
+      output: {
+        // Better chunking strategy
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            // Avoid creating a separate `vendor-react` chunk to prevent
-            // circular initialization issues between React and other vendor
-            // chunks when loaded as ES modules in production. Keep React with
-            // the main vendor chunk.
+            // Heavy libraries get their own chunks
             if (id.includes('three')) return 'vendor-three';
             if (id.includes('framer-motion') || id.includes('@motionone')) return 'vendor-motion';
             if (id.includes('recharts')) return 'vendor-recharts';
             if (id.includes('gsap')) return 'vendor-gsap';
+            if (id.includes('cobe')) return 'vendor-globe';
+            // Group Radix UI components
+            if (id.includes('@radix-ui')) return 'vendor-radix';
+            // Group Lucide icons
+            if (id.includes('lucide-react')) return 'vendor-icons';
+            // Default vendor chunk
             return 'vendor';
           }
-        }
-      }
-    }
+        },
+        // Optimize asset names
+        assetFileNames: (assetInfo) => {
+          const name = assetInfo.name || '';
+          if (/\.(gif|jpe?g|png|svg|webp|avif)$/.test(name)) {
+            return 'assets/images/[name]-[hash][extname]';
+          }
+          if (/\.css$/.test(name)) {
+            return 'assets/css/[name]-[hash][extname]';
+          }
+          return 'assets/[name]-[hash][extname]';
+        },
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+      },
+    },
+    // Enable CSS code splitting
+    cssCodeSplit: true,
+    // Inline small assets
+    assetsInlineLimit: 4096,
   },
   server: {
     host: "0.0.0.0",
@@ -77,5 +122,17 @@ export default defineConfig({
       strict: true,
       deny: ["**/.*"],
     },
+  },
+  // Preview server for production testing
+  preview: {
+    host: "0.0.0.0",
+    port: 4173,
+  },
+  // Enable esbuild optimizations
+  esbuild: {
+    // Remove console in production
+    drop: isProduction ? ["console", "debugger"] : [],
+    // Use modern syntax
+    target: "es2020",
   },
 });

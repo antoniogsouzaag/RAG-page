@@ -439,22 +439,7 @@ const CompactHeroCard = memo(function CompactHeroCard({ service, index }: { serv
             }} />
           </div>
           
-          {/* Featured Badge */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4, type: "spring" }}
-            viewport={{ once: true }}
-            className="absolute top-4 right-4 md:top-6 md:right-6 flex items-center gap-2 px-3 py-1.5 rounded-full bg-linear-to-r from-cyan-500/20 via-blue-500/20 to-indigo-500/20 border border-blue-400/30 backdrop-blur-md shadow-lg shadow-blue-500/10"
-          >
-            <motion.div
-              animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: reduceMotion ? 0 : Infinity, repeatDelay: reduceMotion ? 0 : 3 }}
-            >
-              <Sparkles className="w-3.5 h-3.5 text-blue-300" />
-            </motion.div>
-            <span className="text-[10px] font-semibold text-blue-200 tracking-wide">ALTA CONVERSÃO</span>
-          </motion.div>
+          {/* Featured Badge removido conforme solicitado */}
 
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-6 h-full">
             {/* Left: Icon + Title + Description */}
@@ -662,18 +647,9 @@ export default function Services() {
             viewport={{ once: true }}
             className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-linear-to-r from-white/5 via-white/10 to-white/5 border border-white/10 backdrop-blur-sm mb-8"
           >
-            <motion.span 
-              animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 2, repeat: reduceMotion ? 0 : Infinity }}
-              className="w-2.5 h-2.5 rounded-full bg-linear-to-r from-purple-400 to-pink-400" 
-            />
+            <span className="w-2.5 h-2.5 rounded-full bg-linear-to-r from-purple-400 to-pink-400" />
             <span className="text-sm font-medium text-white/80 tracking-wide">Nossas Soluções</span>
-            <motion.span 
-              animate={{ rotate: [0, 15, -15, 0] }}
-              transition={{ duration: 3, repeat: reduceMotion ? 0 : Infinity }}
-            >
-              <Sparkles className="w-4 h-4 text-purple-400" />
-            </motion.span>
+            <Sparkles className="w-4 h-4 text-purple-400" />
           </motion.div>
           
           <motion.h2 
@@ -748,17 +724,12 @@ export default function Services() {
                     { Icon: Clock, gradient: "from-blue-400 to-cyan-500" },
                     { Icon: TrendingUp, gradient: "from-amber-400 to-orange-500" }
                   ].map(({ Icon, gradient }, idx) => (
-                    <motion.div
+                    <div
                       key={idx}
-                      initial={{ opacity: 0, scale: 0, x: -20 }}
-                      whileInView={{ opacity: 1, scale: 1, x: 0 }}
-                      transition={{ delay: 0.6 + idx * 0.1, type: "spring" }}
-                      viewport={{ once: true }}
-                      whileHover={{ scale: 1.1, zIndex: 10 }}
-                      className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-linear-to-br ${gradient} flex items-center justify-center border-2 border-zinc-950 shadow-lg cursor-pointer`}
+                      className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-linear-to-br ${gradient} flex items-center justify-center border-2 border-zinc-950 shadow-lg`}
                     >
                       <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
                 

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, memo, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -12,13 +12,69 @@ import { useChatbot } from "@/components/ChatbotContext";
 
 const WHATSAPP_LINK = "https://wa.me/5564993259857?text=Quero%20saber%20mais%20sobre%20o%20Agente%20RAG...";
 
+// Memoized static SVG globe for low-end mobile devices
+const SVGGlobeFallback = memo(() => (
+  <div className="absolute left-1/2 -translate-x-1/2 top-24 w-44 h-44 pointer-events-none mobile-globe opacity-50" aria-hidden>
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0" stopColor="#6b21a8" />
+          <stop offset="1" stopColor="#db2777" />
+        </linearGradient>
+      </defs>
+      <g fill="none" stroke="url(#g1)" strokeWidth="1.5" className="animate-spin-slow">
+        <circle cx="50" cy="50" r="22" opacity="0.95" />
+        <ellipse cx="50" cy="50" rx="28" ry="10" transform="rotate(20 50 50)" opacity="0.8" />
+        <ellipse cx="50" cy="50" rx="28" ry="10" transform="rotate(-20 50 50)" opacity="0.6" />
+      </g>
+    </svg>
+  </div>
+));
+SVGGlobeFallback.displayName = "SVGGlobeFallback";
+
+// Memoized CSS pillar fallback
+const CSSPillarFallback = memo(() => (
+  <div className="absolute inset-0 mobile-pillar-bg">
+    <div className="absolute inset-0 bg-black/28" />
+  </div>
+));
+CSSPillarFallback.displayName = "CSSPillarFallback";
+
+// Stats data - defined outside component to avoid recreation
 const stats = [
   { value: 40, suffix: "h+", label: "Economizadas/mês" },
   { value: 99, suffix: "%", label: "Precisão" },
   { value: 24, suffix: "/7", label: "Disponível" },
 ];
 
-export default function Hero() {
+// LightPillar config - memoized to prevent re-renders
+const desktopPillarConfig = {
+  topColor: "#2d1f6b",
+  bottomColor: "#4a3259",
+  intensity: 0.5,
+  rotationSpeed: 0.1,
+  glowAmount: 0.01,
+  pillarWidth: 6.0,
+  pillarHeight: 0.25,
+  noiseIntensity: 0.5,
+  mixBlendMode: "screen",
+  pillarRotation: 55,
+} as const;
+
+const mobilePillarConfig = {
+  topColor: "#2d1f6b",
+  bottomColor: "#4a3259",
+  intensity: 0.45,
+  rotationSpeed: 0.08,
+  glowAmount: 0.008,
+  pillarWidth: 5.5,
+  pillarHeight: 0.25,
+  noiseIntensity: 0.45,
+  mixBlendMode: "screen",
+  pillarRotation: 55,
+} as const;
+
+function Hero() {
   const { openChat } = useChatbot();
   const isMobile = useIsMobile();
   const isHighPerf = useHighPerfWebGL();
@@ -27,19 +83,8 @@ export default function Hero() {
     <section className="relative min-h-screen flex items-center pt-20 sm:pt-24 pb-12 sm:pb-16 overflow-hidden bg-black">
       {/* Light Pillar Background - Only on desktop for performance */}
       {!isMobile && (
-        <Suspense fallback={<div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-purple-900/20 to-pink-900/20"><span className="text-white/60 animate-pulse">Carregando efeito visual...</span></div>}>
-          <LightPillar
-            topColor="#2d1f6b"
-            bottomColor="#4a3259"
-            intensity={0.5}
-            rotationSpeed={0.1}
-            glowAmount={0.01}
-            pillarWidth={6.0}
-            pillarHeight={0.25}
-            noiseIntensity={0.5}
-            mixBlendMode="screen"
-            pillarRotation={55}
-          />
+        <Suspense fallback={null}>
+          <LightPillar {...desktopPillarConfig} />
         </Suspense>
       )}
 
@@ -49,24 +94,14 @@ export default function Hero() {
           {isHighPerf ? (
             <>
               {/* WebGL LightPillar (lazy) */}
-              <Suspense fallback={<div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-purple-900/20 to-pink-900/20"><span className="text-white/60 animate-pulse">Carregando efeito visual...</span></div>}>
-                <LightPillar
-                  topColor="#2d1f6b"
-                  bottomColor="#4a3259"
-                  intensity={0.45}
-                  rotationSpeed={0.08}
-                  glowAmount={0.008}
-                  pillarWidth={5.5}
-                  pillarHeight={0.25}
-                  noiseIntensity={0.45}
-                  mixBlendMode="screen"
-                  pillarRotation={55}
-                />
+              <Suspense fallback={null}>
+                <LightPillar {...mobilePillarConfig} />
               </Suspense>
 
-              {/* Animated globe (lazy) positioned in corner */}
-              <div className="absolute right-4 bottom-8 w-28 h-28 md:w-36 md:h-36 pointer-events-none" aria-hidden>
-                <Suspense fallback={<div className="w-full h-full flex items-center justify-center"><span className="text-white/60 animate-pulse">Carregando globo...</span></div>}>
+              {/* Animated globe (lazy) positioned for mobile - centralizado no topo */}
+              <div className="absolute left-1/2 -translate-x-1/2 top-24 w-56 h-56 sm:w-64 sm:h-64 z-20 pointer-events-none opacity-60" aria-hidden>
+                <div className="absolute inset-0 bg-purple-500/20 blur-[60px] rounded-full" />
+                <Suspense fallback={null}>
                   <Globe className="w-full h-full" />
                 </Suspense>
               </div>
@@ -74,26 +109,9 @@ export default function Hero() {
           ) : (
             <>
               {/* CSS pillar fallback to preserve visual identity */}
-              <div className="absolute inset-0 mobile-pillar-bg">
-                <div className="absolute inset-0 bg-black/28" />
-              </div>
-
-              {/* SVG globe fallback (lightweight) */}
-              <div className="absolute right-4 bottom-8 w-24 h-24 pointer-events-none mobile-globe" aria-hidden>
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-                  <defs>
-                    <linearGradient id="g1" x1="0" x2="1">
-                      <stop offset="0" stopColor="#6b21a8" />
-                      <stop offset="1" stopColor="#db2777" />
-                    </linearGradient>
-                  </defs>
-                  <g fill="none" stroke="url(#g1)" strokeWidth="1.5" className="animate-spin-slow">
-                    <circle cx="50" cy="50" r="22" opacity="0.95" />
-                    <ellipse cx="50" cy="50" rx="28" ry="10" transform="rotate(20 50 50)" opacity="0.8" />
-                    <ellipse cx="50" cy="50" rx="28" ry="10" transform="rotate(-20 50 50)" opacity="0.6" />
-                  </g>
-                </svg>
-              </div>
+              <CSSPillarFallback />
+              {/* SVG globe fallback (lightweight) - centralizado no topo */}
+              <SVGGlobeFallback />
             </>
           )}
         </>
@@ -184,7 +202,7 @@ export default function Hero() {
             <div className="relative w-full max-w-[1400px] aspect-square flex items-center justify-center overflow-visible translate-x-16 translate-y-48 scale-[1.5]">
               {/* Glow effect behind globe */}
               <div className="absolute inset-0 bg-purple-500/10 blur-[120px] rounded-full scale-150" />
-              <Suspense fallback={<div className="flex items-center justify-center w-full h-full"><span className="text-white/60 animate-pulse">Carregando globo...</span></div>}>
+              <Suspense fallback={null}>
                 <Globe className="relative z-10 w-full h-full" />
               </Suspense>
             </div>
@@ -194,7 +212,7 @@ export default function Hero() {
           {!isMobile && (
             <div className="w-full flex justify-center xl:hidden order-3">
               <div className="w-70 h-70 md:w-56 md:h-56 relative">
-                <Suspense fallback={<div className="flex items-center justify-center w-full h-full"><span className="text-white/60 animate-pulse">Carregando globo...</span></div>}>
+                <Suspense fallback={null}>
                   <Globe className="w-full h-full" />
                 </Suspense>
               </div>
@@ -221,3 +239,6 @@ export default function Hero() {
     </section>
   );
 }
+
+// Export memoized component to prevent unnecessary re-renders
+export default memo(Hero);

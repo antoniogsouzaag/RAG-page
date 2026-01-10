@@ -14,10 +14,34 @@
     <meta name="twitter:description" content="Transforme seu negócio com Agentes de IA, Websites de Alta Conversão e Automações Inteligentes." />
 
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Importing Outfit (Display) and Inter (Body) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Preconnect for critical third-party resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Preload critical font weights (only the most used) -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700&display=swap" />
+    
+    <!-- Load fonts with font-display: swap for faster text rendering -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700&display=swap" rel="stylesheet" />
+    
+    <!-- DNS prefetch for potential resources -->
+    <link rel="dns-prefetch" href="https://wa.me" />
+    
+    <!-- Inline critical CSS for immediate styling -->
+    <style>
+      /* Critical above-the-fold styles */
+      html { background: #09090b; }
+      body { 
+        margin: 0; 
+        background: #09090b; 
+        color: #fafafa;
+        font-family: 'Inter', system-ui, sans-serif;
+      }
+      #root { min-height: 100vh; }
+      /* Prevent FOUC */
+      .dark { color-scheme: dark; }
+    </style>
   </head>
   <body class="bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
     <div id="root"></div>

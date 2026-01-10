@@ -1,16 +1,28 @@
-import { useEffect, Suspense, lazy } from "react";
+import { useEffect, Suspense, lazy, memo } from "react";
 import { useLocation } from "wouter";
+
+// Critical above-fold components loaded synchronously
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import Marquee from "@/components/Marquee";
-import Services from "@/components/Services";
+
+// Below-fold components lazy loaded for better initial performance
+const Marquee = lazy(() => import("@/components/Marquee"));
+const Services = lazy(() => import("@/components/Services"));
 const RAGSectionNew = lazy(() => import("@/components/RAGSectionNew"));
 const AppIntroTransition = lazy(() => import("@/components/AppIntroTransition"));
 const AppShowcaseIntro = lazy(() => import("@/components/AppShowcaseIntro"));
 const AppGalleryNew = lazy(() => import("@/components/AppGalleryNew"));
-import CTASection from "@/components/CTASection";
-import WhatsAppButton from "@/components/WhatsAppButton";
-import Footer from "@/components/Footer";
+const CTASection = lazy(() => import("@/components/CTASection"));
+const WhatsAppButton = lazy(() => import("@/components/WhatsAppButton"));
+const Footer = lazy(() => import("@/components/Footer"));
+
+// Minimal loading spinner component
+const LoadingSpinner = memo(() => (
+  <div className="h-32 flex items-center justify-center">
+    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-500" />
+  </div>
+));
+LoadingSpinner.displayName = "LoadingSpinner";
 
 export default function Home() {
   const [location] = useLocation();
@@ -35,26 +47,36 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
-        <Marquee />
-        <Services />
-        <Suspense fallback={<div className="h-96 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div></div>}>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Marquee />
+        </Suspense>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Services />
+        </Suspense>
+        <Suspense fallback={<LoadingSpinner />}>
           <RAGSectionNew />
         </Suspense>
-        <CTASection />
+        <Suspense fallback={<LoadingSpinner />}>
+          <CTASection />
+        </Suspense>
         {/* Generous spacing before app showcase */}
         <div className="h-24 md:h-32 lg:h-40" />
-        <Suspense fallback={<div className="h-64 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div></div>}>
+        <Suspense fallback={<LoadingSpinner />}>
           <AppIntroTransition />
         </Suspense>
-        <Suspense fallback={<div className="h-64 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div></div>}>
+        <Suspense fallback={<LoadingSpinner />}>
           <AppShowcaseIntro />
         </Suspense>
-        <Suspense fallback={<div className="h-96 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div></div>}>
+        <Suspense fallback={<LoadingSpinner />}>
           <AppGalleryNew />
         </Suspense>
       </main>
-      <WhatsAppButton />
-      <Footer />
+      <Suspense fallback={null}>
+        <WhatsAppButton />
+      </Suspense>
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   );
 }

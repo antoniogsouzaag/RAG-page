@@ -1,12 +1,19 @@
 import { Link, useLocation } from "wouter";
 import { Menu, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import WavyButton from "@/components/ui/wavy-button";
 import { Button } from "@/components/ui/button";
 
-export default function Navbar() {
+// Define nav links outside component to avoid recreation
+const navLinks = [
+  { name: "Serviços", href: "#services" },
+  { name: "RAG", href: "#rag" },
+  { name: "IA Generativa", href: "#app-intro" },
+] as const;
+
+function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location, setLocation] = useLocation();
@@ -15,10 +22,11 @@ export default function Navbar() {
   const isHomePage = location === "/";
 
   useEffect(() => {
+    // Use passive listener for better scroll performance
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -39,21 +47,15 @@ export default function Navbar() {
     };
   }, [isMobileMenuOpen]);
 
-  const navLinks = [
-    { name: "Serviços", href: "#services" },
-    { name: "RAG", href: "#rag" },
-    { name: "IA Generativa", href: "#app-intro" },
-  ];
-
-  const smoothScrollTo = (elementId: string) => {
+  const smoothScrollTo = useCallback((elementId: string) => {
     const element = document.querySelector(elementId);
     if (element) {
       const offsetTop = element.getBoundingClientRect().top + window.scrollY - 100;
       window.scrollTo({ top: offsetTop, behavior: "smooth" });
     }
-  };
+  }, []);
 
-  const handleNavClick = (href: string) => {
+  const handleNavClick = useCallback((href: string) => {
     if (isHomePage) {
       // If we're on home page, just scroll
       smoothScrollTo(href);
@@ -62,15 +64,18 @@ export default function Navbar() {
       setLocation("/" + href);
     }
     setIsMobileMenuOpen(false);
-  };
+  }, [isHomePage, smoothScrollTo, setLocation]);
 
-  const scrollToTop = () => {
+  const scrollToTop = useCallback(() => {
     if (isHomePage) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       setLocation("/");
     }
-  };
+  }, [isHomePage, setLocation]);
+
+  const openMobileMenu = useCallback(() => setIsMobileMenuOpen(true), []);
+  const closeMobileMenu = useCallback(() => setIsMobileMenuOpen(false), []);
 
   return (
     <nav
@@ -109,7 +114,7 @@ export default function Navbar() {
         {!isMobileMenuOpen && (
           <button
             className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors"
-            onClick={() => setIsMobileMenuOpen(true)}
+            onClick={openMobileMenu}
             aria-label="Abrir menu"
           >
             <motion.div
@@ -140,7 +145,7 @@ export default function Navbar() {
             <div className="absolute top-0 left-0 right-0 h-20 flex items-center justify-end px-4">
               <button
                 className="relative w-10 h-10 flex items-center justify-center rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={closeMobileMenu}
                 aria-label="Fechar menu"
               >
                 <X className="w-5 h-5" />
@@ -199,3 +204,6 @@ export default function Navbar() {
     </nav>
   );
 }
+
+// Export memoized component
+export default memo(Navbar);
