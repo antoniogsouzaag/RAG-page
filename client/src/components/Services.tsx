@@ -261,16 +261,18 @@ const FeatureList = memo(function FeatureList({ features, gradient }: { features
 const HeroCard = memo(function HeroCard({ service, index }: { service: typeof services[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
   const reduceMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
+  const skipAnimations = reduceMotion || isMobile;
   
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40, scale: 0.95 }}
+      initial={skipAnimations ? false : { opacity: 0, y: 40, scale: 0.95 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.6, delay: index * 0.1, type: "spring", stiffness: 100 }}
-      viewport={{ once: true }}
+      transition={{ duration: skipAnimations ? 0.2 : 0.6, delay: skipAnimations ? 0 : index * 0.1, type: skipAnimations ? "tween" : "spring", stiffness: 100 }}
+      viewport={{ once: true, margin: "-50px" }}
       className="h-full perspective-1000"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => !isMobile && setIsHovered(true)}
+      onMouseLeave={() => !isMobile && setIsHovered(false)}
     >
       <TiltCard className="h-full" intensity={0.8}>
         <SpotlightCard
@@ -397,16 +399,18 @@ const HeroCard = memo(function HeroCard({ service, index }: { service: typeof se
 const CompactHeroCard = memo(function CompactHeroCard({ service, index }: { service: typeof services[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
   const reduceMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
+  const skipAnimations = reduceMotion || isMobile;
   
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40, scale: 0.95 }}
+      initial={skipAnimations ? false : { opacity: 0, y: 40, scale: 0.95 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.6, delay: index * 0.1, type: "spring", stiffness: 100 }}
-      viewport={{ once: true }}
+      transition={{ duration: skipAnimations ? 0.2 : 0.6, delay: skipAnimations ? 0 : index * 0.1, type: skipAnimations ? "tween" : "spring", stiffness: 100 }}
+      viewport={{ once: true, margin: "-50px" }}
       className="h-full perspective-1000"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => !isMobile && setIsHovered(true)}
+      onMouseLeave={() => !isMobile && setIsHovered(false)}
     >
       <TiltCard className="h-full" intensity={0.8}>
         <SpotlightCard
@@ -511,16 +515,18 @@ const CompactHeroCard = memo(function CompactHeroCard({ service, index }: { serv
 const StandardCard = memo(function StandardCard({ service, index }: { service: typeof services[0]; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
   const reduceMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
+  const skipAnimations = reduceMotion || isMobile;
   
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      initial={skipAnimations ? false : { opacity: 0, y: 30, scale: 0.95 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.5, delay: 0.1 + index * 0.1, type: "spring", stiffness: 120 }}
-      viewport={{ once: true }}
+      transition={{ duration: skipAnimations ? 0.15 : 0.5, delay: skipAnimations ? 0 : 0.1 + index * 0.1, type: skipAnimations ? "tween" : "spring", stiffness: 120 }}
+      viewport={{ once: true, margin: "-50px" }}
       className="h-full perspective-1000"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => !isMobile && setIsHovered(true)}
+      onMouseLeave={() => !isMobile && setIsHovered(false)}
     >
       <TiltCard className="h-full">
         <SpotlightCard

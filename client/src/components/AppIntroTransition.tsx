@@ -1,8 +1,14 @@
 import { memo } from "react";
 import TextAnimation from "@/components/ui/scroll-text";
 import { motion } from "motion/react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import usePrefersReducedMotion from "@/hooks/use-prefers-reduced-motion";
 
 function AppIntroTransition() {
+  const isMobile = useIsMobile();
+  const reducedMotion = usePrefersReducedMotion();
+  const skipBlur = isMobile || reducedMotion;
+  
   return (
     <section id="app-intro" className="relative bg-black overflow-hidden">
       {/* Subtle background gradient */}
@@ -11,10 +17,10 @@ function AppIntroTransition() {
       {/* Spacer section - large spacing before animation */}
       <div className="h-[40vh] grid place-content-center relative z-10">
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={skipBlur ? false : { opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: skipBlur ? 0.15 : 0.6, ease: "easeOut" }}
           className="text-purple-400/90 text-1xl sm:text-2xl md:text-3xl lg:text-4xl font-bold uppercase tracking-[0.25em] text-center drop-shadow-md"
         >
           Economize mais tempo ainda 
@@ -27,14 +33,12 @@ function AppIntroTransition() {
           text="Crie criativos, artes, vídeos e narração em segundos!"
           classname="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl max-w-5xl mx-auto font-display font-bold text-white leading-tight normal-case tracking-tight"
           viewport={{ amount: 0.3, once: true }}
-          variants={{
-            hidden: { filter: 'blur(10px)', opacity: 0, translateY: 20 },
-            visible: {
-              filter: 'blur(0px)',
-              opacity: 1,
-              translateY: 0,
-              transition: { ease: 'linear' },
-            },
+          variants={skipBlur ? {
+            hidden: { opacity: 0, translateY: 15 },
+            visible: { opacity: 1, translateY: 0, transition: { duration: 0.2 } },
+          } : {
+            hidden: { filter: 'blur(6px)', opacity: 0, translateY: 20 },
+            visible: { filter: 'blur(0px)', opacity: 1, translateY: 0, transition: { ease: 'linear' } },
           }}
         />
       </div>
@@ -64,33 +68,29 @@ function AppIntroTransition() {
         <TextAnimation
           as="p"
           text="Conheça o nosso APP"
-          letterAnime={true}
+          letterAnime={!isMobile}
           classname="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl max-w-4xl mx-auto font-semibold text-white normal-case"
           viewport={{ amount: 0.3, once: true }}
-          variants={{
+          variants={skipBlur ? {
+            hidden: { opacity: 0, translateY: 15 },
+            visible: { opacity: 1, translateY: 0, transition: { duration: 0.15 } },
+          } : {
             hidden: { filter: 'blur(4px)', opacity: 0, translateY: 20 },
-            visible: {
-              filter: 'blur(0px)',
-              opacity: 1,
-              translateY: 0,
-              transition: {
-                duration: 0.2,
-              },
-            },
+            visible: { filter: 'blur(0px)', opacity: 1, translateY: 0, transition: { duration: 0.2 } },
           }}
         />
         
-        {/* Animated arrow indicator */}
+        {/* Animated arrow indicator - simpler on mobile */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          transition={{ duration: 0.4, delay: isMobile ? 0.2 : 0.6 }}
           className="mt-16 md:mt-24"
         >
           <motion.div
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            animate={reducedMotion ? {} : { y: [0, 12, 0] }}
+            transition={{ duration: 2, repeat: reducedMotion ? 0 : Infinity, ease: "easeInOut" }}
             className="text-purple-500/70"
           >
             <svg

@@ -183,15 +183,19 @@ const Masonry = ({
           opacity: 0; 
           transform: translate3d(0, 10px, 0); 
           transition: opacity 0.35s ease-out, transform 0.35s ease-out;
-          will-change: opacity, transform;
+          contain: layout style paint;
         }
         .masonry-item-visible { 
           opacity: 1 !important; 
-          transform: translate3d(0, 0, 0) !important;
+          transform: none !important;
           will-change: auto;
+          contain: layout style;
         }
         .break-inside-avoid { break-inside: avoid-column; }
         .w-full img { width: 100%; display: block; }
+        @media (prefers-reduced-motion: reduce) {
+          .masonry-item { opacity: 1; transform: none; transition: none; }
+        }
       `}</style>
     </div>
   );

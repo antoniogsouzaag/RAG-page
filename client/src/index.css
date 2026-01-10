@@ -163,7 +163,6 @@
 
     .animate-spin-slow {
       animation: spin-slow 12s linear infinite;
-      will-change: transform;
     }
 
     /* Disable heavy animations on mobile */
@@ -271,6 +270,9 @@ body {
   scroll-behavior: smooth;
   /* Optimize scrolling performance */
   overscroll-behavior: none;
+  /* Prevent text size adjustment on mobile */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* Global scroll performance optimizations */
@@ -278,29 +280,34 @@ html {
   scroll-behavior: smooth;
   /* Prevent layout shifts during scroll */
   overflow-anchor: auto;
+  /* Force GPU acceleration for smoother scrolling */
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Optimize main content sections for scroll */
 main {
   contain: layout style;
+  /* Prevent layout thrashing during scroll */
+  will-change: auto;
 }
 
 section {
-  contain: layout style paint;
+  contain: layout paint;
   content-visibility: auto;
-  contain-intrinsic-size: auto 100vh;
+  contain-intrinsic-size: auto 500px;
 }
 
-/* Force GPU acceleration for fixed/absolute positioned elements */
-.fixed, [class*="absolute"] {
+/* Only use transform-gpu on elements that actually animate */
+.transform-gpu {
   transform: translateZ(0);
   backface-visibility: hidden;
+  perspective: 1000px;
 }
 
-/* Optimize backdrop-filter elements */
+/* Optimize backdrop-filter elements - use sparingly */
 [class*="backdrop-blur"] {
   transform: translateZ(0);
-  backface-visibility: hidden;
+  isolation: isolate;
 }
 
 /* Reduce paint complexity for gradients */

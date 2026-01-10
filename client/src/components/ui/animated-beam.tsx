@@ -1,6 +1,6 @@
 "use client";
 
-import { RefObject, useEffect, useId, useState } from "react";
+import { RefObject, useEffect, useId, useState, memo } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -98,26 +98,35 @@ export function AnimatedBeam({
       updatePath();
     }, 100);
 
+    // Throttled resize handler - prevents excessive recalculations
+    let resizeTimeout: number | null = null;
+    const throttledUpdatePath = () => {
+      if (resizeTimeout) return;
+      resizeTimeout = window.setTimeout(() => {
+        updatePath();
+        resizeTimeout = null;
+      }, 150);
+    };
+
     // Set up resize observer (guarded for environments without ResizeObserver)
     let resizeObserver: ResizeObserver | null = null;
     if (typeof ResizeObserver !== 'undefined') {
-      resizeObserver = new ResizeObserver(() => {
-        updatePath();
-      });
+      resizeObserver = new ResizeObserver(throttledUpdatePath);
       if (containerRef.current) {
         resizeObserver.observe(containerRef.current);
       }
     } else {
       // Fallback: resize event
-      window.addEventListener('resize', updatePath);
+      window.addEventListener('resize', throttledUpdatePath);
     }
 
     return () => {
       clearTimeout(timer);
+      if (resizeTimeout) clearTimeout(resizeTimeout);
       if (resizeObserver) {
         resizeObserver.disconnect();
       } else {
-        window.removeEventListener('resize', updatePath);
+        window.removeEventListener('resize', throttledUpdatePath);
       }
     };
   }, [

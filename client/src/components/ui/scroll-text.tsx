@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { type JSX, useMemo } from 'react';
+import React, { type JSX, useMemo, memo } from 'react';
 import { motion, HTMLMotionProps } from 'motion/react';
 import { cn } from '@/lib/utils';
 
@@ -18,24 +18,32 @@ const containerVariants = {
   },
 };
 
+// Check if device prefers reduced motion or is mobile (for SSR safety, check at call time)
+const shouldReduceAnimations = () => {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+         window.innerWidth < 768;
+};
+
 const generateVariants = (
   direction: Direction
 ): { hidden: any; visible: any } => {
   const axis = direction === 'left' || direction === 'right' ? 'X' : 'Y';
-  const value = direction === 'right' || direction === 'down' ? 50 : -50; // Reduced from 100
+  const value = direction === 'right' || direction === 'down' ? 30 : -30; // Reduced movement
+  const skipBlur = shouldReduceAnimations();
 
   return {
     hidden: {
-      filter: 'blur(8px)', // Reduced blur for better performance
+      filter: skipBlur ? 'none' : 'blur(4px)', // Reduced blur, skip on mobile
       opacity: 0,
       [`translate${axis}`]: value,
     },
     visible: {
-      filter: 'blur(0px)',
+      filter: 'none',
       opacity: 1,
       [`translate${axis}`]: 0,
       transition: {
-        duration: 0.3, // Reduced from 0.4
+        duration: skipBlur ? 0.15 : 0.25, // Faster transitions
         ease: 'easeOut',
       },
     },

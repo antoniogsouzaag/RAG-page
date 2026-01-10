@@ -2,63 +2,44 @@ import * as React from "react"
 
 const MOBILE_BREAKPOINT = 768
 
-// Cache the initial value at module load to prevent hydration mismatch and re-renders
-let cachedIsMobile: boolean | null = null
-
-function getInitialMobileState(): boolean {
+// Immediate synchronous detection at module load - prevents any flash
+const getIsMobileSync = (): boolean => {
   if (typeof window === "undefined") return false
-  if (cachedIsMobile !== null) return cachedIsMobile
-  cachedIsMobile = window.innerWidth < MOBILE_BREAKPOINT
-  return cachedIsMobile
+  return window.innerWidth < MOBILE_BREAKPOINT
 }
 
-// Initialize immediately at module load
-if (typeof window !== "undefined") {
-  getInitialMobileState()
-}
+// Initialize cache immediately at module load - this runs BEFORE any component renders
+const INITIAL_IS_MOBILE = typeof window !== "undefined" ? getIsMobileSync() : false
+
+// Stable reference that never changes after initial load
+let stableValue = INITIAL_IS_MOBILE
 
 export function useIsMobile(): boolean {
-  // Use cached value - NEVER causes a re-render on initial mount
-  const [isMobile, setIsMobile] = React.useState<boolean>(() => cachedIsMobile ?? false)
-  const initializedRef = React.useRef(false)
-
+  // CRITICAL: Use stable value as initial state - this prevents flash
+  // The value is computed synchronously before first render
+  const [isMobile, setIsMobile] = React.useState<boolean>(stableValue)
+  
   React.useEffect(() => {
-    // Skip if already initialized with correct value
-    if (initializedRef.current) return
-    initializedRef.current = true
-    
     if (typeof window === "undefined") return
 
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
     
-    // Only update if actually different to prevent re-render
-    if (mql.matches !== isMobile) {
-      cachedIsMobile = mql.matches
-      setIsMobile(mql.matches)
-    }
-    
+    // Only update if device orientation actually changes (rare)
     const onChange = () => {
-      cachedIsMobile = mql.matches
-      setIsMobile(mql.matches)
-    }
-
-    // Add listener with modern API, fallback to older API
-    if (typeof mql.addEventListener === "function") {
-      mql.addEventListener("change", onChange)
-    } else if (typeof mql.addListener === "function") {
-      // @ts-ignore - older API
-      mql.addListener(onChange)
-    }
-
-    return () => {
-      if (typeof mql.removeEventListener === "function") {
-        mql.removeEventListener("change", onChange)
-      } else if (typeof mql.removeListener === "function") {
-        // @ts-ignore - older API
-        mql.removeListener(onChange)
+      const newValue = mql.matches
+      if (newValue !== stableValue) {
+        stableValue = newValue
+        setIsMobile(newValue)
       }
     }
-  }, [isMobile])
+
+    // Add listener
+    mql.addEventListener("change", onChange)
+
+    return () => {
+      mql.removeEventListener("change", onChange)
+    }
+  }, [])
 
   return isMobile
 }
