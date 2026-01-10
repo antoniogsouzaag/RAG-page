@@ -91,6 +91,7 @@
   @media (max-width: 768px) {
     .bg-noise {
       opacity: 0.2;
+      display: none;
     }
     
     /* Reduce blur on mobile for better performance */

@@ -1,36 +1,29 @@
 "use client";
 
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, useState } from "react";
 import createGlobe, { COBEOptions } from "cobe";
 import { useMotionValue, useSpring } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const MOVEMENT_DAMPING = 1400;
 
-// Detect if we're on a mobile device
-const isMobile = typeof window !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-const GLOBE_CONFIG: COBEOptions = {
-  width: isMobile ? 800 : 1400,
-  height: isMobile ? 800 : 1400,
+// NOTE: avoid reading `navigator` at module load to be safer with SSR environments.
+// Provide a sane default config; specific per-device adjustments happen at runtime.
+const DEFAULT_GLOBE_OPTIONS: COBEOptions = {
+  width: 1400,
+  height: 1400,
   onRender: () => {},
-  devicePixelRatio: isMobile ? 1 : 2,
+  devicePixelRatio: 2,
   phi: 0,
   theta: 0.3,
   dark: 1,
   diffuse: 0.4,
-  mapSamples: isMobile ? 8000 : 16000, // Reduce samples on mobile
+  mapSamples: 16000,
   mapBrightness: 1.2,
   baseColor: [0.3, 0.3, 0.3],
   markerColor: [0.6, 0.3, 1],
   glowColor: [0.4, 0.2, 0.8],
-  markers: isMobile ? [
-    // Reduce markers on mobile for performance
-    { location: [19.076, 72.8777], size: 0.1 },
-    { location: [39.9042, 116.4074], size: 0.08 },
-    { location: [-23.5505, -46.6333], size: 0.1 },
-    { location: [40.7128, -74.006], size: 0.1 },
-  ] : [
+  markers: [
     { location: [14.5995, 120.9842], size: 0.03 },
     { location: [19.076, 72.8777], size: 0.1 },
     { location: [23.8103, 90.4125], size: 0.05 },
@@ -44,9 +37,10 @@ const GLOBE_CONFIG: COBEOptions = {
   ],
 };
 
+
 export function Globe({
   className,
-  config = GLOBE_CONFIG,
+  config = DEFAULT_GLOBE_OPTIONS,
 }: {
   className?: string;
   config?: COBEOptions;
@@ -63,6 +57,11 @@ export function Globe({
     damping: 30,
     stiffness: 100,
   });
+
+  // runtime-only checks
+  const [glSupported, setGlSupported] = useState<boolean | null>(null);
+  const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
 
   const updatePointerInteraction = (value: number | null) => {
     pointerInteracting.current = value;
@@ -89,29 +88,99 @@ export function Globe({
     window.addEventListener("resize", onResize);
     onResize();
 
-    const globe = createGlobe(canvasRef.current!, {
-      ...config,
-      width: width * (isMobile ? 1 : 2),
-      height: width * (isMobile ? 1 : 2),
-      onRender: (state) => {
-        if (!pointerInteracting.current) phi += isMobile ? 0.001 : 0.002; // Slower rotation on mobile
-        state.phi = phi + rs.get();
-        state.width = width * (isMobile ? 1 : 2);
-        state.height = width * (isMobile ? 1 : 2);
-      },
-    });
-
-    setTimeout(() => {
-      if (canvasRef.current) {
-        canvasRef.current.style.opacity = "1";
+    // Allow user to opt into a safe (lightweight) mode
+    const safeMode = (() => {
+      try {
+        return !!(localStorage && localStorage.getItem && localStorage.getItem('aglabs_safe_mode') === '1');
+      } catch (e) {
+        return false;
       }
-    }, 0);
+    })();
+
+    if (safeMode) {
+      setGlSupported(false);
+      window.removeEventListener("resize", onResize);
+      return;
+    }
+
+    // Basic WebGL support check (defensive)
+    const webglSupported = (() => {
+      try {
+        const c = document.createElement('canvas');
+        return !!(c.getContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
+      } catch (e) {
+        return false;
+      }
+    })();
+
+    if (!webglSupported) {
+      // Avoid attempting to initialize the globe if WebGL isn't available
+      setGlSupported(false);
+      window.removeEventListener("resize", onResize);
+      return;
+    }
+
+    let globeInstance: ReturnType<typeof createGlobe> | null = null;
+
+    try {
+      // compute per-device adjustments
+      const runtimeIsMobile = isMobile;
+
+      globeInstance = createGlobe(canvasRef.current!, {
+        ...config,
+        width: width * (runtimeIsMobile ? 1 : 2),
+        height: width * (runtimeIsMobile ? 1 : 2),
+        devicePixelRatio: runtimeIsMobile ? 1 : config.devicePixelRatio ?? 2,
+        mapSamples: runtimeIsMobile ? 8000 : config.mapSamples ?? 16000,
+        onRender: (state) => {
+          try {
+            if (!pointerInteracting.current) phi += runtimeIsMobile ? 0.001 : 0.002; // Slower rotation on mobile
+            state.phi = phi + rs.get();
+            state.width = width * (runtimeIsMobile ? 1 : 2);
+            state.height = width * (runtimeIsMobile ? 1 : 2);
+          } catch (e) {
+            // protect render callback from throwing
+            // eslint-disable-next-line no-console
+            console.error('Error in globe onRender', e);
+          }
+        },
+      });
+
+      setGlSupported(true);
+
+      setTimeout(() => {
+        if (canvasRef.current) {
+          canvasRef.current.style.opacity = "1";
+        }
+      }, 0);
+    } catch (err) {
+      // Log and gracefully fallback
+      // eslint-disable-next-line no-console
+      console.error('Globe initialization failed:', err);
+      setGlSupported(false);
+    }
     
     return () => {
-      globe.destroy();
+      if (globeInstance && typeof globeInstance.destroy === 'function') {
+        try {
+          globeInstance.destroy();
+        } catch (e) {
+          // ignore
+        }
+      }
       window.removeEventListener("resize", onResize);
     };
   }, [rs, config]);
+
+  if (glSupported === false) {
+    return (
+      <div className={cn("relative w-full h-full aspect-square", className)}>
+        <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-purple-900/20 via-black to-pink-900/20 rounded-md">
+          <span className="text-white/60 text-sm">Visual 3D não disponível neste dispositivo</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

@@ -25,7 +25,7 @@ export default function Hero() {
     <section className="relative min-h-screen flex items-center pt-20 sm:pt-24 pb-12 sm:pb-16 overflow-hidden bg-black">
       {/* Light Pillar Background - Only on desktop for performance */}
       {!isMobile && (
-        <Suspense fallback={<div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-900/20 to-pink-900/20"><span className="text-white/60 animate-pulse">Carregando efeito visual...</span></div>}>
+        <Suspense fallback={<div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-purple-900/20 to-pink-900/20"><span className="text-white/60 animate-pulse">Carregando efeito visual...</span></div>}>
           <LightPillar
             topColor="#2d1f6b"
             bottomColor="#4a3259"
@@ -41,10 +41,14 @@ export default function Hero() {
         </Suspense>
       )}
 
-      {/* Mobile background fallback */}
+      {/* Mobile background fallback: use optimized static image for performance */}
       {isMobile && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-900/20 via-black to-pink-900/20">
-          <span className="text-white/60 animate-pulse">Carregando visual mobile...</span>
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/attached_assets/generated_images/optimized/dark_mesh_gradient_background.avif')" }}
+        >
+          {/* subtle overlay to keep contrast for text */}
+          <div className="absolute inset-0 bg-black/30" />
         </div>
       )}
 
@@ -139,14 +143,16 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* Mobile Globe (small, below content) - lazy loaded to avoid adding cost to initial bundle */}
-          <div className="w-full flex justify-center xl:hidden order-3">
-            <div className="w-70 h-70 md:w-56 md:h-56 relative">
-              <Suspense fallback={<div className="flex items-center justify-center w-full h-full"><span className="text-white/60 animate-pulse">Carregando globo mobile...</span></div>}>
-                <Globe className="w-full h-full" />
-              </Suspense>
+          {/* Small decorative globe for medium screens only — avoid initializing on small mobile to save CPU */}
+          {!isMobile && (
+            <div className="w-full flex justify-center xl:hidden order-3">
+              <div className="w-70 h-70 md:w-56 md:h-56 relative">
+                <Suspense fallback={<div className="flex items-center justify-center w-full h-full"><span className="text-white/60 animate-pulse">Carregando globo...</span></div>}>
+                  <Globe className="w-full h-full" />
+                </Suspense>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

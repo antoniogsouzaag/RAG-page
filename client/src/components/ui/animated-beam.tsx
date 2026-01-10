@@ -98,17 +98,27 @@ export function AnimatedBeam({
       updatePath();
     }, 100);
 
-    // Set up resize observer
-    const resizeObserver = new ResizeObserver(() => {
-      updatePath();
-    });
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
+    // Set up resize observer (guarded for environments without ResizeObserver)
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        updatePath();
+      });
+      if (containerRef.current) {
+        resizeObserver.observe(containerRef.current);
+      }
+    } else {
+      // Fallback: resize event
+      window.addEventListener('resize', updatePath);
     }
 
     return () => {
       clearTimeout(timer);
-      resizeObserver.disconnect();
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      } else {
+        window.removeEventListener('resize', updatePath);
+      }
     };
   }, [
     containerRef,

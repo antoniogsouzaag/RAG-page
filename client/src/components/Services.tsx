@@ -4,6 +4,7 @@ import { Bot, Globe, Layers, Zap, ArrowRight, Check, Sparkles, TrendingUp, Clock
 import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import usePrefersReducedMotion from "@/hooks/use-prefers-reduced-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const ServicesBackground = lazy(() => import("./ServicesBackground"));
 
@@ -75,8 +76,10 @@ const TiltCard = memo(function TiltCard({ children, className, intensity = 1 }: 
   const ref = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const reduceMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
 
-  if (reduceMotion) {
+  // Disable tilt and heavy motion on mobile or when the user prefers reduced motion
+  if (reduceMotion || isMobile) {
     return (
       <div ref={ref} className={className}>
         {children}
@@ -129,8 +132,9 @@ const TiltCard = memo(function TiltCard({ children, className, intensity = 1 }: 
 // Animated Number Counter
 const AnimatedCounter = memo(function AnimatedCounter({ value, delay = 0 }: { value: string; delay?: number }) {
   const reduceMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
 
-  if (reduceMotion) return <span>{value}</span>;
+  if (reduceMotion || isMobile) return <span>{value}</span>; 
 
   const [displayValue, setDisplayValue] = useState("0");
   const numericPart = value.replace(/[^0-9]/g, '');
@@ -173,6 +177,8 @@ const GlowingOrb = memo(function GlowingOrb({ gradient, position = "top-right" }
     "bottom-left": "-bottom-20 -left-20",
     "center": "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
   };
+  const isMobile = useIsMobile();
+  if (isMobile) return null;
   
   return (
     <>
@@ -185,25 +191,10 @@ const GlowingOrb = memo(function GlowingOrb({ gradient, position = "top-right" }
 // Floating Decorative Icons
 const FloatingIcons = memo(function FloatingIcons({ icons, gradient }: { icons: React.ComponentType<{ className?: string }>[]; gradient: string }) {
   const reduceMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
 
-  if (reduceMotion) {
-    return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {icons.map((Icon, idx) => (
-          <div
-            key={idx}
-            style={{
-              position: "absolute",
-              right: `${10 + idx * 20}%`,
-              bottom: `${15 + idx * 12}%`,
-            }}
-            className={`w-14 h-14 rounded-2xl bg-linear-to-br ${gradient} flex items-center justify-center opacity-30`}
-          >
-            <Icon className="w-7 h-7 text-white" />
-          </div>
-        ))}
-      </div>
-    );
+  if (reduceMotion || isMobile) {
+    return null;
   }
 
   return (
