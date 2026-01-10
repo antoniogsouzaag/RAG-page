@@ -6,32 +6,34 @@ import React, {
   useMemo,
   useState,
   useRef,
-  useCallback,
 } from "react";
-import { AnimatePresence, motion, MotionProps, useInView } from "framer-motion";
+import { motion, MotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-// Item individual com animação baseada em inView
+// Simple fade-in animation for each item
+const itemVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  visible: { opacity: 1, y: 0, scale: 1 },
+};
+
+// Item individual with stable animation
 export const AnimatedListItem = React.memo(function AnimatedListItem({ 
   children,
   delay = 0,
-  index,
 }: { 
   children: React.ReactNode;
   delay?: number;
-  index: number;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { amount: 0.5, once: false });
-  
   return (
     <motion.div
-      ref={ref}
-      data-index={index}
-      initial={{ scale: 0.7, opacity: 0 }}
-      animate={inView ? { scale: 1, opacity: 1 } : { scale: 0.7, opacity: 0 }}
-      transition={{ duration: 0.3, delay, ease: "easeOut" }}
-      layout="position"
+      initial="hidden"
+      animate="visible"
+      variants={itemVariants}
+      transition={{ 
+        duration: 0.4, 
+        delay, 
+        ease: [0.22, 1, 0.36, 1] 
+      }}
       className="mx-auto w-full"
     >
       {children}
@@ -46,17 +48,20 @@ export interface AnimatedListProps extends ComponentPropsWithoutRef<"div"> {
 }
 
 export const AnimatedList = React.memo(
-  ({ children, className, delay = 1000, loop = true, ...props }: AnimatedListProps) => {
-    const [index, setIndex] = useState(0);
+  ({ children, className, delay = 1500, loop = true, ...props }: AnimatedListProps) => {
+    const [visibleCount, setVisibleCount] = useState(1);
     const containerRef = useRef<HTMLDivElement>(null);
     const [isVisible, setIsVisible] = useState(false);
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     
     const childrenArray = useMemo(
       () => React.Children.toArray(children),
       [children]
     );
+    
+    const totalItems = childrenArray.length;
 
-    // Track container visibility
+    // Track container visibility with IntersectionObserver
     useEffect(() => {
       if (!containerRef.current) return;
       
@@ -71,27 +76,43 @@ export const AnimatedList = React.memo(
       return () => observer.disconnect();
     }, []);
 
-    // Animation timer - only runs when visible
+    // Animation timer - only runs when visible, uses stable logic
     useEffect(() => {
-      if (!isVisible) return;
+      if (!isVisible) {
+        // Clear timer when not visible
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+          timerRef.current = null;
+        }
+        return;
+      }
       
-      const timeout = setTimeout(() => {
-        setIndex((prevIndex) => {
-          // Se chegou ao final e loop está ativo, volta ao início
-          if (prevIndex >= childrenArray.length - 1) {
-            return loop ? 0 : prevIndex;
+      timerRef.current = setTimeout(() => {
+        setVisibleCount((prev) => {
+          // If we've shown all items
+          if (prev >= totalItems) {
+            // If loop is enabled, reset after showing all
+            if (loop) {
+              return 1; // Start over from 1
+            }
+            return prev; // Stay at max
           }
-          return prevIndex + 1;
+          return prev + 1; // Show next item
         });
       }, delay);
 
-      return () => clearTimeout(timeout);
-    }, [index, delay, childrenArray.length, loop, isVisible]);
+      return () => {
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+          timerRef.current = null;
+        }
+      };
+    }, [visibleCount, delay, totalItems, loop, isVisible]);
 
-    // Items to show - sempre mostra do início até o índice atual
+    // Get items to display
     const itemsToShow = useMemo(() => {
-      return childrenArray.slice(0, index + 1);
-    }, [index, childrenArray]);
+      return childrenArray.slice(0, visibleCount);
+    }, [visibleCount, childrenArray]);
 
     return (
       <div
@@ -99,17 +120,14 @@ export const AnimatedList = React.memo(
         className={cn("flex flex-col items-center gap-4", className)}
         {...props}
       >
-        <AnimatePresence mode="popLayout">
-          {itemsToShow.map((item, i) => (
-            <AnimatedListItem 
-              key={`${index >= childrenArray.length - 1 && loop ? 'loop-' : ''}${(item as React.ReactElement).key || i}`}
-              delay={0.05 * i}
-              index={i}
-            >
-              {item}
-            </AnimatedListItem>
-          ))}
-        </AnimatePresence>
+        {itemsToShow.map((item, i) => (
+          <AnimatedListItem 
+            key={`item-${i}`}
+            delay={i === visibleCount - 1 ? 0.1 : 0} // Only animate the newest item
+          >
+            {item}
+          </AnimatedListItem>
+        ))}
       </div>
     );
   }

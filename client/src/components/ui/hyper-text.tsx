@@ -1,7 +1,6 @@
 "use client";
 
-import { memo, useEffect, useRef, useState, useMemo, useCallback } from "react";
-import { motion } from "framer-motion";
+import { memo, useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import usePrefersReducedMotion from "@/hooks/use-prefers-reduced-motion";
@@ -13,91 +12,112 @@ interface HyperTextProps {
   animateOnLoad?: boolean;
 }
 
-const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const ALPHABETS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-const getRandomInt = (max: number) => Math.floor(Math.random() * max);
+const getRandomChar = () => ALPHABETS[Math.floor(Math.random() * 26)];
 
 export function HyperTextComponent({
   children,
   className,
-  duration = 150,
+  duration = 800,
   animateOnLoad = true,
 }: HyperTextProps) {
   const isMobile = useIsMobile();
   const reducedMotion = usePrefersReducedMotion();
   
-  const initialText = useMemo(() => children.split(""), [children]);
-  const [displayText, setDisplayText] = useState(initialText);
-  const [trigger, setTrigger] = useState(false);
+  // Memoize the text to prevent unnecessary recalculations
+  const text = useMemo(() => children.toUpperCase(), [children]);
+  const textChars = useMemo(() => text.split(""), [text]);
+  const textLength = textChars.length;
+  
+  const [displayText, setDisplayText] = useState<string[]>(() => 
+    animateOnLoad ? textChars.map(c => c === " " ? " " : getRandomChar()) : textChars
+  );
+  const [isAnimating, setIsAnimating] = useState(animateOnLoad);
   const iterationsRef = useRef(0);
-  const isFirstRender = useRef(true);
+  const animationFrameRef = useRef<number | null>(null);
+  const lastTimeRef = useRef<number>(0);
 
   // Disable animation on mobile for performance and to fix touch issues
   const shouldAnimate = !isMobile && !reducedMotion;
 
   const triggerAnimation = useCallback(() => {
-    if (!shouldAnimate) return;
+    if (!shouldAnimate || isAnimating) return;
     iterationsRef.current = 0;
-    setTrigger(true);
-  }, [shouldAnimate]);
+    lastTimeRef.current = 0;
+    setIsAnimating(true);
+  }, [shouldAnimate, isAnimating]);
 
+  // Animation effect using requestAnimationFrame for smoother performance
   useEffect(() => {
-    // Skip animation completely on mobile or if reduced motion
-    if (!shouldAnimate) {
-      setDisplayText(initialText);
+    if (!shouldAnimate || !isAnimating) {
+      setDisplayText(textChars);
       return;
     }
+
+    const intervalMs = duration / textLength;
     
-    const interval = setInterval(() => {
-      if (!animateOnLoad && isFirstRender.current) {
-        clearInterval(interval);
-        isFirstRender.current = false;
-        return;
-      }
-      if (iterationsRef.current < children.length) {
-        setDisplayText((t) =>
-          t.map((l, i) =>
-            l === " "
-              ? l
-              : i <= iterationsRef.current
-                ? children[i]
-                : alphabets[getRandomInt(26)]
-          )
+    const animate = (timestamp: number) => {
+      if (!lastTimeRef.current) lastTimeRef.current = timestamp;
+      
+      const elapsed = timestamp - lastTimeRef.current;
+      
+      if (elapsed >= intervalMs) {
+        lastTimeRef.current = timestamp;
+        iterationsRef.current += 1;
+        
+        if (iterationsRef.current >= textLength) {
+          // Animation complete - set final text
+          setDisplayText(textChars);
+          setIsAnimating(false);
+          return;
+        }
+        
+        // Update display text
+        setDisplayText(prev => 
+          prev.map((char, i) => {
+            if (textChars[i] === " ") return " ";
+            if (i < iterationsRef.current) return textChars[i];
+            return getRandomChar();
+          })
         );
-        iterationsRef.current = iterationsRef.current + 0.1;
-      } else {
-        setTrigger(false);
-        clearInterval(interval);
       }
-    }, duration / (children.length * 10));
-    return () => clearInterval(interval);
-  }, [children, duration, trigger, animateOnLoad, shouldAnimate, initialText]);
+      
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+    
+    animationFrameRef.current = requestAnimationFrame(animate);
+    
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      lastTimeRef.current = 0;
+    };
+  }, [shouldAnimate, isAnimating, textLength, duration, textChars]);
 
   // Simple render for mobile - no animation, just text
-  // Use inline-block to preserve text gradient clipping from parent
   if (!shouldAnimate) {
     return (
       <span className={cn("inline-block", className)}>
-        {children.toUpperCase()}
+        {text}
       </span>
     );
   }
 
   return (
     <span
-      className={cn("inline-flex flex-wrap", className)}
+      className={cn("inline-flex", className)}
       onMouseEnter={triggerAnimation}
     >
       {displayText.map((letter, i) => (
-        <motion.span
-          key={`${i}-${letter}`}
-          className={cn(letter === " " ? "w-2" : "")}
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 1 }}
+        <span
+          key={i}
+          className={cn(letter === " " ? "w-[0.3em]" : "")}
           style={{ display: 'inline-block' }}
         >
-          {letter.toUpperCase()}
-        </motion.span>
+          {letter}
+        </span>
       ))}
     </span>
   );

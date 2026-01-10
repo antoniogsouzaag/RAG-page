@@ -95,8 +95,7 @@ const HowItWorksItem = memo(({ emoji, step, title, description }: {
   description: string;
 }) => (
   <div 
-    className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm animate-fade-in-up"
-    style={{ animationDelay: `${step * 100}ms` }}
+    className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm"
   >
     <div className="shrink-0 w-12 h-12 rounded-xl bg-linear-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center text-2xl">
       {emoji}

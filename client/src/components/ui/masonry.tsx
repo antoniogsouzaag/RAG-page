@@ -251,7 +251,7 @@ const Masonry = ({
             style={{ backgroundImage: `url(${item.img})` }}
           >
             {colorShiftOnHover && (
-              <div className="color-overlay absolute inset-0 rounded-xl bg-gradient-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none" />
+              <div className="color-overlay absolute inset-0 rounded-xl bg-linear-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none" />
             )}
           </div>
         </div>
