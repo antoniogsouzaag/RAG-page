@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, memo } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import usePrefersReducedMotion from "@/hooks/use-prefers-reduced-motion";
 
 interface Stat {
   value: number;
@@ -21,6 +23,8 @@ function AnimatedNumber({ value, suffix = "", prefix = "" }: { value: number; su
   const [displayValue, setDisplayValue] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   const [isInView, setIsInView] = useState(false);
+  const isMobile = useIsMobile();
+  const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     const el = ref.current;
@@ -44,6 +48,12 @@ function AnimatedNumber({ value, suffix = "", prefix = "" }: { value: number; su
 
   useEffect(() => {
     if (!isInView) return;
+    
+    // Skip animation on mobile/reduced motion - show final value immediately
+    if (isMobile || reducedMotion) {
+      setDisplayValue(value);
+      return;
+    }
 
     const duration = 2000;
     const steps = 60;
@@ -62,7 +72,7 @@ function AnimatedNumber({ value, suffix = "", prefix = "" }: { value: number; su
     }, stepDuration);
 
     return () => clearInterval(timer);
-  }, [isInView, value]);
+  }, [isInView, value, isMobile, reducedMotion]);
 
   return (
     <span ref={ref} className="tabular-nums">
@@ -72,15 +82,19 @@ function AnimatedNumber({ value, suffix = "", prefix = "" }: { value: number; su
 }
 
 export function StatsCount({ stats, className, showDividers = true }: StatsCountProps) {
+  const isMobile = useIsMobile();
+  const reducedMotion = usePrefersReducedMotion();
+  const skipAnimations = isMobile || reducedMotion;
+  
   return (
     <div className={cn("flex flex-wrap justify-center lg:justify-start items-center gap-6 md:gap-0", className)}>
       {stats.map((stat, index) => (
         <div key={index} className="flex items-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={skipAnimations ? false : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
+            transition={{ delay: skipAnimations ? 0 : index * 0.1, duration: skipAnimations ? 0 : 0.5 }}
             className="text-center px-3 md:px-6 lg:px-8"
           >
             <div className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-1">

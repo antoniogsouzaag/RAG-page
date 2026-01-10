@@ -44,19 +44,28 @@
 @layer utilities {
   /* Performance-optimized fade-in-up animation for Hero section */
   @keyframes fade-in-up {
-    from {
+    0% {
       opacity: 0;
       transform: translate3d(0, 20px, 0);
     }
-    to {
+    100% {
       opacity: 1;
       transform: translate3d(0, 0, 0);
     }
   }
   
   .animate-fade-in-up {
-    animation: fade-in-up 0.6s ease-out both;
-    will-change: opacity, transform;
+    animation: fade-in-up 0.6s ease-out forwards;
+    animation-fill-mode: forwards;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  
+  /* Stable animation states - applied after animation completes */
+  .animation-complete {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) !important;
   }
   
   /* Performance optimizations for animations */
@@ -128,6 +137,18 @@
       display: none;
     }
     
+    /* CRITICAL: Force stable final animation state on mobile - prevents flicker */
+    .animate-fade-in-up {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    
+    /* Disable framer-motion opacity transitions to prevent end-of-animation flicker */
+    [style*="opacity"] {
+      transition: opacity 0ms !important;
+    }
+    
     /* Reduce blur on mobile for better performance */
     .blur-3xl {
       filter: blur(24px);
@@ -163,45 +184,51 @@
 
     .animate-spin-slow {
       animation: spin-slow 12s linear infinite;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
     }
 
     /* Disable heavy animations on mobile */
     .animate-pulse {
-      animation: none;
+      animation: none !important;
     }
     
     /* Disable ping animations on mobile */
     .animate-ping {
-      animation: none;
-      opacity: 0;
+      animation: none !important;
+      opacity: 0 !important;
     }
 
     /* Reduce backdrop blur on mobile for performance */
     .backdrop-blur-xl {
       backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
     }
 
     .backdrop-blur-md {
       backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
     }
 
     .backdrop-blur-lg {
       backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
     }
     
     .backdrop-blur-2xl {
       backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
     }
     
     /* Disable expensive effects on mobile */
     .group-hover\:scale-110:hover,
     .group-hover\:scale-105:hover {
-      transform: none;
+      transform: none !important;
     }
     
-    /* Simplify transitions on mobile */
+    /* Simplify transitions on mobile - shorter duration to reduce flicker window */
     * {
-      transition-duration: 150ms !important;
+      transition-duration: 100ms !important;
     }
     
     /* Reduce shadow complexity on mobile */
@@ -212,6 +239,21 @@
     /* Add containment for better rendering */
     section {
       contain: layout style;
+    }
+    
+    /* Stable transforms on mobile - force GPU layer */
+    .transform-gpu {
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
+    
+    /* Force hardware acceleration for all animated elements to prevent flicker */
+    [class*="motion"],
+    [class*="animate"] {
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
     
     /* Disable expensive hover effects on mobile */
@@ -287,20 +329,32 @@ html {
 /* Optimize main content sections for scroll */
 main {
   contain: layout style;
-  /* Prevent layout thrashing during scroll */
+  /* Prevent layout thrashing during scroll - use auto instead of scroll */
   will-change: auto;
 }
 
 section {
   contain: layout paint;
   content-visibility: auto;
-  contain-intrinsic-size: auto 500px;
+  contain-intrinsic-size: auto 600px;
+}
+
+/* Optimize Framer Motion elements during scroll */
+[data-framer-component-type] {
+  contain: layout style;
+}
+
+/* Force hardware acceleration for motion elements but prevent over-use */
+[style*="transform"] {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Only use transform-gpu on elements that actually animate */
 .transform-gpu {
   transform: translateZ(0);
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   perspective: 1000px;
 }
 

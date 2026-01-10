@@ -268,7 +268,7 @@ const HeroCard = memo(function HeroCard({ service, index }: { service: typeof se
     <motion.div
       initial={skipAnimations ? false : { opacity: 0, y: 40, scale: 0.95 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: skipAnimations ? 0.2 : 0.6, delay: skipAnimations ? 0 : index * 0.1, type: skipAnimations ? "tween" : "spring", stiffness: 100 }}
+      transition={{ duration: skipAnimations ? 0.15 : 0.5, delay: skipAnimations ? 0 : index * 0.08, ease: "easeOut" }}
       viewport={{ once: true, margin: "-50px" }}
       className="h-full perspective-1000"
       onMouseEnter={() => !isMobile && setIsHovered(true)}
@@ -303,25 +303,19 @@ const HeroCard = memo(function HeroCard({ service, index }: { service: typeof se
           <div className="relative z-10 flex flex-col h-full">
             {/* Header */}
             <div className="flex flex-col gap-5 mb-8">
-              {/* Icon with Animation */}
-              <motion.div 
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                transition={{ type: "spring", stiffness: 400 }}
-                className={`w-16 h-16 rounded-2xl ${service.iconBg} backdrop-blur-sm flex items-center justify-center border border-white/20 shadow-xl shadow-purple-500/20`}
+              {/* Icon with CSS hover animation for better scroll performance */}
+              <div
+                className={`w-16 h-16 rounded-2xl ${service.iconBg} backdrop-blur-sm flex items-center justify-center border border-white/20 shadow-xl shadow-purple-500/20 transition-transform duration-200 ease-out hover:scale-110 hover:rotate-3`}
               >
                 <service.icon className="w-8 h-8 text-white" />
-              </motion.div>
+              </div>
               
               <div>
-                <motion.span 
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  viewport={{ once: true }}
+                <span
                   className={`text-xs font-bold uppercase tracking-[0.2em] bg-linear-to-r ${service.gradient} bg-clip-text text-transparent`}
                 >
                   {service.subtitle}
-                </motion.span>
+                </span>
                 <h3 className="text-3xl md:text-4xl font-display font-bold text-white mt-2 leading-tight">
                   {service.title}
                 </h3>
@@ -346,12 +340,10 @@ const HeroCard = memo(function HeroCard({ service, index }: { service: typeof se
                 <FeatureList features={service.features} gradient={service.gradient} />
               </div>
               
-              {/* Metric Highlight */}
+              {/* Metric Highlight - CSS hover for better performance */}
               <div className="flex items-end">
-                <motion.div 
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  className="p-6 md:p-8 rounded-2xl bg-linear-to-br from-white/10 to-white/5 border border-white/15 backdrop-blur-sm min-w-[180px] shadow-xl"
+                <div 
+                  className="p-6 md:p-8 rounded-2xl bg-linear-to-br from-white/10 to-white/5 border border-white/15 backdrop-blur-sm min-w-[180px] shadow-xl transition-transform duration-200 ease-out hover:scale-105 hover:-translate-y-1"
                 >
                   <div className={`text-4xl md:text-5xl font-display font-bold bg-linear-to-r ${service.gradient} bg-clip-text text-transparent mb-2`}>
                     <AnimatedCounter value={service.metrics.value} delay={0.5} />
@@ -359,7 +351,7 @@ const HeroCard = memo(function HeroCard({ service, index }: { service: typeof se
                   <div className="text-sm text-white/60 uppercase tracking-wider font-medium">
                     {service.metrics.label}
                   </div>
-                </motion.div>
+                </div>
               </div>
             </div>
 
@@ -406,7 +398,7 @@ const CompactHeroCard = memo(function CompactHeroCard({ service, index }: { serv
     <motion.div
       initial={skipAnimations ? false : { opacity: 0, y: 40, scale: 0.95 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: skipAnimations ? 0.2 : 0.6, delay: skipAnimations ? 0 : index * 0.1, type: skipAnimations ? "tween" : "spring", stiffness: 100 }}
+      transition={{ duration: skipAnimations ? 0.15 : 0.5, delay: skipAnimations ? 0 : index * 0.08, ease: "easeOut" }}
       viewport={{ once: true, margin: "-50px" }}
       className="h-full perspective-1000"
       onMouseEnter={() => !isMobile && setIsHovered(true)}
@@ -435,24 +427,18 @@ const CompactHeroCard = memo(function CompactHeroCard({ service, index }: { serv
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-6 h-full">
             {/* Left: Icon + Title + Description */}
             <div className="flex items-start gap-4 flex-1">
-              <motion.div 
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                transition={{ type: "spring", stiffness: 400 }}
-                className={`w-14 h-14 rounded-2xl ${service.iconBg} backdrop-blur-sm flex items-center justify-center border border-white/20 shadow-xl shadow-blue-500/20 shrink-0`}
+              <div
+                className={`w-14 h-14 rounded-2xl ${service.iconBg} backdrop-blur-sm flex items-center justify-center border border-white/20 shadow-xl shadow-blue-500/20 shrink-0 transition-transform duration-200 ease-out hover:scale-110 hover:rotate-3`}
               >
                 <service.icon className="w-7 h-7 text-white" />
-              </motion.div>
+              </div>
               
               <div className="flex-1">
-                <motion.span 
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  viewport={{ once: true }}
+                <span
                   className={`text-[10px] font-bold uppercase tracking-[0.2em] bg-linear-to-r ${service.gradient} bg-clip-text text-transparent`}
                 >
                   {service.subtitle}
-                </motion.span>
+                </span>
                 <h3 className="text-2xl md:text-3xl font-display font-bold text-white mt-1 leading-tight">
                   {service.title}
                 </h3>
@@ -464,10 +450,8 @@ const CompactHeroCard = memo(function CompactHeroCard({ service, index }: { serv
             
             {/* Right: Metric + CTA */}
             <div className="flex flex-row md:flex-col items-center gap-4 md:gap-3">
-              <motion.div 
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="p-4 rounded-xl bg-linear-to-br from-white/10 to-white/5 border border-white/15 backdrop-blur-sm shadow-lg text-center"
+              <div 
+                className="p-4 rounded-xl bg-linear-to-br from-white/10 to-white/5 border border-white/15 backdrop-blur-sm shadow-lg text-center transition-transform duration-200 ease-out hover:scale-105"
               >
                 <div className={`text-3xl font-display font-bold bg-linear-to-r ${service.gradient} bg-clip-text text-transparent`}>
                   <AnimatedCounter value={service.metrics.value} delay={0.5} />
@@ -475,7 +459,7 @@ const CompactHeroCard = memo(function CompactHeroCard({ service, index }: { serv
                 <div className="text-[10px] text-white/60 uppercase tracking-wider font-medium">
                   {service.metrics.label}
                 </div>
-              </motion.div>
+              </div>
               
               <a 
                 href={WHATSAPP_LINK}
@@ -539,13 +523,11 @@ const StandardCard = memo(function StandardCard({ service, index }: { service: t
           <div className="relative z-10 flex flex-col h-full">
             {/* Header */}
             <div className="flex items-start gap-3 mb-4">
-              <motion.div 
-                whileHover={{ scale: 1.15, rotate: 8 }}
-                transition={{ type: "spring", stiffness: 400 }}
-                className={`w-10 h-10 rounded-lg ${service.iconBg} backdrop-blur-sm flex items-center justify-center border border-white/15 shadow-lg`}
+              <div
+                className={`w-10 h-10 rounded-lg ${service.iconBg} backdrop-blur-sm flex items-center justify-center border border-white/15 shadow-lg transition-transform duration-200 ease-out hover:scale-115 hover:rotate-6`}
               >
                 <service.icon className="w-5 h-5 text-white" />
-              </motion.div>
+              </div>
               
               <div className="flex-1">
                 <span className={`text-[9px] font-bold uppercase tracking-[0.15em] bg-linear-to-r ${service.gradient} bg-clip-text text-transparent`}>
@@ -577,26 +559,21 @@ const StandardCard = memo(function StandardCard({ service, index }: { service: t
                 <span className="text-[10px] text-white/50">{service.metrics.label}</span>
               </div>
               
-              <motion.a 
+              <a 
                 href={WHATSAPP_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.15, rotate: 5 }}
-                whileTap={{ scale: 0.95 }}
-                className={`w-8 h-8 rounded-lg bg-linear-to-br ${service.gradient} flex items-center justify-center cursor-pointer shadow-lg transition-shadow hover:shadow-xl`}
+                className={`w-8 h-8 rounded-lg bg-linear-to-br ${service.gradient} flex items-center justify-center cursor-pointer shadow-lg transition-all duration-200 ease-out hover:scale-115 hover:rotate-3 hover:shadow-xl active:scale-95`}
                 style={{ boxShadow: isHovered ? `0 8px 30px rgba(${service.spotlightColor}, 0.4)` : undefined }}
               >
                 <ArrowRight className="w-3.5 h-3.5 text-white" />
-              </motion.a>
+              </a>
             </div>
           </div>
 
-          {/* Subtle animated line */}
-          <motion.div 
-            className={`absolute bottom-0 left-0 h-1 bg-linear-to-r ${service.gradient} rounded-b-2xl`}
-            initial={{ width: "0%" }}
-            whileHover={{ width: "100%" }}
-            transition={{ duration: 0.5 }}
+          {/* Subtle animated line - CSS only */}
+          <div 
+            className={`absolute bottom-0 left-0 h-1 bg-linear-to-r ${service.gradient} rounded-b-2xl w-0 group-hover:w-full transition-all duration-500 ease-out`}
           />
         </SpotlightCard>
       </TiltCard>
@@ -659,7 +636,7 @@ export default function Services() {
             initial={shouldAnimate ? { opacity: 0, y: 25 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: shouldAnimate ? 0.1 : 0, type: "spring", stiffness: 100 }}
+            transition={{ delay: shouldAnimate ? 0.1 : 0, duration: 0.5, ease: "easeOut" }}
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold mb-6 sm:mb-8 leading-[1.1]"
           >
             <span className="text-white">Tecnologia que</span>
@@ -673,7 +650,7 @@ export default function Services() {
             initial={shouldAnimate ? { opacity: 0, y: 25 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: shouldAnimate ? 0.2 : 0, type: "spring", stiffness: 100 }}
+            transition={{ delay: shouldAnimate ? 0.2 : 0, duration: 0.5, ease: "easeOut" }}
             className="text-white/50 text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed max-w-2xl mx-auto px-2 sm:px-0"
           >
             Soluções sob medida para automatizar processos, escalar operações e multiplicar sua eficiência.
@@ -707,7 +684,7 @@ export default function Services() {
         <motion.div
           initial={shouldAnimate ? { opacity: 0, y: 40 } : false}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: shouldAnimate ? 0.5 : 0, type: "spring", stiffness: 80 }}
+          transition={{ delay: shouldAnimate ? 0.3 : 0, duration: 0.6, ease: "easeOut" }}
           viewport={{ once: true }}
           className="mt-12 sm:mt-16 md:mt-20 lg:mt-28"
         >

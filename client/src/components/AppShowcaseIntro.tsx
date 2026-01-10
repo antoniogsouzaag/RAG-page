@@ -41,7 +41,7 @@ function AppShowcaseIntro() {
           initial={{ opacity: 0, y: 20, scale: 0.9 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.1, type: "spring", stiffness: 100 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
           className="text-center text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-black py-3 tracking-tighter"
         >
           <span className="relative inline-block">

@@ -290,55 +290,53 @@ function RAGSection() {
               </div>
             </div>
 
-            {/* Animated Beams - Only on desktop for performance */}
-            {shouldAnimate && (
-              <>
-                <AnimatedBeam
-                  containerRef={containerRef}
-                  fromRef={pdfRef}
-                  toRef={aiRef}
-                  gradientStartColor="#ef4444"
-                  gradientStopColor="#8b5cf6"
-                  duration={4}
-                />
-                <AnimatedBeam
-                  containerRef={containerRef}
-                  fromRef={excelRef}
-                  toRef={aiRef}
-                  gradientStartColor="#22c55e"
-                  gradientStopColor="#8b5cf6"
-                  duration={5}
-                  delay={0.5}
-                />
-                <AnimatedBeam
-                  containerRef={containerRef}
-                  fromRef={driveRef}
-                  toRef={aiRef}
-                  gradientStartColor="#3b82f6"
-                  gradientStopColor="#8b5cf6"
-                  duration={4.5}
-                  delay={1}
-                />
-                <AnimatedBeam
-                  containerRef={containerRef}
-                  fromRef={whatsappRef}
-                  toRef={aiRef}
-                  gradientStartColor="#25D366"
-                  gradientStopColor="#8b5cf6"
-                  duration={5.5}
-                  delay={1.5}
-                />
-                <AnimatedBeam
-                  containerRef={containerRef}
-                  fromRef={aiRef}
-                  toRef={chatRef}
-                  gradientStartColor="#8b5cf6"
-                  gradientStopColor="#06b6d4"
-                  duration={3}
-                  delay={2}
-                />
-              </>
-            )}
+            {/* Animated Beams - Now visible on all devices for better experience */}
+            <>
+              <AnimatedBeam
+                containerRef={containerRef}
+                fromRef={pdfRef}
+                toRef={aiRef}
+                gradientStartColor="#ef4444"
+                gradientStopColor="#8b5cf6"
+                duration={4}
+              />
+              <AnimatedBeam
+                containerRef={containerRef}
+                fromRef={excelRef}
+                toRef={aiRef}
+                gradientStartColor="#22c55e"
+                gradientStopColor="#8b5cf6"
+                duration={5}
+                delay={0.5}
+              />
+              <AnimatedBeam
+                containerRef={containerRef}
+                fromRef={driveRef}
+                toRef={aiRef}
+                gradientStartColor="#3b82f6"
+                gradientStopColor="#8b5cf6"
+                duration={4.5}
+                delay={1}
+              />
+              <AnimatedBeam
+                containerRef={containerRef}
+                fromRef={whatsappRef}
+                toRef={aiRef}
+                gradientStartColor="#25D366"
+                gradientStopColor="#8b5cf6"
+                duration={5.5}
+                delay={1.5}
+              />
+              <AnimatedBeam
+                containerRef={containerRef}
+                fromRef={aiRef}
+                toRef={chatRef}
+                gradientStartColor="#8b5cf6"
+                gradientStopColor="#06b6d4"
+                duration={3}
+                delay={2}
+              />
+            </>
           </div>
 
           {/* Legenda explicativa */}
