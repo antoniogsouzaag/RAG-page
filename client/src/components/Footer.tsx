@@ -1,7 +1,8 @@
+import { memo } from "react";
 import { Link } from "wouter";
-import { Instagram, Linkedin, Github } from "lucide-react";
+import { Instagram, Linkedin } from "lucide-react";
 
-export default function Footer() {
+function Footer() {
   return (
     <footer className="py-4 sm:py-2 border-t border-white/5 bg-black">
       <div className="container px-4 md:px-6 max-w-7xl mx-auto">
@@ -60,3 +61,5 @@ export default function Footer() {
     </footer>
   );
 }
+
+export default memo(Footer);

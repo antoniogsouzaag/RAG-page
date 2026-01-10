@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, memo, useMemo } from "react";
+import { Suspense, lazy, memo } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -14,7 +14,7 @@ const WHATSAPP_LINK = "https://wa.me/5564993259857?text=Quero%20saber%20mais%20s
 
 // Memoized static SVG globe for low-end mobile devices
 const SVGGlobeFallback = memo(() => (
-  <div className="absolute left-1/2 -translate-x-1/2 top-24 w-44 h-44 pointer-events-none mobile-globe opacity-50" aria-hidden>
+  <div className="absolute right-[-10%] top-[45%] w-64 h-64 pointer-events-none mobile-globe opacity-25" aria-hidden>
     <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
       <defs>
         <linearGradient id="g1" x1="0" x2="1">
@@ -98,9 +98,9 @@ function Hero() {
                 <LightPillar {...mobilePillarConfig} />
               </Suspense>
 
-              {/* Animated globe (lazy) positioned for mobile - centralizado no topo */}
-              <div className="absolute left-1/2 -translate-x-1/2 top-24 w-56 h-56 sm:w-64 sm:h-64 z-20 pointer-events-none opacity-60" aria-hidden>
-                <div className="absolute inset-0 bg-purple-500/20 blur-[60px] rounded-full" />
+              {/* Animated globe (lazy) positioned for mobile - moved down-right with transparency */}
+              <div className="absolute right-[-20%] top-[40%] w-80 h-80 sm:w-96 sm:h-96 z-10 pointer-events-none opacity-30" aria-hidden>
+                <div className="absolute inset-0 bg-purple-500/15 blur-[80px] rounded-full" />
                 <Suspense fallback={null}>
                   <Globe className="w-full h-full" />
                 </Suspense>

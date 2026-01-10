@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
+import { memo } from "react";
 import Masonry from "@/components/ui/masonry";
 
-// Placeholder images - update paths later
+// Gallery items - use base path without extension for optimized images
 const galleryItems = [
   { id: 1, img: "/app1.png", height: 400 },
   { id: 2, img: "/app2.png", height: 320 },
@@ -20,37 +20,30 @@ const galleryItems = [
   { id: 15, img: "/app15.png", height: 380 },
 ];
 
-export default function AppGallery() {
+function AppGallery() {
   return (
     <section id="showcase" className="py-16 sm:py-20 md:py-28 relative overflow-hidden">
-      {/* Background Decor */}
-      <div className="absolute top-0 right-0 w-[300px] sm:w-[400px] md:w-[500px] h-[300px] sm:h-[400px] md:h-[500px] bg-purple-600/10 blur-[100px] sm:blur-[150px] -z-10 rounded-full" />
-      <div className="absolute bottom-0 left-0 w-[300px] sm:w-[400px] md:w-[500px] h-[300px] sm:h-[400px] md:h-[500px] bg-blue-600/10 blur-[100px] sm:blur-[150px] -z-10 rounded-full" />
+      {/* Background Decor - simplified */}
+      <div className="absolute top-0 right-0 w-[300px] sm:w-[400px] md:w-[500px] h-[300px] sm:h-[400px] md:h-[500px] bg-purple-600/10 blur-[100px] sm:blur-[120px] -z-10 rounded-full" />
+      <div className="absolute bottom-0 left-0 w-[300px] sm:w-[400px] md:w-[500px] h-[300px] sm:h-[400px] md:h-[500px] bg-blue-600/10 blur-[100px] sm:blur-[120px] -z-10 rounded-full" />
 
       <div className="container mx-auto px-4 md:px-6 max-w-7xl">
 
-        {/* Masonry Gallery */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="relative"
-        >
+        {/* Masonry Gallery - optimized with reduced animations */}
+        <div className="relative">
           <Masonry 
             items={galleryItems}
-            animateFrom="bottom"
-            stagger={0.03}
             scaleOnHover={true}
-            hoverScale={0.97}
-            blurToFocus={true}
-            colorShiftOnHover={true}
+            hoverScale={0.98}
+            colorShiftOnHover={false}
           />
           
           {/* Bottom gradient fade for smooth transition */}
-          <div className="absolute bottom-0 left-0 right-0 h-40 bg-linear-to-t from-black via-black/80 to-transparent pointer-events-none" />
-        </motion.div>
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-black via-black/80 to-transparent pointer-events-none" />
+        </div>
       </div>
     </section>
   );
 }
+
+export default memo(AppGallery);

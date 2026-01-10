@@ -17,12 +17,12 @@ interface FlickeringGridProps {
 export function FlickeringGrid({
   squareSize = 2,
   gridGap = 6,
-  flickerChance = 0.3,
+  flickerChance = 0.05,
   color = "rgb(0, 0, 0)",
   width,
   height,
   className,
-  maxOpacity = 0.3,
+  maxOpacity = 0.2,
 }: FlickeringGridProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);

@@ -200,51 +200,39 @@ const FloatingIcons = memo(function FloatingIcons({ icons, gradient }: { icons: 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {icons.map((Icon, idx) => (
-        <motion.div
+        <div
           key={idx}
-          initial={{ opacity: 0, scale: 0 }}
-          whileInView={{ opacity: 0.12, scale: 1 }}
-          transition={{ delay: 0.5 + idx * 0.2, duration: 0.5 }}
-          viewport={{ once: true }}
-          animate={{
-            y: [0, -8, 0],
-            rotate: [0, 3, -3, 0]
-          }}
           style={{
             position: 'absolute',
             right: `${10 + idx * 20}%`,
             bottom: `${15 + idx * 12}%`,
+            opacity: 0.12,
           }}
           className={`w-14 h-14 rounded-2xl bg-linear-to-br ${gradient} flex items-center justify-center`}
         >
           <Icon className="w-7 h-7 text-white" />
-        </motion.div>
+        </div>
       ))}
     </div>
   );
 });
 
-// Animated Feature List with Stagger
+// Feature List - otimizado sem animações pesadas
 const FeatureList = memo(function FeatureList({ features, gradient }: { features: string[]; gradient: string }) {
   return (
     <ul className="space-y-2">
       {features.map((feature, idx) => (
-        <motion.li
+        <li
           key={idx}
-          initial={{ opacity: 0, x: -15 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 + idx * 0.1, type: "spring", stiffness: 200 }}
-          viewport={{ once: true }}
           className="flex items-center gap-2 text-xs text-white/80 group/item"
         >
-          <motion.span 
-            whileHover={{ scale: 1.2, rotate: 10 }}
+          <span 
             className={`w-4 h-4 rounded-md bg-linear-to-br ${gradient} flex items-center justify-center shadow-lg shrink-0`}
           >
             <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
-          </motion.span>
+          </span>
           <span className="group-hover/item:text-white transition-colors">{feature}</span>
-        </motion.li>
+        </li>
       ))}
     </ul>
   );
@@ -284,21 +272,12 @@ const HeroCard = memo(function HeroCard({ service, index }: { service: typeof se
           </div>
           
           {/* Featured Badge */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4, type: "spring" }}
-            viewport={{ once: true }}
+          <div
             className="absolute top-6 right-6 flex items-center gap-2 px-4 py-2 rounded-full bg-linear-to-r from-violet-500/20 via-purple-500/20 to-fuchsia-500/20 border border-purple-400/30 backdrop-blur-md shadow-lg shadow-purple-500/10"
           >
-            <motion.div
-              animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: reduceMotion ? 0 : Infinity, repeatDelay: reduceMotion ? 0 : 3 }}
-            >
-              <Sparkles className="w-4 h-4 text-purple-300" />
-            </motion.div>
+            <Sparkles className="w-4 h-4 text-purple-300" />
             <span className="text-xs font-semibold text-purple-200 tracking-wide">MAIS POPULAR</span>
-          </motion.div>
+          </div>
 
           <div className="relative z-10 flex flex-col h-full">
             {/* Header */}
@@ -364,13 +343,7 @@ const HeroCard = memo(function HeroCard({ service, index }: { service: typeof se
             </div>
 
             {/* CTA */}
-            <motion.div 
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              viewport={{ once: true }}
-              className="mt-8 pt-6 border-t border-white/10"
-            >
+            <div className="mt-8 pt-6 border-t border-white/10">
               <a 
                 href={WHATSAPP_LINK}
                 target="_blank"
@@ -379,15 +352,10 @@ const HeroCard = memo(function HeroCard({ service, index }: { service: typeof se
                 <RainbowButton className="h-12 px-6 text-sm font-semibold">
                   <MessageSquare className="w-4 h-4" />
                   Solicitar Demonstração
-                  <motion.span
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1.5, repeat: reduceMotion ? 0 : Infinity }}
-                  >
-                    <ArrowRight className="w-4 h-4" />
-                  </motion.span>
+                  <ArrowRight className="w-4 h-4" />
                 </RainbowButton>
               </a>
-            </motion.div>
+            </div>
           </div>
 
           {/* Animated Border Glow */}
@@ -577,12 +545,7 @@ const StandardCard = memo(function StandardCard({ service, index }: { service: t
             {/* Metric & Arrow */}
             <div className="flex items-center justify-between pt-3 border-t border-white/10">
               <div className="flex items-center gap-1.5">
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: reduceMotion ? 0 : Infinity }}
-                >
-                  <TrendingUp className="w-3.5 h-3.5" style={{ color: `rgb(${service.spotlightColor})` }} />
-                </motion.div>
+                <TrendingUp className="w-3.5 h-3.5" style={{ color: `rgb(${service.spotlightColor})` }} />
                 <span className={`text-lg font-bold bg-linear-to-r ${service.gradient} bg-clip-text text-transparent`}>
                   <AnimatedCounter value={service.metrics.value} delay={0.3 + index * 0.1} />
                 </span>
@@ -751,12 +714,7 @@ export default function Services() {
               >
                 <RainbowButton className="h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base font-semibold w-full">
                   Falar com Especialista
-                  <motion.span
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1.5, repeat: reduceMotion ? 0 : Infinity }}
-                  >
-                    <ArrowRight className="w-5 h-5" />
-                  </motion.span>
+                  <ArrowRight className="w-5 h-5" />
                 </RainbowButton>
               </a>
             </div>

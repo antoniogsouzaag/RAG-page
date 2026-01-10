@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Clock, Shield, Zap } from "lucide-react";
 import { RainbowButton } from "@/components/ui/rainbow-button";
@@ -6,20 +7,27 @@ import { useChatbot } from "@/components/ChatbotContext";
 
 const WHATSAPP_LINK = "https://wa.me/5564993259857?text=Quero%20saber%20mais%20sobre%20o%20Agente%20RAG...";
 
-export default function CTASection() {
+// Trust badges data - defined outside component to avoid recreation
+const trustBadges = [
+  { icon: Clock, text: "Resposta em 24h" },
+  { icon: Shield, text: "Dados 100% Seguros" },
+  { icon: Zap, text: "Implementação Rápida" },
+] as const;
+
+function CTASection() {
   const { openChat } = useChatbot();
   
   return (
     <section className="py-24 md:py-32 px-4 md:px-6 relative overflow-hidden">
-      {/* FlickeringGrid Background */}
+      {/* FlickeringGrid Background - optimized for performance */}
       <div className="absolute inset-0 z-0">
         <FlickeringGrid
           className="absolute inset-0 w-full h-full mask-[linear-gradient(to_bottom,transparent_0%,white_15%,white_85%,transparent_100%)]"
           squareSize={4}
-          gridGap={6}
+          gridGap={8}
           color="#A855F7"
-          maxOpacity={0.3}
-          flickerChance={0.1}
+          maxOpacity={0.2}
+          flickerChance={0.03}
         />
       </div>
       
@@ -60,11 +68,7 @@ export default function CTASection() {
           
           {/* Trust badges */}
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-8 sm:mb-12">
-            {[
-              { icon: Clock, text: "Resposta em 24h" },
-              { icon: Shield, text: "Dados 100% Seguros" },
-              { icon: Zap, text: "Implementação Rápida" },
-            ].map((item, index) => (
+            {trustBadges.map((item, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -118,3 +122,5 @@ export default function CTASection() {
     </section>
   );
 }
+
+export default memo(CTASection);

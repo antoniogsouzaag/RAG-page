@@ -1,7 +1,8 @@
+import { memo } from "react";
 import TextAnimation from "@/components/ui/scroll-text";
 import { motion } from "motion/react";
 
-export default function AppIntroTransition() {
+function AppIntroTransition() {
   return (
     <section id="app-intro" className="relative bg-black overflow-hidden">
       {/* Subtle background gradient */}
@@ -112,3 +113,5 @@ export default function AppIntroTransition() {
     </section>
   );
 }
+
+export default memo(AppIntroTransition);

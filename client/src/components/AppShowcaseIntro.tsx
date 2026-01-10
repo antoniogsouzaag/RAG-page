@@ -1,8 +1,9 @@
+import { memo } from "react";
 import { Sparkles } from "@/components/ui/sparkles";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { motion } from "framer-motion";
 
-export default function AppShowcaseIntro() {
+function AppShowcaseIntro() {
   return (
     <div className="w-full overflow-hidden bg-black relative">
       {/* Sparkles effect section */}
@@ -90,3 +91,5 @@ export default function AppShowcaseIntro() {
     </div>
   );
 }
+
+export default memo(AppShowcaseIntro);

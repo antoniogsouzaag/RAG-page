@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +16,7 @@ const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 const getRandomInt = (max: number) => Math.floor(Math.random() * max);
 
-export function HyperText({
+export function HyperTextComponent({
   children,
   className,
   duration = 150,
@@ -82,3 +82,5 @@ export function HyperText({
     </span>
   );
 }
+
+export const HyperText = memo(HyperTextComponent);

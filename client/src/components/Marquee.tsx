@@ -1,8 +1,10 @@
-import { SiOpenai, SiGooglecloud, SiWhatsapp, SiInstagram, SiYoutube, SiStripe, SiSupabase, SiPostgresql, SiNextdotjs, SiTailwindcss, SiReact, SiNodedotjs, SiTypescript, SiDocker } from "react-icons/si";
+import { memo } from "react";
+import { SiOpenai, SiGooglecloud, SiWhatsapp, SiInstagram, SiYoutube, SiStripe, SiSupabase, SiPostgresql, SiNextdotjs, SiTailwindcss, SiReact, SiNodedotjs, SiTypescript, SiDocker, SiN8N } from "react-icons/si";
 
 const models = [
   { name: "OpenAI", icon: SiOpenai },
   { name: "Gemini", icon: SiGooglecloud },
+  { name: "n8n", icon: SiN8N },
   { name: "React", icon: SiReact },
   { name: "Node.js", icon: SiNodedotjs },
   { name: "TypeScript", icon: SiTypescript },
@@ -17,7 +19,7 @@ const models = [
   { name: "Docker", icon: SiDocker }
 ];
 
-export default function Marquee() {
+function Marquee() {
   return (
     <div className="py-10 sm:py-12 md:py-16 bg-black border-y border-white/5 relative z-20 overflow-hidden">
       {/* CSS for marquee animation - optimized for consistent speed across all screen sizes */}
@@ -81,3 +83,5 @@ export default function Marquee() {
     </div>
   );
 }
+
+export default memo(Marquee);

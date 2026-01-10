@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { forwardRef, useRef } from 'react';
 import { 
@@ -112,7 +113,7 @@ const HowItWorksItem = ({ emoji, step, title, description }: {
   </motion.div>
 );
 
-export default function RAGSection() {
+function RAGSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const pdfRef = useRef<HTMLDivElement>(null);
   const excelRef = useRef<HTMLDivElement>(null);
@@ -534,3 +535,5 @@ export default function RAGSection() {
     </section>
   );
 }
+
+export default memo(RAGSection);

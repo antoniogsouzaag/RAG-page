@@ -103,11 +103,11 @@
     
     /* Reduce blur on mobile for better performance */
     .blur-3xl {
-      filter: blur(30px);
+      filter: blur(24px);
     }
     
     .blur-\[100px\], .blur-\[120px\], .blur-\[150px\] {
-      filter: blur(40px);
+      filter: blur(32px);
     }
 
     /* Mobile pillar background fallback (lightweight) */
@@ -136,21 +136,35 @@
 
     /* Reduce backdrop blur on mobile */
     .backdrop-blur-xl {
-      backdrop-filter: blur(6px);
-    }
-
-    .backdrop-blur-md {
       backdrop-filter: blur(4px);
     }
 
-    .backdrop-blur-lg {
-      backdrop-filter: blur(6px);
+    .backdrop-blur-md {
+      backdrop-filter: blur(3px);
     }
 
-    /* Force GPU acceleration only where needed, not globally */
-    .gpu-accelerated {
-      transform: translateZ(0);
-      will-change: transform;
+    .backdrop-blur-lg {
+      backdrop-filter: blur(4px);
+    }
+    
+    /* Disable expensive effects on mobile */
+    .group-hover\:scale-110:hover,
+    .group-hover\:scale-105:hover {
+      transform: none;
+    }
+    
+    /* Simplify transitions on mobile */
+    * {
+      transition-duration: 150ms !important;
+    }
+  }
+  
+  /* Optimize for low-power devices */
+  @media (max-width: 768px) and (prefers-reduced-motion: no-preference) {
+    /* Disable some animations on mobile even if user allows motion */
+    .animate-bounce,
+    .animate-spin {
+      animation: none !important;
     }
   }
 
