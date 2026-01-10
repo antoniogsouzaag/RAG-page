@@ -68,19 +68,42 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
         // espaço inferior estimado (distância entre visualViewport.bottom e window.innerHeight)
         const keyboardOverlap = Math.max(0, window.innerHeight - (viewportHeight + offsetTop));
 
-        // calcula nova bottom (mantém mínimo 12px)
-        const bottomPx = Math.max(12, keyboardOverlap + 12);
+        // Detecta se é mobile
+        const isMobileDevice = window.innerWidth < 640;
 
-        // altura máxima do chat considerando header + input (~140px)
-        const reservedForHeaderAndInput = 140;
-        const maxHeightPx = Math.max(200, viewportHeight - reservedForHeaderAndInput);
-
-        el.style.bottom = `${bottomPx}px`;
-        el.style.height = `${Math.min(window.innerHeight - 24, maxHeightPx)}px`;
+        if (isMobileDevice && keyboardOverlap > 50) {
+          // Teclado aberto em mobile: ocupa toda a área visível
+          el.style.position = 'fixed';
+          el.style.top = `${offsetTop + 8}px`;
+          el.style.bottom = 'auto';
+          el.style.height = `${viewportHeight - 16}px`;
+          el.style.left = '8px';
+          el.style.right = '8px';
+        } else if (isMobileDevice) {
+          // Mobile sem teclado: altura quase completa
+          el.style.position = 'fixed';
+          el.style.top = '12px';
+          el.style.bottom = '12px';
+          el.style.height = 'auto';
+          el.style.left = '16px';
+          el.style.right = '16px';
+        } else {
+          // Desktop: limpa estilos inline para usar CSS padrão
+          el.style.position = '';
+          el.style.top = '';
+          el.style.bottom = '';
+          el.style.height = '';
+          el.style.left = '';
+          el.style.right = '';
+        }
       } else {
         // limpa estilos quando não há visualViewport
+        el.style.position = '';
+        el.style.top = '';
         el.style.bottom = '';
         el.style.height = '';
+        el.style.left = '';
+        el.style.right = '';
       }
     };
 
