@@ -80,9 +80,10 @@ export function HyperTextComponent({
   }, [children, duration, trigger, animateOnLoad, shouldAnimate, initialText]);
 
   // Simple render for mobile - no animation, just text
+  // Use inline to preserve text gradient clipping from parent
   if (!shouldAnimate) {
     return (
-      <span className={cn("inline-flex overflow-hidden", className)}>
+      <span className={cn("inline", className)}>
         {children.toUpperCase()}
       </span>
     );

@@ -87,18 +87,16 @@ const Icons = {
   ),
 };
 
-// "Como funciona" step item
-const HowItWorksItem = ({ emoji, step, title, description }: { 
+// "Como funciona" step item - Optimized with CSS animation
+const HowItWorksItem = memo(({ emoji, step, title, description }: { 
   emoji?: string;
   step: number; 
   title: string; 
   description: string;
 }) => (
-  <motion.div 
-    className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm"
-    initial={{ opacity: 0, x: -20 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ duration: 0.5 }}
+  <div 
+    className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm animate-fade-in-up"
+    style={{ animationDelay: `${step * 100}ms` }}
   >
     <div className="shrink-0 w-12 h-12 rounded-xl bg-linear-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center text-2xl">
       {emoji}
@@ -112,8 +110,9 @@ const HowItWorksItem = ({ emoji, step, title, description }: {
       <h4 className="font-semibold text-white mb-1">{title}</h4>
       <p className="text-sm text-white/50">{description}</p>
     </div>
-  </motion.div>
-);
+  </div>
+));
+HowItWorksItem.displayName = 'HowItWorksItem';
 
 function RAGSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -291,51 +290,55 @@ function RAGSection() {
               </div>
             </div>
 
-            {/* Animated Beams */}
-            <AnimatedBeam
-              containerRef={containerRef}
-              fromRef={pdfRef}
-              toRef={aiRef}
-              gradientStartColor="#ef4444"
-              gradientStopColor="#8b5cf6"
-              duration={4}
-            />
-            <AnimatedBeam
-              containerRef={containerRef}
-              fromRef={excelRef}
-              toRef={aiRef}
-              gradientStartColor="#22c55e"
-              gradientStopColor="#8b5cf6"
-              duration={5}
-              delay={0.5}
-            />
-            <AnimatedBeam
-              containerRef={containerRef}
-              fromRef={driveRef}
-              toRef={aiRef}
-              gradientStartColor="#3b82f6"
-              gradientStopColor="#8b5cf6"
-              duration={4.5}
-              delay={1}
-            />
-            <AnimatedBeam
-              containerRef={containerRef}
-              fromRef={whatsappRef}
-              toRef={aiRef}
-              gradientStartColor="#25D366"
-              gradientStopColor="#8b5cf6"
-              duration={5.5}
-              delay={1.5}
-            />
-            <AnimatedBeam
-              containerRef={containerRef}
-              fromRef={aiRef}
-              toRef={chatRef}
-              gradientStartColor="#8b5cf6"
-              gradientStopColor="#06b6d4"
-              duration={3}
-              delay={2}
-            />
+            {/* Animated Beams - Only on desktop for performance */}
+            {shouldAnimate && (
+              <>
+                <AnimatedBeam
+                  containerRef={containerRef}
+                  fromRef={pdfRef}
+                  toRef={aiRef}
+                  gradientStartColor="#ef4444"
+                  gradientStopColor="#8b5cf6"
+                  duration={4}
+                />
+                <AnimatedBeam
+                  containerRef={containerRef}
+                  fromRef={excelRef}
+                  toRef={aiRef}
+                  gradientStartColor="#22c55e"
+                  gradientStopColor="#8b5cf6"
+                  duration={5}
+                  delay={0.5}
+                />
+                <AnimatedBeam
+                  containerRef={containerRef}
+                  fromRef={driveRef}
+                  toRef={aiRef}
+                  gradientStartColor="#3b82f6"
+                  gradientStopColor="#8b5cf6"
+                  duration={4.5}
+                  delay={1}
+                />
+                <AnimatedBeam
+                  containerRef={containerRef}
+                  fromRef={whatsappRef}
+                  toRef={aiRef}
+                  gradientStartColor="#25D366"
+                  gradientStopColor="#8b5cf6"
+                  duration={5.5}
+                  delay={1.5}
+                />
+                <AnimatedBeam
+                  containerRef={containerRef}
+                  fromRef={aiRef}
+                  toRef={chatRef}
+                  gradientStartColor="#8b5cf6"
+                  gradientStopColor="#06b6d4"
+                  duration={3}
+                  delay={2}
+                />
+              </>
+            )}
           </div>
 
           {/* Legenda explicativa */}

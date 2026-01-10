@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useRef } from 'react';
 
 // Cache the WebGL check result to prevent repeated checks and ensure stable initial value
 let cachedHighPerfResult: boolean | null = null;
@@ -53,37 +53,23 @@ function checkHighPerfWebGL(): boolean {
   }
 }
 
-// Initialize cache at module load for stable SSR hydration
+// Initialize cache at module load for stable SSR hydration - SYNC initialization
 if (typeof window !== 'undefined' && cachedHighPerfResult === null) {
   cachedHighPerfResult = checkHighPerfWebGL();
 }
 
 export function useHighPerfWebGL(): boolean {
-  // Use cached result as initial value to prevent flickering
-  const [highPerf, setHighPerf] = useState<boolean>(() => cachedHighPerfResult ?? false);
+  // Return cached result directly - NO state changes, NO re-renders
   const hasChecked = useRef(false);
 
-  useEffect(() => {
-    // Only check once per session
-    if (hasChecked.current) return;
+  // Ensure cache is populated (defensive, should already be done at module load)
+  if (!hasChecked.current && typeof window !== 'undefined') {
     hasChecked.current = true;
-
-    if (typeof window === 'undefined') {
-      setHighPerf(false);
-      return;
+    if (cachedHighPerfResult === null) {
+      cachedHighPerfResult = checkHighPerfWebGL();
     }
+  }
 
-    // If already cached, use cached value
-    if (cachedHighPerfResult !== null) {
-      setHighPerf(cachedHighPerfResult);
-      return;
-    }
-
-    // Otherwise compute and cache
-    const result = checkHighPerfWebGL();
-    cachedHighPerfResult = result;
-    setHighPerf(result);
-  }, []);
-
-  return highPerf;
+  // Always return cached value - this never triggers a re-render
+  return cachedHighPerfResult ?? false;
 }

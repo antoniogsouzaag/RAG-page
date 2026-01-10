@@ -42,6 +42,23 @@
 }
 
 @layer utilities {
+  /* Performance-optimized fade-in-up animation for Hero section */
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 20px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  
+  .animate-fade-in-up {
+    animation: fade-in-up 0.6s ease-out both;
+    will-change: opacity, transform;
+  }
+  
   /* Performance optimizations for animations */
   .will-change-transform {
     will-change: transform;
@@ -252,6 +269,43 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
+  /* Optimize scrolling performance */
+  overscroll-behavior: none;
+}
+
+/* Global scroll performance optimizations */
+html {
+  scroll-behavior: smooth;
+  /* Prevent layout shifts during scroll */
+  overflow-anchor: auto;
+}
+
+/* Optimize main content sections for scroll */
+main {
+  contain: layout style;
+}
+
+section {
+  contain: layout style paint;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 100vh;
+}
+
+/* Force GPU acceleration for fixed/absolute positioned elements */
+.fixed, [class*="absolute"] {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Optimize backdrop-filter elements */
+[class*="backdrop-blur"] {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Reduce paint complexity for gradients */
+[class*="bg-linear"] {
+  contain: paint;
 }
 
 /* Improve tap targets on mobile */

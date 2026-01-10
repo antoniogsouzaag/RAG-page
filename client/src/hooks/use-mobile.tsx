@@ -2,34 +2,43 @@ import * as React from "react"
 
 const MOBILE_BREAKPOINT = 768
 
-// Stable initial value to prevent flickering - use sync check
+// Cache the initial value at module load to prevent hydration mismatch and re-renders
+let cachedIsMobile: boolean | null = null
+
 function getInitialMobileState(): boolean {
   if (typeof window === "undefined") return false
-  return window.innerWidth < MOBILE_BREAKPOINT
+  if (cachedIsMobile !== null) return cachedIsMobile
+  cachedIsMobile = window.innerWidth < MOBILE_BREAKPOINT
+  return cachedIsMobile
 }
 
-// Cache the initial value at module load to prevent hydration mismatch
-const INITIAL_IS_MOBILE = typeof window !== "undefined" 
-  ? window.innerWidth < MOBILE_BREAKPOINT 
-  : false
+// Initialize immediately at module load
+if (typeof window !== "undefined") {
+  getInitialMobileState()
+}
 
 export function useIsMobile(): boolean {
-  // Use a stable initial value (not undefined) to prevent layout shifts
-  const [isMobile, setIsMobile] = React.useState<boolean>(INITIAL_IS_MOBILE)
-  const [isHydrated, setIsHydrated] = React.useState(false)
+  // Use cached value - NEVER causes a re-render on initial mount
+  const [isMobile, setIsMobile] = React.useState<boolean>(() => cachedIsMobile ?? false)
+  const initializedRef = React.useRef(false)
 
   React.useEffect(() => {
-    // Mark as hydrated on first effect
-    setIsHydrated(true)
+    // Skip if already initialized with correct value
+    if (initializedRef.current) return
+    initializedRef.current = true
     
     if (typeof window === "undefined") return
 
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
     
-    // Sync with actual value immediately
-    setIsMobile(mql.matches)
+    // Only update if actually different to prevent re-render
+    if (mql.matches !== isMobile) {
+      cachedIsMobile = mql.matches
+      setIsMobile(mql.matches)
+    }
     
     const onChange = () => {
+      cachedIsMobile = mql.matches
       setIsMobile(mql.matches)
     }
 
@@ -49,7 +58,7 @@ export function useIsMobile(): boolean {
         mql.removeListener(onChange)
       }
     }
-  }, [])
+  }, [isMobile])
 
   return isMobile
 }

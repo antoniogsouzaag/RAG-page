@@ -11,6 +11,12 @@ import { HyperText } from "@/components/ui/hyper-text";
 import { StatsCount } from "@/components/ui/stats-count";
 import { useChatbot } from "@/components/ChatbotContext";
 
+// Simple wrapper component for no-animation scenarios
+const StaticDiv = memo(({ children, className }: { children: React.ReactNode; className?: string }) => (
+  <div className={className}>{children}</div>
+));
+StaticDiv.displayName = "StaticDiv";
+
 const WHATSAPP_LINK = "https://wa.me/5564993259857?text=Quero%20saber%20mais%20sobre%20o%20Agente%20RAG...";
 
 // Memoized static SVG globe for low-end mobile devices
@@ -81,29 +87,15 @@ function Hero() {
   const isHighPerf = useHighPerfWebGL();
   const reducedMotion = usePrefersReducedMotion();
   
-  // Memoize animation variants to prevent re-creation
-  const animationProps = useMemo(() => {
-    // Disable animations on mobile or when reduced motion is preferred
-    if (isMobile || reducedMotion) {
-      return {
-        initial: {},
-        animate: {},
-        transition: { duration: 0 }
-      };
-    }
-    return null; // Use default framer motion animations
-  }, [isMobile, reducedMotion]);
+  // Determine if we should skip animations entirely
+  const skipAnimations = isMobile || reducedMotion;
   
-  // Simplified motion wrapper for mobile
-  const MotionWrapper = useMemo(() => {
-    if (isMobile || reducedMotion) {
-      // Return a simple div wrapper that doesn't animate
-      return ({ children, className }: { children: React.ReactNode; className?: string }) => (
-        <div className={className}>{children}</div>
-      );
-    }
-    return null;
-  }, [isMobile, reducedMotion]);
+  // Memoized animation config - prevents object recreation
+  const fadeInUp = useMemo(() => ({
+    initial: skipAnimations ? false : { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: skipAnimations ? 0 : 0.6 }
+  }), [skipAnimations]);
   
   return (
     <section className="relative min-h-screen flex items-center pt-20 sm:pt-24 pb-12 sm:pb-16 overflow-hidden bg-black">
@@ -147,51 +139,43 @@ function Hero() {
         <div className="grid w-full xl:grid-cols-2 gap-8 xl:gap-12 items-center overflow-visible">
           {/* Left Column - Content (shows first on mobile) */}
           <div className="relative order-1 text-center xl:text-left">
-            {/* Badge - simplified animation for mobile */}
-            <motion.div
-              initial={isMobile || reducedMotion ? false : { opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: isMobile ? 0.2 : 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm font-medium text-white/80 backdrop-blur-xl mb-6"
+            {/* Badge - use CSS animations only */}
+            <div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm font-medium text-white/80 backdrop-blur-xl mb-6 animate-fade-in-up"
+              style={{ animationDelay: '0ms', animationDuration: skipAnimations ? '0ms' : '600ms' }}
             >
               <span className="relative flex h-2 w-2">
                 {/* Disable ping animation on mobile */}
-                {!isMobile && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>}
+                {!skipAnimations && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>}
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
               Agência de IA em Rio Verde
-            </motion.div>
+            </div>
 
             {/* Main Headline - SEO optimized with HyperText effect */}
-            <motion.h1
-              initial={isMobile || reducedMotion ? false : { opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: isMobile ? 0.2 : 0.8, delay: isMobile ? 0 : 0.1 }}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-display font-bold leading-[1.1] tracking-tight mb-4 sm:mb-6"
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-display font-bold leading-[1.1] tracking-tight mb-4 sm:mb-6 animate-fade-in-up"
+              style={{ animationDelay: skipAnimations ? '0ms' : '100ms', animationDuration: skipAnimations ? '0ms' : '800ms' }}
             >
               <span className="text-white">Automatize seu negócio com</span>
               <br />
               <span className="bg-linear-to-r from-purple-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
                 <HyperText>AGENTES DE IA</HyperText>
               </span>
-            </motion.h1>
+            </h1>
 
             {/* Subtitle - Improved copy */}
-            <motion.p
-              initial={isMobile || reducedMotion ? false : { opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: isMobile ? 0.2 : 0.8, delay: isMobile ? 0 : 0.2 }}
-              className="text-sm sm:text-base md:text-lg lg:text-xl text-white/60 leading-relaxed max-w-xl mx-auto xl:mx-0 mb-6 sm:mb-8 px-2 sm:px-0"
+            <p
+              className="text-sm sm:text-base md:text-lg lg:text-xl text-white/60 leading-relaxed max-w-xl mx-auto xl:mx-0 mb-6 sm:mb-8 px-2 sm:px-0 animate-fade-in-up"
+              style={{ animationDelay: skipAnimations ? '0ms' : '200ms', animationDuration: skipAnimations ? '0ms' : '800ms' }}
             >
               Criamos funcionários digitais. Agentes que leem seus documentos e <strong className="text-white">reduzem 80% do trabalho manual</strong>. Atendimento 24/7, zero erros, escala infinita.
-            </motion.p>
+            </p>
 
             {/* CTA Buttons */}
-            <motion.div
-              initial={isMobile || reducedMotion ? false : { opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: isMobile ? 0.2 : 0.8, delay: isMobile ? 0 : 0.3 }}
-              className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-8 sm:mb-10 px-2 sm:px-0"
+            <div
+              className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-8 sm:mb-10 px-2 sm:px-0 animate-fade-in-up"
+              style={{ animationDelay: skipAnimations ? '0ms' : '300ms', animationDuration: skipAnimations ? '0ms' : '800ms' }}
             >
               <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
                 <RainbowButton className="h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base w-full">
@@ -207,16 +191,15 @@ function Hero() {
               >
                 Teste a Eficiência Agora
               </button>
-            </motion.div>
+            </div>
 
             {/* Stats with animated counter */}
-            <motion.div
-              initial={isMobile || reducedMotion ? false : { opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: isMobile ? 0.2 : 0.8, delay: isMobile ? 0 : 0.4 }}
+            <div
+              className="animate-fade-in-up"
+              style={{ animationDelay: skipAnimations ? '0ms' : '400ms', animationDuration: skipAnimations ? '0ms' : '800ms' }}
             >
               <StatsCount stats={stats} showDividers={true} />
-            </motion.div>
+            </div>
           </div>
     
           {/* Right Column - Globe (desktop only - not rendered on mobile) */}

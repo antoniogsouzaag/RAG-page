@@ -98,40 +98,34 @@ const Masonry = ({
 
   // Track which items entered viewport so we can toggle lightweight CSS animation
   const itemRefs = useRef<Record<number, HTMLElement | null>>({});
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
     
-    // Fallback: if IntersectionObserver isn't working, show items after a delay
-    const fallbackTimer = setTimeout(() => {
-      Object.values(itemRefs.current).forEach(el => {
-        if (el && !el.classList.contains('masonry-item-visible')) {
-          el.classList.add('masonry-item-visible');
-        }
-      });
-    }, 500);
-
-    const io = new IntersectionObserver((entries) => {
+    // Create single observer instance for all items
+    observerRef.current = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        const el = entry.target as HTMLElement;
-        const id = Number(el.dataset.key);
-        if (!isNaN(id) && entry.isIntersecting) {
-          // add visible class for animation
+        if (entry.isIntersecting) {
+          const el = entry.target as HTMLElement;
           el.classList.add('masonry-item-visible');
+          // Unobserve after visible to reduce overhead
+          observerRef.current?.unobserve(el);
         }
       });
-    }, { root: null, threshold: 0.05, rootMargin: '50px' });
+    }, { root: null, threshold: 0.05, rootMargin: '100px' });
 
-    // Small delay to ensure refs are populated
+    // Observe all items after a frame to ensure refs are populated
     requestAnimationFrame(() => {
-      Object.values(itemRefs.current).forEach(el => { if (el) io.observe(el); });
+      Object.values(itemRefs.current).forEach(el => { 
+        if (el) observerRef.current?.observe(el); 
+      });
     });
 
     return () => {
-      clearTimeout(fallbackTimer);
-      io.disconnect();
+      observerRef.current?.disconnect();
     };
-  }, [items]);
+  }, [items.length]); // Only re-run when items count changes
 
   const handleMouseEnter = (id: number) => {
     if (!scaleOnHover) return;
@@ -167,7 +161,7 @@ const Masonry = ({
             data-key={item.id}
             ref={(el) => { itemRefs.current[item.id] = el; }}
             className="mb-4 break-inside-avoid relative cursor-pointer overflow-hidden rounded-xl shadow-lg masonry-item"
-            style={{ contain: 'layout paint' }}
+            style={{ contain: 'layout paint', contentVisibility: 'auto', containIntrinsicSize: `auto ${item.height}px` }}
             onClick={() => item.url && window.open(item.url, '_blank', 'noopener')}
             onMouseEnter={() => handleMouseEnter(item.id)}
             onMouseLeave={() => handleMouseLeave(item.id)}
@@ -187,12 +181,14 @@ const Masonry = ({
       <style>{`
         .masonry-item { 
           opacity: 0; 
-          transform: translateY(10px); 
-          transition: opacity 0.4s ease-out, transform 0.4s ease-out; 
+          transform: translate3d(0, 10px, 0); 
+          transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+          will-change: opacity, transform;
         }
         .masonry-item-visible { 
           opacity: 1 !important; 
-          transform: translateY(0) !important; 
+          transform: translate3d(0, 0, 0) !important;
+          will-change: auto;
         }
         .break-inside-avoid { break-inside: avoid-column; }
         .w-full img { width: 100%; display: block; }

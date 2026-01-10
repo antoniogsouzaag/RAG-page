@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, memo, useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { Bot, Globe, Layers, Zap, ArrowRight, Check, Sparkles, TrendingUp, Clock, Shield, MessageSquare, Brain, Cpu, Database, Workflow, Code2 } from "lucide-react";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { RainbowButton } from "@/components/ui/rainbow-button";
@@ -71,45 +71,28 @@ const services = [
   }
 ];
 
-// 3D Tilt Card Component with Enhanced Effects - Fixed to not call hooks conditionally
+// 3D Tilt Card Component with Enhanced Effects - Optimized for performance
 const TiltCard = memo(function TiltCard({ children, className, intensity = 1 }: { children: React.ReactNode; className?: string; intensity?: number }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
   const reduceMotion = usePrefersReducedMotion();
   const isMobile = useIsMobile();
-  
-  // Always call hooks unconditionally
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  
-  const springConfig = useMemo(() => ({ stiffness: 400, damping: 30 }), []);
-  const rotateXTransform = useTransform(y, [-0.5, 0.5], [10 * intensity, -10 * intensity]);
-  const rotateYTransform = useTransform(x, [-0.5, 0.5], [-10 * intensity, 10 * intensity]);
-  const rotateX = useSpring(rotateXTransform, springConfig);
-  const rotateY = useSpring(rotateYTransform, springConfig);
-  const scale = useSpring(isHovered ? 1.02 : 1, springConfig);
-  
-  // Memoize disabled state
   const isDisabled = reduceMotion || isMobile;
-
+  
+  // Use CSS-based transforms instead of Framer Motion springs for better scroll performance
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (isDisabled || !ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const xPos = (e.clientX - rect.left) / rect.width - 0.5;
     const yPos = (e.clientY - rect.top) / rect.height - 0.5;
-    x.set(xPos);
-    y.set(yPos);
-  }, [isDisabled, x, y]);
+    const rotateX = yPos * -10 * intensity;
+    const rotateY = xPos * 10 * intensity;
+    ref.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+  }, [isDisabled, intensity]);
 
   const handleMouseLeave = useCallback(() => {
-    setIsHovered(false);
-    x.set(0);
-    y.set(0);
-  }, [x, y]);
-  
-  const handleMouseEnter = useCallback(() => {
-    if (!isDisabled) setIsHovered(true);
-  }, [isDisabled]);
+    if (!ref.current) return;
+    ref.current.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+  }, []);
 
   // Render simple div when disabled
   if (isDisabled) {
@@ -121,28 +104,27 @@ const TiltCard = memo(function TiltCard({ children, className, intensity = 1 }: 
   }
 
   return (
-    <motion.div
+    <div
       ref={ref}
       onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      style={{
-        rotateX,
-        rotateY,
-        scale,
-        transformStyle: "preserve-3d",
-      }}
       className={className}
+      style={{
+        transformStyle: 'preserve-3d',
+        transition: 'transform 0.15s ease-out',
+        willChange: 'transform'
+      }}
     >
       {children}
-    </motion.div>
+    </div>
   );
 });
 
-// Animated Number Counter - Fixed hooks called unconditionally
+// Animated Number Counter - Optimized with IntersectionObserver instead of continuous RAF
 const AnimatedCounter = memo(function AnimatedCounter({ value, delay = 0 }: { value: string; delay?: number }) {
   const reduceMotion = usePrefersReducedMotion();
   const isMobile = useIsMobile();
+  const ref = useRef<HTMLSpanElement>(null);
   
   // Parse values outside of conditional
   const numericPart = useMemo(() => value.replace(/[^0-9]/g, ''), [value]);
@@ -150,46 +132,61 @@ const AnimatedCounter = memo(function AnimatedCounter({ value, delay = 0 }: { va
   const target = useMemo(() => parseInt(numericPart) || 0, [numericPart]);
   
   const [displayValue, setDisplayValue] = useState(value);
+  const [hasAnimated, setHasAnimated] = useState(false);
   const isDisabled = reduceMotion || isMobile;
   
   useEffect(() => {
-    // Skip animation if disabled
-    if (isDisabled) {
+    // Skip animation if disabled or already animated
+    if (isDisabled || hasAnimated) {
       setDisplayValue(value);
       return;
     }
     
-    const duration = 1500;
-    const startTime = Date.now() + delay * 1000;
-    let rafId: number;
+    if (!ref.current) return;
     
-    const animate = () => {
-      const now = Date.now();
-      if (now < startTime) {
-        rafId = requestAnimationFrame(animate);
-        return;
-      }
-      
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easeOut = 1 - Math.pow(1 - progress, 3);
-      const current = Math.floor(target * easeOut);
-      
-      setDisplayValue(current.toString() + suffix);
-      
-      if (progress < 1) {
-        rafId = requestAnimationFrame(animate);
-      }
-    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+          const duration = 1200;
+          const startTime = Date.now() + delay * 1000;
+          let rafId: number;
+          
+          const animate = () => {
+            const now = Date.now();
+            if (now < startTime) {
+              rafId = requestAnimationFrame(animate);
+              return;
+            }
+            
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            const current = Math.floor(target * easeOut);
+            
+            setDisplayValue(current.toString() + suffix);
+            
+            if (progress < 1) {
+              rafId = requestAnimationFrame(animate);
+            }
+          };
+          
+          rafId = requestAnimationFrame(animate);
+          
+          return () => {
+            if (rafId) cancelAnimationFrame(rafId);
+          };
+        }
+      },
+      { threshold: 0.5, rootMargin: '50px' }
+    );
     
-    rafId = requestAnimationFrame(animate);
+    observer.observe(ref.current);
     
-    return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-    };
-  }, [target, suffix, delay, isDisabled, value]);
+    return () => observer.disconnect();
+  }, [target, suffix, delay, isDisabled, value, hasAnimated]);
   
-  return <span>{displayValue}</span>;
+  return <span ref={ref}>{displayValue}</span>;
 });
 
 // Glowing Orb Effect
