@@ -13,9 +13,10 @@ export function useIsMobile() {
     if (typeof window === "undefined") return
 
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-    const onChange = React.useCallback(() => {
+    // Use a simple function here (do NOT call hooks inside effects)
+    const onChange = () => {
       setIsMobile(mql.matches)
-    }, [])
+    }
 
     // Set initial state
     setIsMobile(mql.matches)
