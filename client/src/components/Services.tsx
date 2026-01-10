@@ -605,30 +605,45 @@ export default function Services() {
   const featuredServices = services.filter(s => s.featured);
   const standardServices = services.filter(s => !s.featured);
   const reduceMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
+  
+  // Disable animations on mobile for better performance
+  const shouldAnimate = !isMobile && !reduceMotion;
   
   return (
     <section id="services" className="py-16 sm:py-20 md:py-28 px-4 md:px-6 relative overflow-hidden">
-      {/* Enhanced Background Effects (lazy-loaded) */}
-      <Suspense fallback={
+      {/* Enhanced Background Effects (lazy-loaded) - skip on mobile */}
+      {!isMobile && (
+        <Suspense fallback={
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/4 -left-32 w-[360px] h-[360px] bg-linear-to-br from-purple-500/12 via-violet-500/06 to-transparent rounded-full blur-2xl" />
+            <div className="absolute bottom-1/4 -right-32 w-[420px] h-[420px] bg-linear-to-br from-blue-500/10 via-cyan-500/06 to-transparent rounded-full blur-2xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] bg-linear-to-br from-pink-500/06 via-purple-500/03 to-transparent rounded-full blur-2xl" />
+            <div className="absolute inset-0 opacity-[0.02]" style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
+              backgroundSize: '50px 50px'
+            }} />
+          </div>
+        }>
+          <ServicesBackground reduceMotion={reduceMotion} />
+        </Suspense>
+      )}
+      
+      {/* Simple mobile background fallback */}
+      {isMobile && (
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 -left-32 w-[360px] h-[360px] bg-linear-to-br from-purple-500/12 via-violet-500/06 to-transparent rounded-full blur-2xl" />
-          <div className="absolute bottom-1/4 -right-32 w-[420px] h-[420px] bg-linear-to-br from-blue-500/10 via-cyan-500/06 to-transparent rounded-full blur-2xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] bg-linear-to-br from-pink-500/06 via-purple-500/03 to-transparent rounded-full blur-2xl" />
-          <div className="absolute inset-0 opacity-[0.02]" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
-            backgroundSize: '50px 50px'
-          }} />
+          <div className="absolute top-1/4 -left-16 w-[180px] h-[180px] bg-purple-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 -right-16 w-[200px] h-[200px] bg-blue-500/8 rounded-full blur-3xl" />
         </div>
-      }>
-        <ServicesBackground reduceMotion={reduceMotion} />
-      </Suspense>
+      )}
 
       <div className="container mx-auto max-w-7xl relative z-10">
         {/* Section Header */}
         <div className="mb-12 sm:mb-16 md:mb-20 lg:mb-24 text-center max-w-4xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            initial={shouldAnimate ? { opacity: 0, y: 20, scale: 0.9 } : false}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: isMobile ? 0.2 : undefined }}
             viewport={{ once: true }}
             className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-linear-to-r from-white/5 via-white/10 to-white/5 border border-white/10 backdrop-blur-sm mb-8"
           >
@@ -638,10 +653,10 @@ export default function Services() {
           </motion.div>
           
           <motion.h2 
-            initial={{ opacity: 0, y: 25 }}
+            initial={shouldAnimate ? { opacity: 0, y: 25 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.1, type: "spring", stiffness: 100 }}
+            transition={{ delay: shouldAnimate ? 0.1 : 0, type: "spring", stiffness: 100 }}
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold mb-6 sm:mb-8 leading-[1.1]"
           >
             <span className="text-white">Tecnologia que</span>
@@ -652,10 +667,10 @@ export default function Services() {
           </motion.h2>
           
           <motion.p 
-            initial={{ opacity: 0, y: 25 }}
+            initial={shouldAnimate ? { opacity: 0, y: 25 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+            transition={{ delay: shouldAnimate ? 0.2 : 0, type: "spring", stiffness: 100 }}
             className="text-white/50 text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed max-w-2xl mx-auto px-2 sm:px-0"
           >
             Soluções sob medida para automatizar processos, escalar operações e multiplicar sua eficiência.
@@ -687,18 +702,20 @@ export default function Services() {
 
         {/* Enhanced Bottom CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={shouldAnimate ? { opacity: 0, y: 40 } : false}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, type: "spring", stiffness: 80 }}
+          transition={{ delay: shouldAnimate ? 0.5 : 0, type: "spring", stiffness: 80 }}
           viewport={{ once: true }}
           className="mt-12 sm:mt-16 md:mt-20 lg:mt-28"
         >
           <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-linear-to-br from-zinc-900/90 via-zinc-950/95 to-zinc-900/90 border border-white/10 backdrop-blur-xl p-5 sm:p-8 md:p-10">
-            {/* Background Glow */}
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-0 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" />
-              <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
-            </div>
+            {/* Background Glow - simplified on mobile */}
+            {!isMobile && (
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-0 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
+              </div>
+            )}
             
             <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8">
               <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">

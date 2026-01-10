@@ -3,6 +3,8 @@
 import { memo, useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import usePrefersReducedMotion from "@/hooks/use-prefers-reduced-motion";
 
 interface HyperTextProps {
   children: string;
@@ -27,18 +29,31 @@ export function HyperTextComponent({
   },
   animateOnLoad = true,
 }: HyperTextProps) {
+  const isMobile = useIsMobile();
+  const reducedMotion = usePrefersReducedMotion();
+  
   const initialText = useMemo(() => children.split(""), [children]);
   const [displayText, setDisplayText] = useState(initialText);
   const [trigger, setTrigger] = useState(false);
   const iterationsRef = useRef(0);
   const isFirstRender = useRef(true);
 
+  // Disable animation on mobile for performance and to fix touch issues
+  const shouldAnimate = !isMobile && !reducedMotion;
+
   const triggerAnimation = useCallback(() => {
+    if (!shouldAnimate) return;
     iterationsRef.current = 0;
     setTrigger(true);
-  }, []);
+  }, [shouldAnimate]);
 
   useEffect(() => {
+    // Skip animation completely on mobile or if reduced motion
+    if (!shouldAnimate) {
+      setDisplayText(initialText);
+      return;
+    }
+    
     const interval = setInterval(() => {
       if (!animateOnLoad && isFirstRender.current) {
         clearInterval(interval);
@@ -62,7 +77,16 @@ export function HyperTextComponent({
       }
     }, duration / (children.length * 10));
     return () => clearInterval(interval);
-  }, [children, duration, trigger, animateOnLoad]);
+  }, [children, duration, trigger, animateOnLoad, shouldAnimate, initialText]);
+
+  // Simple render for mobile - no animation, just text
+  if (!shouldAnimate) {
+    return (
+      <span className={cn("inline-flex overflow-hidden", className)}>
+        {children.toUpperCase()}
+      </span>
+    );
+  }
 
   return (
     <span

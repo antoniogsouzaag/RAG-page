@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { forwardRef, useRef } from 'react';
 import { 
@@ -18,6 +18,8 @@ import { AnimatedBeam } from '@/components/ui/animated-beam';
 import { AnimatedList } from '@/components/ui/animated-list';
 import { StaggerChars } from '@/components/ui/stagger-chars';
 import { SpotlightCard } from '@/components/ui/spotlight-card';
+import { useIsMobile } from '@/hooks/use-mobile';
+import usePrefersReducedMotion from '@/hooks/use-prefers-reduced-motion';
 
 // Circle component for animated beam visualization
 const Circle = forwardRef<
@@ -121,22 +123,33 @@ function RAGSection() {
   const whatsappRef = useRef<HTMLDivElement>(null);
   const aiRef = useRef<HTMLDivElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
+  
+  const isMobile = useIsMobile();
+  const reducedMotion = usePrefersReducedMotion();
+  const shouldAnimate = !isMobile && !reducedMotion;
 
-  const useCases = [
+  const useCases = useMemo(() => [
     { icon: MessageSquare, title: "Atendimento ao cliente", description: "Respondendo políticas, prazos e dúvidas frequentes" },
     { icon: Headphones, title: "Suporte técnico", description: "Consultando manuais e resolvendo problemas" },
     { icon: FileText, title: "Equipe comercial", description: "Explicando contratos e condições" },
     { icon: Users, title: "Colaboradores internos", description: "Tirando dúvidas rápidas do dia a dia" },
     { icon: ShoppingCart, title: "E-commerce", description: "Informando sobre produtos e entregas" },
     { icon: Calendar, title: "Agendamentos", description: "Marcando reuniões e consultas" },
-  ];
+  ], []);
 
   return (
     <section id="rag" className="py-16 sm:py-24 md:py-40 relative overflow-hidden">
-      {/* Background effects */}
+      {/* Background effects - simplified on mobile */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] rounded-full bg-purple-500/5 blur-[100px] sm:blur-[150px]" />
-        <div className="absolute top-1/4 right-1/4 w-[300px] sm:w-[400px] md:w-[500px] h-[300px] sm:h-[400px] md:h-[500px] rounded-full bg-blue-500/5 blur-[80px] sm:blur-[120px]" />
+        {isMobile ? (
+          // Simplified background for mobile
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-purple-500/5 blur-[60px]" />
+        ) : (
+          <>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] md:w-[800px] h-[400px] sm:h-[600px] md:h-[800px] rounded-full bg-purple-500/5 blur-[100px] sm:blur-[150px]" />
+            <div className="absolute top-1/4 right-1/4 w-[300px] sm:w-[400px] md:w-[500px] h-[300px] sm:h-[400px] md:h-[500px] rounded-full bg-blue-500/5 blur-[80px] sm:blur-[120px]" />
+          </>
+        )}
       </div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10 max-w-7xl">
@@ -145,10 +158,10 @@ function RAGSection() {
         {/* HEADER - Hook Principal */}
         {/* ============================================= */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={shouldAnimate ? { opacity: 0, y: 30 } : false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: isMobile ? 0.2 : 0.8 }}
           className="text-center mb-20 md:mb-32"
         >
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-sm font-medium text-purple-400 mb-10">
@@ -188,23 +201,25 @@ function RAGSection() {
             <span className="text-white font-medium"> Zero alucinações.</span>
           </p>
           
-          {/* CSS para animação do gradiente */}
-          <style>{`
-            @keyframes gradient-shift {
-              0%, 100% { background-position: 0% center; }
-              50% { background-position: 100% center; }
-            }
-          `}</style>
+          {/* CSS para animação do gradiente - only render on desktop */}
+          {!isMobile && (
+            <style>{`
+              @keyframes gradient-shift {
+                0%, 100% { background-position: 0% center; }
+                50% { background-position: 100% center; }
+              }
+            `}</style>
+          )}
         </motion.div>
 
         {/* ============================================= */}
         {/* VISUALIZAÇÃO ANIMADA - Mockup de Interface */}
         {/* ============================================= */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={shouldAnimate ? { opacity: 0, y: 40 } : false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ duration: isMobile ? 0.2 : 0.8, delay: isMobile ? 0 : 0.2 }}
           className="mb-16 sm:mb-24 md:mb-36"
         >
           <div
@@ -333,10 +348,10 @@ function RAGSection() {
         {/* COMPARAÇÃO: Antes vs Depois */}
         {/* ============================================= */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={shouldAnimate ? { opacity: 0, y: 40 } : false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: isMobile ? 0.2 : 0.8 }}
           className="mb-24 md:mb-36"
         >
           <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-3 sm:mb-4">
@@ -443,10 +458,10 @@ function RAGSection() {
         {/* COMO FUNCIONA - AnimatedList */}
         {/* ============================================= */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={shouldAnimate ? { opacity: 0, y: 40 } : false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: isMobile ? 0.2 : 0.8 }}
           className="mb-24 md:mb-36"
         >
           <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4 sm:mb-5">
@@ -484,10 +499,10 @@ function RAGSection() {
         {/* EXEMPLOS REAIS DE USO */}
         {/* ============================================= */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={shouldAnimate ? { opacity: 0, y: 40 } : false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: isMobile ? 0.2 : 0.8 }}
           className="pt-8"
         >
           <div className="text-center mb-14">
@@ -507,10 +522,10 @@ function RAGSection() {
             {useCases.map((useCase, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
+                initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
+                transition={{ delay: shouldAnimate ? index * 0.1 : 0, duration: isMobile ? 0.15 : 0.5 }}
               >
                 <SpotlightCard 
                   className="h-full p-6"

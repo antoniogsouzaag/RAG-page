@@ -1,8 +1,9 @@
-import { Suspense, lazy, memo } from "react";
+import { Suspense, lazy, memo, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useHighPerfWebGL } from "@/hooks/use-high-perf";
+import usePrefersReducedMotion from "@/hooks/use-prefers-reduced-motion";
 const LightPillar = lazy(() => import("@/components/ui/light-pillar"));
 const Globe = lazy(() => import("@/components/ui/globe").then((m) => ({ default: m.Globe })));
 import { RainbowButton } from "@/components/ui/rainbow-button";
@@ -78,6 +79,31 @@ function Hero() {
   const { openChat } = useChatbot();
   const isMobile = useIsMobile();
   const isHighPerf = useHighPerfWebGL();
+  const reducedMotion = usePrefersReducedMotion();
+  
+  // Memoize animation variants to prevent re-creation
+  const animationProps = useMemo(() => {
+    // Disable animations on mobile or when reduced motion is preferred
+    if (isMobile || reducedMotion) {
+      return {
+        initial: {},
+        animate: {},
+        transition: { duration: 0 }
+      };
+    }
+    return null; // Use default framer motion animations
+  }, [isMobile, reducedMotion]);
+  
+  // Simplified motion wrapper for mobile
+  const MotionWrapper = useMemo(() => {
+    if (isMobile || reducedMotion) {
+      // Return a simple div wrapper that doesn't animate
+      return ({ children, className }: { children: React.ReactNode; className?: string }) => (
+        <div className={className}>{children}</div>
+      );
+    }
+    return null;
+  }, [isMobile, reducedMotion]);
   
   return (
     <section className="relative min-h-screen flex items-center pt-20 sm:pt-24 pb-12 sm:pb-16 overflow-hidden bg-black">
@@ -121,15 +147,16 @@ function Hero() {
         <div className="grid w-full xl:grid-cols-2 gap-8 xl:gap-12 items-center overflow-visible">
           {/* Left Column - Content (shows first on mobile) */}
           <div className="relative order-1 text-center xl:text-left">
-            {/* Badge */}
+            {/* Badge - simplified animation for mobile */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={isMobile || reducedMotion ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: isMobile ? 0.2 : 0.6 }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm font-medium text-white/80 backdrop-blur-xl mb-6"
             >
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                {/* Disable ping animation on mobile */}
+                {!isMobile && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>}
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
               Agência de IA em Rio Verde
@@ -137,9 +164,9 @@ function Hero() {
 
             {/* Main Headline - SEO optimized with HyperText effect */}
             <motion.h1
-              initial={{ opacity: 0, y: 30 }}
+              initial={isMobile || reducedMotion ? false : { opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
+              transition={{ duration: isMobile ? 0.2 : 0.8, delay: isMobile ? 0 : 0.1 }}
               className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-display font-bold leading-[1.1] tracking-tight mb-4 sm:mb-6"
             >
               <span className="text-white">Automatize seu negócio com</span>
@@ -151,9 +178,9 @@ function Hero() {
 
             {/* Subtitle - Improved copy */}
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={isMobile || reducedMotion ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              transition={{ duration: isMobile ? 0.2 : 0.8, delay: isMobile ? 0 : 0.2 }}
               className="text-sm sm:text-base md:text-lg lg:text-xl text-white/60 leading-relaxed max-w-xl mx-auto xl:mx-0 mb-6 sm:mb-8 px-2 sm:px-0"
             >
               Criamos funcionários digitais. Agentes que leem seus documentos e <strong className="text-white">reduzem 80% do trabalho manual</strong>. Atendimento 24/7, zero erros, escala infinita.
@@ -161,9 +188,9 @@ function Hero() {
 
             {/* CTA Buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={isMobile || reducedMotion ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              transition={{ duration: isMobile ? 0.2 : 0.8, delay: isMobile ? 0 : 0.3 }}
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-8 sm:mb-10 px-2 sm:px-0"
             >
               <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
@@ -184,29 +211,31 @@ function Hero() {
 
             {/* Stats with animated counter */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={isMobile || reducedMotion ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              transition={{ duration: isMobile ? 0.2 : 0.8, delay: isMobile ? 0 : 0.4 }}
             >
               <StatsCount stats={stats} showDividers={true} />
             </motion.div>
           </div>
     
-          {/* Right Column - Globe (desktop) */}
-          <motion.div
-            className="relative order-2 mt-8 xl:mt-0 hidden xl:flex items-center justify-center overflow-visible"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.3 }}
-          >
-            <div className="relative w-full max-w-[1400px] aspect-square flex items-center justify-center overflow-visible translate-x-16 translate-y-48 scale-[1.5]">
-              {/* Glow effect behind globe */}
-              <div className="absolute inset-0 bg-purple-500/10 blur-[120px] rounded-full scale-150" />
-              <Suspense fallback={null}>
-                <Globe className="relative z-10 w-full h-full" />
-              </Suspense>
-            </div>
-          </motion.div>
+          {/* Right Column - Globe (desktop only - not rendered on mobile) */}
+          {!isMobile && (
+            <motion.div
+              className="relative order-2 mt-8 xl:mt-0 hidden xl:flex items-center justify-center overflow-visible"
+              initial={reducedMotion ? false : { opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.3 }}
+            >
+              <div className="relative w-full max-w-[1400px] aspect-square flex items-center justify-center overflow-visible translate-x-16 translate-y-48 scale-[1.5]">
+                {/* Glow effect behind globe */}
+                <div className="absolute inset-0 bg-purple-500/10 blur-[120px] rounded-full scale-150" />
+                <Suspense fallback={null}>
+                  <Globe className="relative z-10 w-full h-full" />
+                </Suspense>
+              </div>
+            </motion.div>
+          )}
 
           {/* Small decorative globe for medium screens only — avoid initializing on small mobile to save CPU */}
           {!isMobile && (
@@ -221,21 +250,23 @@ function Hero() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <motion.div
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 z-50"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-      >
+      {/* Scroll indicator - desktop only */}
+      {!isMobile && (
         <motion.div
-          className="w-5 h-8 rounded-full border border-white/30 flex justify-center pt-1.5"
-          animate={{ y: [0, 4, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 z-50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
         >
-          <motion.div className="w-1 h-1 rounded-full bg-white/50" />
+          <motion.div
+            className="w-5 h-8 rounded-full border border-white/30 flex justify-center pt-1.5"
+            animate={reducedMotion ? {} : { y: [0, 4, 0] }}
+            transition={{ duration: 1.5, repeat: reducedMotion ? 0 : Infinity }}
+          >
+            <motion.div className="w-1 h-1 rounded-full bg-white/50" />
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
     </section>
   );
 }

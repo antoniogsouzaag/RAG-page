@@ -119,6 +119,16 @@
     .blur-\[100px\], .blur-\[120px\], .blur-\[150px\] {
       filter: blur(32px);
     }
+    
+    /* Reduce blur-[80px] as well */
+    .blur-\[80px\] {
+      filter: blur(24px);
+    }
+    
+    /* Reduce blur-[60px] */
+    .blur-\[60px\] {
+      filter: blur(20px);
+    }
 
     /* Mobile pillar background fallback (lightweight) */
     .mobile-pillar-bg {
@@ -143,8 +153,14 @@
     .animate-pulse {
       animation: none;
     }
+    
+    /* Disable ping animations on mobile */
+    .animate-ping {
+      animation: none;
+      opacity: 0;
+    }
 
-    /* Reduce backdrop blur on mobile */
+    /* Reduce backdrop blur on mobile for performance */
     .backdrop-blur-xl {
       backdrop-filter: blur(4px);
     }
@@ -157,6 +173,10 @@
       backdrop-filter: blur(4px);
     }
     
+    .backdrop-blur-2xl {
+      backdrop-filter: blur(6px);
+    }
+    
     /* Disable expensive effects on mobile */
     .group-hover\:scale-110:hover,
     .group-hover\:scale-105:hover {
@@ -166,6 +186,21 @@
     /* Simplify transitions on mobile */
     * {
       transition-duration: 150ms !important;
+    }
+    
+    /* Reduce shadow complexity on mobile */
+    .shadow-2xl, .shadow-xl {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Add containment for better rendering */
+    section {
+      contain: layout style;
+    }
+    
+    /* Disable expensive hover effects on mobile */
+    .hover\:shadow-\[0_0_20px_rgba\(168\,85\,247\,0\.4\)\]:hover {
+      box-shadow: none;
     }
   }
   
