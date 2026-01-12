@@ -21,6 +21,9 @@ function Footer() {
           </div>
           
           <nav className="flex items-center gap-4 sm:gap-6 order-3 sm:order-2" aria-label="Links legais">
+            <Link href="/app" className="text-white/50 hover:text-purple-400 transition-colors text-xs sm:text-sm">
+              App AGLabs
+            </Link>
             <Link href="/terms" className="text-white/50 hover:text-white transition-colors text-xs sm:text-sm">
               Termos
             </Link>

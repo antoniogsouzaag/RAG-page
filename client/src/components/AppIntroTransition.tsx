@@ -15,7 +15,7 @@ function AppIntroTransition() {
       <div className="absolute inset-0 bg-linear-to-b from-black via-purple-950/10 to-black pointer-events-none" />
       
       {/* Spacer section - large spacing before animation */}
-      <div className="h-[40vh] grid place-content-center relative z-10">
+      <div className="h-[40vh] grid place-content-center relative z-10 mt-32 md:mt-48 lg:mt-56">
         <motion.p
           initial={skipBlur ? false : { opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

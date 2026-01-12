@@ -9,6 +9,7 @@ import { ChatbotProvider } from "@/components/ChatbotContext";
 
 // Lazy load pages for code splitting
 const Home = lazy(() => import("@/pages/Home"));
+const AGLabsApp = lazy(() => import("@/pages/AGLabsApp"));
 const Terms = lazy(() => import("@/pages/Terms"));
 const Privacy = lazy(() => import("@/pages/Privacy"));
 const NotFound = lazy(() => import("@/pages/not-found"));
@@ -26,6 +27,8 @@ function Router() {
     <Suspense fallback={<PageLoader />}>
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/app" component={AGLabsApp} />
+        <Route path="/aglabs" component={AGLabsApp} />
         <Route path="/terms" component={Terms} />
         <Route path="/privacy" component={Privacy} />
         <Route component={NotFound} />

@@ -46,8 +46,8 @@ export function Globe({
   config?: COBEOptions;
 }) {
   let phi = 0;
-  let width = 0;
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const widthRef = useRef(400); // Use ref to persist width across renders
   const pointerInteracting = useRef<number | null>(null);
   const pointerInteractionMovement = useRef(0);
 
@@ -81,7 +81,7 @@ export function Globe({
   useEffect(() => {
     const onResize = () => {
       if (canvasRef.current) {
-        width = canvasRef.current.offsetWidth;
+        widthRef.current = canvasRef.current.offsetWidth || 400; // Fallback to 400 if offsetWidth is 0
       }
     };
 
@@ -103,12 +103,16 @@ export function Globe({
       return;
     }
 
-    // Basic WebGL support check (defensive)
+    // Basic WebGL support check (defensive) - more permissive detection
     const webglSupported = (() => {
       try {
         const c = document.createElement('canvas');
-        return !!(c.getContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
+        const gl = c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl');
+        if (!gl) return false;
+        // Additional check: verify we can actually render
+        return true;
       } catch (e) {
+        console.warn('WebGL detection failed:', e);
         return false;
       }
     })();
@@ -128,16 +132,16 @@ export function Globe({
 
       globeInstance = createGlobe(canvasRef.current!, {
         ...config,
-        width: width * (runtimeIsMobile ? 1 : 2),
-        height: width * (runtimeIsMobile ? 1 : 2),
+        width: widthRef.current * (runtimeIsMobile ? 1 : 2),
+        height: widthRef.current * (runtimeIsMobile ? 1 : 2),
         devicePixelRatio: runtimeIsMobile ? 1 : config.devicePixelRatio ?? 2,
         mapSamples: runtimeIsMobile ? 8000 : config.mapSamples ?? 16000,
         onRender: (state) => {
           try {
             if (!pointerInteracting.current) phi += runtimeIsMobile ? 0.001 : 0.002; // Slower rotation on mobile
             state.phi = phi + rs.get();
-            state.width = width * (runtimeIsMobile ? 1 : 2);
-            state.height = width * (runtimeIsMobile ? 1 : 2);
+            state.width = widthRef.current * (runtimeIsMobile ? 1 : 2);
+            state.height = widthRef.current * (runtimeIsMobile ? 1 : 2);
           } catch (e) {
             // protect render callback from throwing
             // eslint-disable-next-line no-console

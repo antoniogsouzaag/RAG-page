@@ -9,9 +9,6 @@ import Hero from "@/components/Hero";
 const Marquee = lazy(() => import("@/components/Marquee"));
 const Services = lazy(() => import("@/components/Services"));
 const RAGSectionNew = lazy(() => import("@/components/RAGSectionNew"));
-const AppIntroTransition = lazy(() => import("@/components/AppIntroTransition"));
-const AppShowcaseIntro = lazy(() => import("@/components/AppShowcaseIntro"));
-const AppGalleryNew = lazy(() => import("@/components/AppGalleryNew"));
 const CTASection = lazy(() => import("@/components/CTASection"));
 const WhatsAppButton = lazy(() => import("@/components/WhatsAppButton"));
 const Footer = lazy(() => import("@/components/Footer"));
@@ -66,17 +63,6 @@ export default function Home() {
         </Suspense>
         <Suspense fallback={<SectionPlaceholder height="h-48" />}>
           <CTASection />
-        </Suspense>
-        {/* Generous spacing before app showcase */}
-        <div className="h-24 md:h-32 lg:h-40" />
-        <Suspense fallback={<SectionPlaceholder height="h-64" />}>
-          <AppIntroTransition />
-        </Suspense>
-        <Suspense fallback={<SectionPlaceholder height="h-64" />}>
-          <AppShowcaseIntro />
-        </Suspense>
-        <Suspense fallback={<SectionPlaceholder height="h-96" />}>
-          <AppGalleryNew />
         </Suspense>
       </main>
       <Suspense fallback={null}>

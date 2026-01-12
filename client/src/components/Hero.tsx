@@ -220,14 +220,13 @@ function Hero() {
             </motion.div>
           )}
 
-          {/* Small decorative globe for medium screens only — avoid initializing on small mobile to save CPU */}
+          {/* Small decorative globe for medium screens (tablet) - positioned behind content like mobile */}
           {!isMobile && (
-            <div className="w-full flex justify-center xl:hidden order-3">
-              <div className="w-70 h-70 md:w-56 md:h-56 relative">
-                <Suspense fallback={null}>
-                  <Globe className="w-full h-full" />
-                </Suspense>
-              </div>
+            <div className="absolute right-[-20%] top-[30%] w-[400px] h-[400px] md:w-[500px] md:h-[500px] lg:w-[600px] lg:h-[600px] z-0 pointer-events-none opacity-25 xl:hidden" aria-hidden>
+              <div className="absolute inset-0 bg-purple-500/15 blur-[100px] rounded-full" />
+              <Suspense fallback={null}>
+                <Globe className="w-full h-full" />
+              </Suspense>
             </div>
           )}
         </div>
