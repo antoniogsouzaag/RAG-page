@@ -41,18 +41,31 @@ const useMeasure = () => {
   return [ref, size] as const;
 };
 
-// Preload images
-const preloadImages = async (urls: string[]) => {
+// Preload images with priority for first items
+const preloadImages = async (urls: string[], priorityCount = 6) => {
+  // Preload priority images first (above the fold)
+  const priorityUrls = urls.slice(0, priorityCount);
+  const restUrls = urls.slice(priorityCount);
+  
+  // Load priority images immediately
   await Promise.all(
-    urls.map(
+    priorityUrls.map(
       src =>
         new Promise<void>(resolve => {
           const img = new Image();
+          img.fetchPriority = 'high';
           img.src = src;
           img.onload = img.onerror = () => resolve();
         })
     )
   );
+  
+  // Load rest in background (don't wait)
+  restUrls.forEach(src => {
+    const img = new Image();
+    img.fetchPriority = 'low';
+    img.src = src;
+  });
 };
 
 interface MasonryItem {
@@ -254,7 +267,9 @@ const Masonry = ({
               alt={`App screenshot ${item.id}`}
               className="w-full h-full object-cover"
               loading={index < 6 ? "eager" : "lazy"}
-              decoding="async"
+              decoding={index < 6 ? "sync" : "async"}
+              fetchPriority={index < 3 ? "high" : index < 6 ? "auto" : "low"}
+              sizes="(min-width: 1500px) 20vw, (min-width: 1000px) 25vw, (min-width: 600px) 33vw, 50vw"
             />
             {colorShiftOnHover && (
               <div className="color-overlay absolute inset-0 rounded-xl bg-linear-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none" />

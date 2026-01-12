@@ -21,19 +21,17 @@ function CTASection() {
   
   return (
     <section className="py-24 md:py-32 px-4 md:px-6 relative overflow-hidden">
-      {/* FlickeringGrid Background - skip on mobile for performance */}
-      {!isMobile && (
-        <div className="absolute inset-0 z-0">
-          <FlickeringGrid
-            className="absolute inset-0 w-full h-full mask-[linear-gradient(to_bottom,transparent_0%,white_15%,white_85%,transparent_100%)]"
-            squareSize={4}
-            gridGap={8}
-            color="#A855F7"
-            maxOpacity={0.2}
-            flickerChance={0.03}
-          />
-        </div>
-      )}
+      {/* FlickeringGrid Background - optimized for mobile */}
+      <div className="absolute inset-0 z-0">
+        <FlickeringGrid
+          className="absolute inset-0 w-full h-full mask-[linear-gradient(to_bottom,transparent_0%,white_15%,white_85%,transparent_100%)]"
+          squareSize={isMobile ? 6 : 4}
+          gridGap={isMobile ? 12 : 8}
+          color="#A855F7"
+          maxOpacity={isMobile ? 0.15 : 0.2}
+          flickerChance={isMobile ? 0.015 : 0.03}
+        />
+      </div>
       
       {/* Background Effects - simplified on mobile */}
       <div className="absolute inset-0 bg-linear-to-b from-black/40 via-transparent to-black/40 z-1" />
