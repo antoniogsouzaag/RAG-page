@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, memo, useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { Suspense, lazy, memo, useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Bot, Globe, Layers, Zap, ArrowRight, Check, Sparkles, TrendingUp, Clock, Shield, MessageSquare, Brain, Cpu, Database, Workflow, Code2 } from "lucide-react";
 import { SpotlightCard } from "@/components/ui/spotlight-card";

@@ -4,6 +4,7 @@ import { ArrowRight, Sparkles, Clock, Shield, Zap } from "lucide-react";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { FlickeringGrid } from "@/components/ui/flickering-grid";
 import { useChatbot } from "@/components/ChatbotContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const WHATSAPP_LINK = "https://wa.me/5564993259857?text=Quero%20saber%20mais%20sobre%20o%20Agente%20RAG...";
 
@@ -16,39 +17,39 @@ const trustBadges = [
 
 function CTASection() {
   const { openChat } = useChatbot();
+  const isMobile = useIsMobile();
   
   return (
     <section className="py-24 md:py-32 px-4 md:px-6 relative overflow-hidden">
-      {/* FlickeringGrid Background - optimized for performance */}
-      <div className="absolute inset-0 z-0">
-        <FlickeringGrid
-          className="absolute inset-0 w-full h-full mask-[linear-gradient(to_bottom,transparent_0%,white_15%,white_85%,transparent_100%)]"
-          squareSize={4}
-          gridGap={8}
-          color="#A855F7"
-          maxOpacity={0.2}
-          flickerChance={0.03}
-        />
-      </div>
+      {/* FlickeringGrid Background - skip on mobile for performance */}
+      {!isMobile && (
+        <div className="absolute inset-0 z-0">
+          <FlickeringGrid
+            className="absolute inset-0 w-full h-full mask-[linear-gradient(to_bottom,transparent_0%,white_15%,white_85%,transparent_100%)]"
+            squareSize={4}
+            gridGap={8}
+            color="#A855F7"
+            maxOpacity={0.2}
+            flickerChance={0.03}
+          />
+        </div>
+      )}
       
-      {/* Background Effects */}
+      {/* Background Effects - simplified on mobile */}
       <div className="absolute inset-0 bg-linear-to-b from-black/40 via-transparent to-black/40 z-1" />
       <div className="absolute inset-0 bg-linear-to-r from-black/30 via-transparent to-black/30 z-1" />
-      <div className="absolute top-[60%] left-[70%] -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/15 blur-[150px] rounded-full z-0" />
+      <div className={`absolute top-[60%] left-[70%] -translate-x-1/2 -translate-y-1/2 ${isMobile ? 'w-[300px] h-[300px] blur-[80px]' : 'w-[600px] h-[600px] blur-[150px]'} bg-purple-600/15 rounded-full z-0`} />
       
       <div className="container mx-auto max-w-7xl relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={isMobile ? false : { opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: isMobile ? 0.2 : 0.8 }}
           className="max-w-4xl mx-auto text-center"
         >
           {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
+          <div
             className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs sm:text-sm font-medium text-purple-400 mb-6 sm:mb-8"
           >
             <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -69,26 +70,18 @@ function CTASection() {
           {/* Trust badges */}
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-8 sm:mb-12">
             {trustBadges.map((item, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 + index * 0.1 }}
                 className="flex items-center gap-2 text-white/60"
               >
                 <item.icon className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
                 <span className="text-xs sm:text-sm font-medium">{item.text}</span>
-              </motion.div>
+              </div>
             ))}
           </div>
           
           {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
+          <div
             className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-2 sm:px-0"
           >
             <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
@@ -105,18 +98,14 @@ function CTASection() {
             >
               Teste a Eficiência Agora
             </button>
-          </motion.div>
+          </div>
           
           {/* Social proof */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.6 }}
+          <p
             className="mt-8 text-sm text-white/40"
           >
             +50 empresas já economizam tempo e dinheiro com nossas soluções
-          </motion.p>
+          </p>
         </motion.div>
       </div>
     </section>

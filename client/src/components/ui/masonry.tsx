@@ -236,7 +236,7 @@ const Masonry = ({
       className="relative w-full"
       style={{ height: containerHeight || 'auto' }}
     >
-      {grid.map(item => (
+      {grid.map((item, index) => (
         <div
           key={item.id}
           data-key={item.id}
@@ -247,9 +247,15 @@ const Masonry = ({
           onMouseLeave={e => handleMouseLeave(item.id, e.currentTarget)}
         >
           <div
-            className="relative w-full h-full bg-cover bg-center rounded-xl shadow-lg overflow-hidden"
-            style={{ backgroundImage: `url(${item.img})` }}
+            className="relative w-full h-full rounded-xl shadow-lg overflow-hidden bg-zinc-900"
           >
+            <img 
+              src={item.img} 
+              alt={`App screenshot ${item.id}`}
+              className="w-full h-full object-cover"
+              loading={index < 6 ? "eager" : "lazy"}
+              decoding="async"
+            />
             {colorShiftOnHover && (
               <div className="color-overlay absolute inset-0 rounded-xl bg-linear-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none" />
             )}

@@ -135,7 +135,7 @@ function Hero() {
         </>
       )}
 
-      <div className="relative z-10 px-4 md:px-6 mx-auto max-w-none w-full h-fullflex items-center overflow-visible py-16 sm:py-20 pb-24 landscape:pb-32 sm:landscape:pb-20">
+      <div className="relative z-10 px-4 md:px-6 mx-auto max-w-none w-full h-full flex items-center overflow-visible py-16 sm:py-20 pb-24 landscape:pb-32 sm:landscape:pb-20">
         <div className="grid w-full xl:grid-cols-2 gap-8 xl:gap-12 items-center overflow-visible">
           {/* Left Column - Content (shows first on mobile) */}
           <div className="relative order-1 text-center xl:text-left">

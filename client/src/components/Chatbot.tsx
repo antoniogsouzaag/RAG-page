@@ -154,14 +154,12 @@ export default function Chatbot({ isOpen, onClose }: ChatbotProps) {
 
       // Tenta ler a resposta como texto primeiro
       const responseText = await response.text();
-      console.log("Resposta bruta do webhook:", responseText);
       
       let content = "";
       
       try {
         // Tenta parsear como JSON
         const data = JSON.parse(responseText);
-        console.log("Resposta JSON parseada:", data);
         
         // Tenta extrair a mensagem de diferentes formatos possíveis
         if (typeof data === "string") {

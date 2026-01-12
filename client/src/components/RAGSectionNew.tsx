@@ -1,6 +1,5 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, forwardRef, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { forwardRef, useRef } from 'react';
 import { 
   Brain, 
   MessageSquare, 

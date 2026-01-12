@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, memo } from "react";
+import { Suspense, lazy, memo } from "react";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";

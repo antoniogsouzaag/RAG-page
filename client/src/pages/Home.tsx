@@ -1,4 +1,4 @@
-import { useEffect, Suspense, lazy, memo, useMemo } from "react";
+import { useEffect, Suspense, lazy, memo } from "react";
 import { useLocation } from "wouter";
 
 // Critical above-fold components loaded synchronously

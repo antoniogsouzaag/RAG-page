@@ -31,6 +31,9 @@ function AppShowcaseIntro() {
             src="/favicon.png" 
             alt="AG Labs Logo" 
             className="w-16 h-16 object-contain"
+            loading="lazy"
+            width={64}
+            height={64}
           />
         </motion.div>
       </div>
