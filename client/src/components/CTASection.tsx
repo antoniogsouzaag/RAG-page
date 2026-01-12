@@ -54,7 +54,7 @@ function CTASection() {
           >
             <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
             <span>Vagas Limitadas para Janeiro 2026</span>
-          </motion.div>
+          </div>
           
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold mb-4 sm:mb-6 leading-tight">
             Pronto para{" "}
@@ -104,7 +104,7 @@ function CTASection() {
           <p
             className="mt-8 text-sm text-white/40"
           >
-            +50 empresas já economizam tempo e dinheiro com nossas soluções
+            Metodologia testada em diversos setores.
           </p>
         </motion.div>
       </div>
