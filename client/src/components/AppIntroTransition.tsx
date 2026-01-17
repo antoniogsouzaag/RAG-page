@@ -23,7 +23,7 @@ function AppIntroTransition() {
           transition={{ duration: skipBlur ? 0.15 : 0.6, ease: "easeOut" }}
           className="text-purple-400/90 text-1xl sm:text-2xl md:text-3xl lg:text-4xl font-bold uppercase tracking-[0.25em] text-center drop-shadow-md"
         >
-          Economize mais tempo ainda 
+          Economize seu tempo! 
         </motion.p>
       </div>
       
