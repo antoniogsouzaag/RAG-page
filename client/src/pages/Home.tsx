@@ -61,13 +61,13 @@ export default function Home() {
           <AtendenteIA />
         </Suspense>
         <Suspense fallback={<SectionPlaceholder height="h-96" />}>
-          <AtendenteIAPlanos />
-        </Suspense>
-        <Suspense fallback={<SectionPlaceholder height="h-96" />}>
           <Services />
         </Suspense>
         <Suspense fallback={<SectionPlaceholder height="h-96" />}>
           <RAGSectionNew />
+        </Suspense>
+        <Suspense fallback={<SectionPlaceholder height="h-96" />}>
+          <AtendenteIAPlanos />
         </Suspense>
         <Suspense fallback={<SectionPlaceholder height="h-48" />}>
           <CTASection />

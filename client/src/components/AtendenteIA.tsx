@@ -1,13 +1,18 @@
 import { memo } from "react";
 import { motion } from "framer-motion";
 import {
-  MessageSquare,
   Clock,
   CalendarCheck,
   UserCheck,
   Send,
   Bot,
+  Scissors,
+  Stethoscope,
+  Dumbbell,
+  Store,
+  UtensilsCrossed,
 } from "lucide-react";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { useIsMobile } from "@/hooks/use-mobile";
 import usePrefersReducedMotion from "@/hooks/use-prefers-reduced-motion";
 
@@ -186,31 +191,93 @@ function AtendenteIA() {
           </motion.div>
         </div>
 
-        {/* "Para quem é" */}
+        {/* "Para quem é" — Premium Cards */}
         <motion.div
           initial={shouldAnimate ? { opacity: 0, y: 30 } : false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: isMobile ? 0.2 : 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center"
         >
-          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-6">
-            Ideal para quem…
-          </h3>
-          <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
+          <div className="text-center mb-10 sm:mb-14">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-white/50 mb-5 uppercase tracking-widest">
+              Segmentos
+            </span>
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+              Ideal para quem…
+            </h3>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 max-w-5xl mx-auto">
             {[
-              "Perde clientes por não responder rápido",
-              "Não consegue atender fora do horário",
-              "Quer vender mais sem contratar",
-              "Precisa organizar agendamentos",
-              "Quer parecer profissional no WhatsApp",
+              {
+                icon: Scissors,
+                title: "Salões & Barbearias",
+                desc: "Perde clientes porque não responde rápido no WhatsApp.",
+                color: "236, 72, 153",
+              },
+              {
+                icon: Stethoscope,
+                title: "Clínicas & Consultórios",
+                desc: "Precisa organizar agendamentos sem uma recepcionista 24h.",
+                color: "34, 197, 94",
+              },
+              {
+                icon: Store,
+                title: "Lojas & E-commerces",
+                desc: "Quer vender mais sem precisar contratar.",
+                color: "168, 85, 247",
+              },
+              {
+                icon: UtensilsCrossed,
+                title: "Restaurantes & Delivery",
+                desc: "Não consegue atender pedidos fora do horário comercial.",
+                color: "251, 146, 60",
+              },
+              {
+                icon: Dumbbell,
+                title: "Academias & Personal",
+                desc: "Precisa parecer profissional e responder na hora.",
+                color: "56, 189, 248",
+              },
+              {
+                icon: Bot,
+                title: "Qualquer Negócio Local",
+                desc: "Quer escalar o atendimento sem escalar a equipe.",
+                color: "139, 92, 246",
+              },
             ].map((item, i) => (
-              <span
+              <motion.div
                 key={i}
-                className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-white/70"
+                initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-30px" }}
+                transition={{
+                  delay: shouldAnimate ? i * 0.07 : 0,
+                  duration: isMobile ? 0.15 : 0.5,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
               >
-                {item}
-              </span>
+                <SpotlightCard
+                  className="h-full p-5 sm:p-6"
+                  spotlightColor={item.color}
+                >
+                  <div className="flex items-start gap-4">
+                    <div
+                      className="shrink-0 w-11 h-11 rounded-xl flex items-center justify-center"
+                      style={{ background: `rgba(${item.color}, 0.12)` }}
+                    >
+                      <item.icon
+                        className="w-5 h-5"
+                        style={{ color: `rgb(${item.color})` }}
+                      />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-white mb-1 text-sm sm:text-base">{item.title}</h4>
+                      <p className="text-sm text-white/45 leading-relaxed">{item.desc}</p>
+                    </div>
+                  </div>
+                </SpotlightCard>
+              </motion.div>
             ))}
           </div>
         </motion.div>
