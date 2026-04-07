@@ -163,7 +163,7 @@ function RAGSection() {
         >
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-sm font-medium text-purple-400 mb-10">
             <Brain className="w-4 h-4" />
-            Tecnologia Exclusiva
+            Inteligência que aprende com você
           </span>
           
           {/* Título principal com gradiente animado moderno */}
@@ -176,7 +176,7 @@ function RAGSection() {
                     animation: 'gradient-shift 4s ease-in-out infinite',
                   }}
                 >
-                  Agente de IA
+                  Assistente Inteligente
                 </span>
                 {/* Glow effect */}
                 <span 
@@ -188,14 +188,14 @@ function RAGSection() {
               </span>
             </h2>
             <p className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-white/90 mt-3">
-              que aprende com o seu negócio
+              treinado com os dados do seu negócio
             </p>
           </div>
 
           {/* Subheadline mais direta */}
           <p className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            Respostas precisas baseadas nos seus documentos. <br />
-            <span className="text-white font-medium"> Zero alucinações.</span>
+            Diferente de um ChatGPT genérico, nosso assistente lê seus documentos e responde com informações reais do seu negócio. <br />
+            <span className="text-white font-medium"> Sem inventar nada.</span>
           </p>
           
           {/* CSS para animação do gradiente - only render on desktop */}
@@ -357,7 +357,7 @@ function RAGSection() {
             Antes <span className="text-white/40">vs</span> Depois
           </h3>
           <p className="text-white/50 text-sm sm:text-base text-center mb-8 sm:mb-12 max-w-lg mx-auto px-2">
-            Veja a diferença entre uma IA genérica e uma treinada com seus dados.
+            Veja a diferença entre uma IA comum e uma que conhece seu negócio de verdade.
           </p>
           
           <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
@@ -467,7 +467,7 @@ function RAGSection() {
             Como <span className="bg-linear-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">funciona</span>
           </h3>
           <p className="text-white/50 text-sm sm:text-base text-center mb-8 sm:mb-12 max-w-md mx-auto px-2">
-            3 passos simples para ter uma IA que conhece seu negócio.
+            3 passos simples para ter um assistente que conhece tudo do seu negócio.
           </p>
 
           <div className="max-w-xl mx-auto h-96 overflow-hidden pb-8">

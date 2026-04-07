@@ -51,7 +51,7 @@ function CTASection() {
             className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs sm:text-sm font-medium text-purple-400 mb-6 sm:mb-8"
           >
             <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
-            <span>Vagas Limitadas para Janeiro 2026</span>
+            <span>Consultoria Gratuita por Tempo Limitado</span>
           </div>
           
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold mb-4 sm:mb-6 leading-tight">

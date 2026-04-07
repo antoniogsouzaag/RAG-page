@@ -7,6 +7,8 @@ import Hero from "@/components/Hero";
 
 // Below-fold components lazy loaded for better initial performance
 const Marquee = lazy(() => import("@/components/Marquee"));
+const AtendenteIA = lazy(() => import("@/components/AtendenteIA"));
+const AtendenteIAPlanos = lazy(() => import("@/components/AtendenteIAPlanos"));
 const Services = lazy(() => import("@/components/Services"));
 const RAGSectionNew = lazy(() => import("@/components/RAGSectionNew"));
 const CTASection = lazy(() => import("@/components/CTASection"));
@@ -54,6 +56,12 @@ export default function Home() {
         <Hero />
         <Suspense fallback={<SectionPlaceholder height="h-24" />}>
           <Marquee />
+        </Suspense>
+        <Suspense fallback={<SectionPlaceholder height="h-96" />}>
+          <AtendenteIA />
+        </Suspense>
+        <Suspense fallback={<SectionPlaceholder height="h-96" />}>
+          <AtendenteIAPlanos />
         </Suspense>
         <Suspense fallback={<SectionPlaceholder height="h-96" />}>
           <Services />
