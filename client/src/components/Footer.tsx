@@ -34,7 +34,7 @@ function Footer() {
           
           <nav className="flex gap-4 order-2 sm:order-3" aria-label="Redes sociais">
             <a 
-              href="https://www.instagram.com/ag.labstech/" 
+              href="https://www.instagram.com/ag_labs/" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-white/50 hover:text-purple-400 transition-colors"
@@ -54,7 +54,7 @@ function Footer() {
               </svg>
             </a>
             <a 
-              href="https://www.linkedin.com/company/ag-labs-tech/" 
+              href="https://www.linkedin.com/company/ag-labs" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-white/50 hover:text-blue-400 transition-colors"
