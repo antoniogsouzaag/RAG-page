@@ -66,7 +66,7 @@ function AtendenteIA() {
         >
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-sm font-medium text-green-400 mb-6">
             <Bot className="w-4 h-4" />
-            Produto Principal
+            Mensagens Automáticas
           </span>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight mb-4 sm:mb-6">
@@ -74,14 +74,14 @@ function AtendenteIA() {
               Atendente IA
             </span>
             <span className="text-white/80 block text-xl sm:text-2xl md:text-3xl mt-2 font-medium">
-              — AG Labs
+              AG Labs
             </span>
           </h2>
 
           <p className="text-white/60 text-lg sm:text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed">
             Seu WhatsApp atendendo, agendando e vendendo{" "}
             <span className="text-white font-medium">
-              — sem você precisar estar online.
+              sem você precisar estar online.
             </span>
           </p>
         </motion.div>

@@ -58,10 +58,10 @@ export default function Home() {
           <Marquee />
         </Suspense>
         <Suspense fallback={<SectionPlaceholder height="h-96" />}>
-          <AtendenteIA />
+          <Services />
         </Suspense>
         <Suspense fallback={<SectionPlaceholder height="h-96" />}>
-          <Services />
+          <AtendenteIA />
         </Suspense>
         <Suspense fallback={<SectionPlaceholder height="h-96" />}>
           <RAGSectionNew />
