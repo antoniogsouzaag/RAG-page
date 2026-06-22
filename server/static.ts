@@ -26,11 +26,26 @@ export function serveStatic(app: Express) {
   // API routes are not interfered with.
   app.use(express.static(distPath, { index: false }));
 
+  const shellIndex = path.resolve(distPath, "index.html");
+
   app.get("*", (req, res, next) => {
     if (req.method !== "GET") return next();
     if (req.path.startsWith("/api") || req.path.startsWith("/api-docs")) return next();
 
-    res.sendFile(path.resolve(distPath, "index.html"), (err) => {
+    // Prefer a route-specific prerendered snapshot (better SEO/GEO) when one
+    // exists, e.g. /terms -> dist/public/terms/index.html. Otherwise fall back
+    // to the SPA shell which renders the route client-side.
+    const safePath = req.path.replace(/\.\.+/g, "").replace(/^\/+/, "");
+    const prerendered = safePath
+      ? path.resolve(distPath, safePath, "index.html")
+      : shellIndex;
+
+    const fileToSend =
+      prerendered.startsWith(distPath) && fs.existsSync(prerendered)
+        ? prerendered
+        : shellIndex;
+
+    res.sendFile(fileToSend, (err) => {
       if (err) return next(err);
     });
   });

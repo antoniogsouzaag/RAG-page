@@ -470,8 +470,8 @@ function RAGSection() {
             3 passos simples para ter um assistente que conhece tudo do seu negócio.
           </p>
 
-          <div className="max-w-xl mx-auto h-96 overflow-hidden pb-8">
-            <AnimatedList delay={1500} loop={true}>
+          <div className="max-w-xl mx-auto min-h-96 overflow-hidden pb-8">
+            <AnimatedList delay={2000} holdDelay={6000} loop={true}>
               <HowItWorksItem
                 emoji="📂"
                 step={1}

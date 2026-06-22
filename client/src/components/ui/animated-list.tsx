@@ -43,40 +43,53 @@ export const AnimatedListItem = React.memo(function AnimatedListItem({
 
 export interface AnimatedListProps extends ComponentPropsWithoutRef<"div"> {
   children: React.ReactNode;
+  /** Cadência (ms) entre a revelação de cada item. */
   delay?: number;
+  /** Tempo (ms) que a lista completa permanece visível antes de reiniciar o loop. */
+  holdDelay?: number;
   loop?: boolean;
 }
 
 export const AnimatedList = React.memo(
-  ({ children, className, delay = 1500, loop = true, ...props }: AnimatedListProps) => {
+  ({
+    children,
+    className,
+    delay = 1500,
+    holdDelay = 5000,
+    loop = true,
+    ...props
+  }: AnimatedListProps) => {
     const [visibleCount, setVisibleCount] = useState(1);
     const containerRef = useRef<HTMLDivElement>(null);
     const [isVisible, setIsVisible] = useState(false);
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    
+
     const childrenArray = useMemo(
       () => React.Children.toArray(children),
       [children]
     );
-    
+
     const totalItems = childrenArray.length;
 
     // Track container visibility with IntersectionObserver
     useEffect(() => {
       if (!containerRef.current) return;
-      
+
       const observer = new IntersectionObserver(
         ([entry]) => {
           setIsVisible(entry.isIntersecting);
         },
         { threshold: 0.1 }
       );
-      
+
       observer.observe(containerRef.current);
       return () => observer.disconnect();
     }, []);
 
-    // Animation timer - only runs when visible, uses stable logic
+    // Animation timer - only runs when visible, uses stable logic.
+    // Cadence is uniform between reveals; once every item is shown the list
+    // is held for `holdDelay` (much longer) so the final card stays readable
+    // before the loop restarts.
     useEffect(() => {
       if (!isVisible) {
         // Clear timer when not visible
@@ -86,20 +99,18 @@ export const AnimatedList = React.memo(
         }
         return;
       }
-      
+
+      const allShown = visibleCount >= totalItems;
+
+      // Nothing left to do when fully shown and not looping
+      if (allShown && !loop) return;
+
+      // Long hold once everything is visible, otherwise the regular cadence
+      const wait = allShown ? holdDelay : delay;
+
       timerRef.current = setTimeout(() => {
-        setVisibleCount((prev) => {
-          // If we've shown all items
-          if (prev >= totalItems) {
-            // If loop is enabled, reset after showing all
-            if (loop) {
-              return 1; // Start over from 1
-            }
-            return prev; // Stay at max
-          }
-          return prev + 1; // Show next item
-        });
-      }, delay);
+        setVisibleCount((prev) => (prev >= totalItems ? 1 : prev + 1));
+      }, wait);
 
       return () => {
         if (timerRef.current) {
@@ -107,7 +118,7 @@ export const AnimatedList = React.memo(
           timerRef.current = null;
         }
       };
-    }, [visibleCount, delay, totalItems, loop, isVisible]);
+    }, [visibleCount, delay, holdDelay, totalItems, loop, isVisible]);
 
     // Get items to display
     const itemsToShow = useMemo(() => {

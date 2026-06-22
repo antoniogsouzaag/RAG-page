@@ -2,6 +2,7 @@ import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
 import { rm, readFile, mkdir, readdir, copyFile } from "fs/promises";
 import { join } from "path";
+import { prerender } from "./prerender";
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -51,6 +52,14 @@ async function buildAll() {
     console.log("Copied optimized images to dist/public/attached_assets/generated_images/optimized");
   } catch (e) {
     // no-op if folder doesn't exist
+  }
+
+  // Prerender route snapshots for SEO/GEO (non-fatal: build continues on failure)
+  try {
+    console.log("prerendering routes...");
+    await prerender(join(process.cwd(), "dist", "public"));
+  } catch (e) {
+    console.warn("[build] prerender step failed (continuing):", e);
   }
 
   console.log("building server...");

@@ -5,27 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
     
     <!-- SEO Meta Tags -->
-    <title>AG LABS - Agência de IA e Automação em Rio Verde | Agentes de IA, Websites e Automações</title>
-    <meta name="description" content="Agência de IA em Rio Verde. Criamos Agentes de IA, Websites de Alta Conversão e Automações Inteligentes. Economize 80% do trabalho manual com nossas soluções." />
-    <meta name="keywords" content="IA, Inteligência Artificial, Automação, Agentes de IA, Websites, Rio Verde, Goiás, Chatbot, RAG, n8n, Make" />
+    <title>AG LABS - Agência de IA e Automação em Rio Verde | Agentes de IA, Atendente para WhatsApp e Automações</title>
+    <meta name="description" content="AG LABS: agência de IA em Rio Verde-GO. Agentes de IA e Atendente para WhatsApp, sites de alta conversão, automações e RAG treinado com os dados do seu negócio." />
+    <meta name="keywords" content="IA, Inteligência Artificial, Automação, Agentes de IA, Atendente IA, WhatsApp, Websites, Rio Verde, Goiás, Chatbot, RAG, n8n, Make" />
     <meta name="author" content="AG LABS" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://aglabs.com.br" />
-    
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link rel="canonical" href="https://rag.aglabs.api.br" />
+    <meta name="language" content="Portuguese" />
+
+    <!-- Geo Targeting -->
+    <meta name="geo.region" content="BR-GO" />
+    <meta name="geo.placename" content="Rio Verde, Goiás" />
+    <meta name="geo.position" content="-17.7976;-50.9230" />
+    <meta name="ICBM" content="-17.7976, -50.9230" />
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://aglabs.com.br" />
-    <meta property="og:title" content="AG LABS - Agência de IA e Automação" />
-    <meta property="og:description" content="Transforme seu negócio com Agentes de IA, Websites de Alta Conversão e Automações Inteligentes." />
-    <meta property="og:image" content="/attached_assets/hero_bg.png" />
+    <meta property="og:url" content="https://rag.aglabs.api.br" />
+    <meta property="og:title" content="AG LABS - Agência de IA e Automação em Rio Verde" />
+    <meta property="og:description" content="Agentes de IA, Atendente para WhatsApp, sites de alta conversão e automações inteligentes treinadas com os dados do seu negócio." />
+    <meta property="og:image" content="https://rag.aglabs.api.br/opengraph.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1901" />
+    <meta property="og:image:height" content="940" />
+    <meta property="og:image:alt" content="AG LABS - Agência de IA e Automação" />
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:site_name" content="AG LABS" />
-    
+
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="AG LABS - Agência de IA e Automação" />
-    <meta name="twitter:description" content="Transforme seu negócio com Agentes de IA, Websites de Alta Conversão e Automações Inteligentes." />
-    <meta name="twitter:image" content="/attached_assets/hero_bg.png" />
+    <meta name="twitter:title" content="AG LABS - Agência de IA e Automação em Rio Verde" />
+    <meta name="twitter:description" content="Agentes de IA, Atendente para WhatsApp, sites de alta conversão e automações inteligentes treinadas com os dados do seu negócio." />
+    <meta name="twitter:image" content="https://rag.aglabs.api.br/opengraph.png" />
+    <meta name="twitter:image:alt" content="AG LABS - Agência de IA e Automação" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png" />
@@ -65,9 +77,191 @@
       /* Prevent FOUC */
       .dark { color-scheme: dark; }
     </style>
+
+    <!-- Structured Data (Schema.org JSON-LD) - helps Google and AI engines (GPT, Claude, Gemini) understand the business -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://rag.aglabs.api.br/#organization",
+          "name": "AG LABS",
+          "alternateName": "AG Labs - Agência de IA",
+          "url": "https://aglabs.ia.br",
+          "logo": "https://rag.aglabs.api.br/favicon.png",
+          "image": "https://rag.aglabs.api.br/opengraph.png",
+          "description": "Agência de IA e automação em Rio Verde-GO. Criamos Agentes de IA, Atendentes para WhatsApp, sites de alta conversão, automações e assistentes RAG treinados com os dados do seu negócio.",
+          "slogan": "Tecnologia que transforma resultados",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Rio Verde",
+            "addressRegion": "GO",
+            "addressCountry": "BR"
+          },
+          "areaServed": [
+            { "@type": "City", "name": "Rio Verde" },
+            { "@type": "State", "name": "Goiás" },
+            { "@type": "Country", "name": "Brasil" }
+          ],
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+5564993259857",
+            "contactType": "sales",
+            "areaServed": "BR",
+            "availableLanguage": ["Portuguese"]
+          },
+          "sameAs": [
+            "https://aglabs.ia.br"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://rag.aglabs.api.br/#website",
+          "url": "https://rag.aglabs.api.br",
+          "name": "AG LABS - Agentes de IA, Atendente para WhatsApp e Automações",
+          "inLanguage": "pt-BR",
+          "publisher": { "@id": "https://rag.aglabs.api.br/#organization" }
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://rag.aglabs.api.br/#webpage",
+          "url": "https://rag.aglabs.api.br",
+          "name": "AG LABS - Agência de IA e Automação em Rio Verde",
+          "isPartOf": { "@id": "https://rag.aglabs.api.br/#website" },
+          "about": { "@id": "https://rag.aglabs.api.br/#organization" },
+          "inLanguage": "pt-BR",
+          "primaryImageOfPage": "https://rag.aglabs.api.br/opengraph.png"
+        },
+        {
+          "@type": "Service",
+          "name": "Atendente IA para WhatsApp",
+          "serviceType": "Atendente virtual com IA para WhatsApp",
+          "provider": { "@id": "https://rag.aglabs.api.br/#organization" },
+          "areaServed": { "@type": "Country", "name": "Brasil" },
+          "description": "Atendente de IA que responde, agenda e vende pelo WhatsApp 24/7, captura leads e faz follow-up automático, sem você precisar estar online."
+        },
+        {
+          "@type": "Service",
+          "name": "Agente de IA com RAG (treinado com seus dados)",
+          "serviceType": "Assistente de IA e RAG",
+          "provider": { "@id": "https://rag.aglabs.api.br/#organization" },
+          "areaServed": { "@type": "Country", "name": "Brasil" },
+          "description": "Assistente inteligente que lê seus documentos (PDFs, planilhas, contratos, site) e responde com informações reais do seu negócio, sempre citando a fonte."
+        },
+        {
+          "@type": "Service",
+          "name": "Websites de Alta Conversão",
+          "serviceType": "Criação de sites e landing pages",
+          "provider": { "@id": "https://rag.aglabs.api.br/#organization" },
+          "areaServed": { "@type": "Country", "name": "Brasil" },
+          "description": "Landing pages e sites otimizados para SEO e performance, focados em transformar visitantes em clientes."
+        },
+        {
+          "@type": "Service",
+          "name": "Automações Inteligentes",
+          "serviceType": "Automação de processos (n8n e Make)",
+          "provider": { "@id": "https://rag.aglabs.api.br/#organization" },
+          "areaServed": { "@type": "Country", "name": "Brasil" },
+          "description": "Fluxos automatizados que conectam suas ferramentas, eliminam tarefas repetitivas e economizam dezenas de horas por mês."
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://rag.aglabs.api.br/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "O que a AG LABS faz?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "A AG LABS é uma agência de IA e automação em Rio Verde-GO. Desenvolvemos Agentes de IA, Atendentes para WhatsApp, sites de alta conversão, automações (n8n e Make) e sistemas sob medida."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "O que é o Atendente IA da AG LABS?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "É um atendente virtual que responde, agenda e vende pelo WhatsApp 24 horas por dia, captura leads e faz follow-up automático, sem você precisar estar online."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Como funciona o assistente de IA treinado com os dados do meu negócio (RAG)?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Você conecta seus documentos (PDFs, planilhas, contratos, site). A IA processa e aprende o conteúdo e passa a responder com informações reais do seu negócio, sempre citando a fonte — diferente de um ChatGPT genérico, sem inventar."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "A AG LABS atende minha cidade?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Atendemos clientes em Rio Verde, em todo o estado de Goiás e em todo o Brasil, de forma remota."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
   </head>
   <body class="bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
     <div id="root"></div>
+
+    <!-- Conteúdo de fallback para crawlers/IA que não executam JavaScript (GPTBot, ClaudeBot, PerplexityBot, etc.) -->
+    <noscript>
+      <main>
+        <h1>AG LABS — Agência de IA e Automação em Rio Verde-GO</h1>
+        <p>
+          A AG LABS cria Agentes de IA, Atendentes para WhatsApp, sites de alta
+          conversão, automações inteligentes e sistemas sob medida. Economize
+          até 80% do trabalho manual com soluções de inteligência artificial
+          treinadas com os dados do seu negócio.
+        </p>
+
+        <h2>Nossas soluções</h2>
+        <ul>
+          <li>
+            <strong>Agentes de IA:</strong> funcionários digitais 24/7 que
+            entendem seus documentos, respondem clientes e automatizam processos.
+          </li>
+          <li>
+            <strong>Atendente IA para WhatsApp:</strong> responde, agenda e vende
+            pelo WhatsApp 24 horas por dia, captura leads e faz follow-up
+            automático.
+          </li>
+          <li>
+            <strong>Websites de alta conversão:</strong> landing pages e sites
+            otimizados para SEO e performance.
+          </li>
+          <li>
+            <strong>Automações:</strong> fluxos com n8n e Make que conectam suas
+            ferramentas e eliminam tarefas repetitivas.
+          </li>
+          <li>
+            <strong>Sistemas & Apps:</strong> plataformas escaláveis e
+            aplicativos mobile.
+          </li>
+        </ul>
+
+        <h2>Assistente de IA treinado com seus dados (RAG)</h2>
+        <p>
+          Diferente de um ChatGPT genérico, nosso assistente lê seus documentos
+          (PDFs, planilhas, contratos, site) e responde com informações reais do
+          seu negócio, sempre citando a fonte — sem inventar.
+        </p>
+
+        <h2>Atendimento</h2>
+        <p>
+          Atendemos Rio Verde, todo o estado de Goiás e todo o Brasil.
+          Fale com a AG LABS pelo WhatsApp: +55 64 99325-9857.
+          Site oficial: <a href="https://aglabs.ia.br">aglabs.ia.br</a>.
+        </p>
+      </main>
+    </noscript>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

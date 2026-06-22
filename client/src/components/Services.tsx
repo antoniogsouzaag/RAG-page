@@ -259,11 +259,10 @@ const FeatureList = memo(function FeatureList({ features, gradient }: { features
 
 // Hero Card Component (Featured Large Card)
 const HeroCard = memo(function HeroCard({ service, index }: { service: typeof services[0]; index: number }) {
-  const [isHovered, setIsHovered] = useState(false);
   const reduceMotion = usePrefersReducedMotion();
   const isMobile = useIsMobile();
   const skipAnimations = reduceMotion || isMobile;
-  
+
   return (
     <motion.div
       initial={skipAnimations ? false : { opacity: 0, y: 40, scale: 0.95 }}
@@ -271,13 +270,11 @@ const HeroCard = memo(function HeroCard({ service, index }: { service: typeof se
       transition={{ duration: skipAnimations ? 0.15 : 0.5, delay: skipAnimations ? 0 : index * 0.08, ease: "easeOut" }}
       viewport={{ once: true, margin: "-50px" }}
       className="h-full perspective-1000"
-      onMouseEnter={() => !isMobile && setIsHovered(true)}
-      onMouseLeave={() => !isMobile && setIsHovered(false)}
     >
       <TiltCard className="h-full" intensity={0.8}>
         <SpotlightCard
           spotlightColor={service.spotlightColor}
-          className="group relative h-full overflow-hidden backdrop-blur-xl bg-zinc-950/90 border border-white/10 transition-all duration-500 rounded-3xl hover:border-white/25 hover:shadow-2xl hover:shadow-purple-500/20 p-6 md:p-8 lg:p-10"
+          className="group relative h-full overflow-hidden backdrop-blur-md bg-zinc-950/90 border border-white/10 transition-all duration-500 rounded-3xl hover:border-white/25 hover:shadow-2xl hover:shadow-purple-500/20 p-6 md:p-8 lg:p-10"
         >
           {/* Background Effects */}
           <GlowingOrb gradient={service.gradient} position="top-right" />
@@ -371,15 +368,10 @@ const HeroCard = memo(function HeroCard({ service, index }: { service: typeof se
             </div>
           </div>
 
-          {/* Animated Border Glow */}
-          <motion.div 
-            className="absolute inset-0 rounded-3xl pointer-events-none"
-            animate={{ 
-              boxShadow: isHovered 
-                ? `inset 0 0 60px rgba(168, 85, 247, 0.1), 0 0 80px rgba(168, 85, 247, 0.15)` 
-                : `inset 0 0 0px transparent, 0 0 0px transparent`
-            }}
-            transition={{ duration: 0.5 }}
+          {/* Border Glow - CSS only (opacity is compositor-friendly, no per-frame repaint) */}
+          <div
+            className="absolute inset-0 rounded-3xl pointer-events-none opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+            style={{ boxShadow: "inset 0 0 60px rgba(168, 85, 247, 0.1), 0 0 80px rgba(168, 85, 247, 0.15)" }}
           />
         </SpotlightCard>
       </TiltCard>
@@ -389,11 +381,10 @@ const HeroCard = memo(function HeroCard({ service, index }: { service: typeof se
 
 // Compact Hero Card (No Features Section - for Websites card)
 const CompactHeroCard = memo(function CompactHeroCard({ service, index }: { service: typeof services[0]; index: number }) {
-  const [isHovered, setIsHovered] = useState(false);
   const reduceMotion = usePrefersReducedMotion();
   const isMobile = useIsMobile();
   const skipAnimations = reduceMotion || isMobile;
-  
+
   return (
     <motion.div
       initial={skipAnimations ? false : { opacity: 0, y: 40, scale: 0.95 }}
@@ -401,13 +392,11 @@ const CompactHeroCard = memo(function CompactHeroCard({ service, index }: { serv
       transition={{ duration: skipAnimations ? 0.15 : 0.5, delay: skipAnimations ? 0 : index * 0.08, ease: "easeOut" }}
       viewport={{ once: true, margin: "-50px" }}
       className="h-full perspective-1000"
-      onMouseEnter={() => !isMobile && setIsHovered(true)}
-      onMouseLeave={() => !isMobile && setIsHovered(false)}
     >
       <TiltCard className="h-full" intensity={0.8}>
         <SpotlightCard
           spotlightColor={service.spotlightColor}
-          className="group relative h-full overflow-hidden backdrop-blur-xl bg-zinc-950/90 border border-white/10 transition-all duration-500 rounded-3xl hover:border-white/25 hover:shadow-2xl hover:shadow-blue-500/20 p-6 md:p-8"
+          className="group relative h-full overflow-hidden backdrop-blur-md bg-zinc-950/90 border border-white/10 transition-all duration-500 rounded-3xl hover:border-white/25 hover:shadow-2xl hover:shadow-blue-500/20 p-6 md:p-8"
         >
           {/* Background Effects */}
           <GlowingOrb gradient={service.gradient} position="top-right" />
@@ -479,15 +468,10 @@ const CompactHeroCard = memo(function CompactHeroCard({ service, index }: { serv
             </div>
           </div>
 
-          {/* Animated Border Glow */}
-          <motion.div 
-            className="absolute inset-0 rounded-3xl pointer-events-none"
-            animate={{ 
-              boxShadow: isHovered 
-                ? `inset 0 0 60px rgba(59, 130, 246, 0.1), 0 0 80px rgba(59, 130, 246, 0.15)` 
-                : `inset 0 0 0px transparent, 0 0 0px transparent`
-            }}
-            transition={{ duration: 0.5 }}
+          {/* Border Glow - CSS only (opacity is compositor-friendly, no per-frame repaint) */}
+          <div
+            className="absolute inset-0 rounded-3xl pointer-events-none opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+            style={{ boxShadow: "inset 0 0 60px rgba(59, 130, 246, 0.1), 0 0 80px rgba(59, 130, 246, 0.15)" }}
           />
         </SpotlightCard>
       </TiltCard>
@@ -497,11 +481,10 @@ const CompactHeroCard = memo(function CompactHeroCard({ service, index }: { serv
 
 // Standard Card Component
 const StandardCard = memo(function StandardCard({ service, index }: { service: typeof services[0]; index: number }) {
-  const [isHovered, setIsHovered] = useState(false);
   const reduceMotion = usePrefersReducedMotion();
   const isMobile = useIsMobile();
   const skipAnimations = reduceMotion || isMobile;
-  
+
   return (
     <motion.div
       initial={skipAnimations ? false : { opacity: 0, y: 30, scale: 0.95 }}
@@ -509,13 +492,11 @@ const StandardCard = memo(function StandardCard({ service, index }: { service: t
       transition={{ duration: skipAnimations ? 0.15 : 0.5, delay: skipAnimations ? 0 : 0.1 + index * 0.1, type: skipAnimations ? "tween" : "spring", stiffness: 120 }}
       viewport={{ once: true, margin: "-50px" }}
       className="h-full perspective-1000"
-      onMouseEnter={() => !isMobile && setIsHovered(true)}
-      onMouseLeave={() => !isMobile && setIsHovered(false)}
     >
       <TiltCard className="h-full">
         <SpotlightCard
           spotlightColor={service.spotlightColor}
-          className="group relative h-full overflow-hidden backdrop-blur-xl bg-zinc-950/80 border border-white/10 transition-all duration-500 rounded-2xl hover:border-white/25 hover:shadow-xl p-5"
+          className="group relative h-full overflow-hidden backdrop-blur-md bg-zinc-950/80 border border-white/10 transition-all duration-500 rounded-2xl hover:border-white/25 hover:shadow-xl p-5"
         >
           {/* Glow Effect */}
           <GlowingOrb gradient={service.gradient} position="top-right" />
@@ -559,12 +540,11 @@ const StandardCard = memo(function StandardCard({ service, index }: { service: t
                 <span className="text-[10px] text-white/50">{service.metrics.label}</span>
               </div>
               
-              <a 
+              <a
                 href={WHATSAPP_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`w-8 h-8 rounded-lg bg-linear-to-br ${service.gradient} flex items-center justify-center cursor-pointer shadow-lg transition-all duration-200 ease-out hover:scale-115 hover:rotate-3 hover:shadow-xl active:scale-95`}
-                style={{ boxShadow: isHovered ? `0 8px 30px rgba(${service.spotlightColor}, 0.4)` : undefined }}
               >
                 <ArrowRight className="w-3.5 h-3.5 text-white" />
               </a>
@@ -688,7 +668,7 @@ export default function Services() {
           viewport={{ once: true }}
           className="mt-12 sm:mt-16 md:mt-20 lg:mt-28"
         >
-          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-linear-to-br from-zinc-900/90 via-zinc-950/95 to-zinc-900/90 border border-white/10 backdrop-blur-xl p-5 sm:p-8 md:p-10">
+          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-linear-to-br from-zinc-900/90 via-zinc-950/95 to-zinc-900/90 border border-white/10 backdrop-blur-md p-5 sm:p-8 md:p-10">
             {/* Background Glow - simplified on mobile */}
             {!isMobile && (
               <div className="absolute inset-0 pointer-events-none">
