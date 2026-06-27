@@ -385,6 +385,14 @@ h1, h2, h3, h4, h5, h6 {
   @apply bg-linear-to-r from-purple-400 via-pink-500 to-purple-600 bg-clip-text text-transparent;
 }
 
+.text-gradient-green {
+  @apply bg-linear-to-r from-emerald-400 via-green-400 to-teal-400 bg-clip-text text-transparent;
+}
+
+.text-mist {
+  color: hsl(240 5% 58%);
+}
+
 /* Safe area insets for mobile devices with notches */
 @supports (padding: max(0px)) {
   .pb-safe {

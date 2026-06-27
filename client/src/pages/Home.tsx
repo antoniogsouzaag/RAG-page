@@ -11,6 +11,7 @@ const AtendenteIA = lazy(() => import("@/components/AtendenteIA"));
 const AtendenteIAPlanos = lazy(() => import("@/components/AtendenteIAPlanos"));
 const Services = lazy(() => import("@/components/Services"));
 const RAGSectionNew = lazy(() => import("@/components/RAGSectionNew"));
+const TechStack = lazy(() => import("@/components/TechStack").then(m => ({ default: m.TechStack })));
 const CTASection = lazy(() => import("@/components/CTASection"));
 const WhatsAppButton = lazy(() => import("@/components/WhatsAppButton"));
 const Footer = lazy(() => import("@/components/Footer"));
@@ -58,19 +59,22 @@ export default function Home() {
           <Marquee />
         </Suspense>
         <Suspense fallback={<SectionPlaceholder height="h-96" />}>
-          <Services />
-        </Suspense>
-        <Suspense fallback={<SectionPlaceholder height="h-96" />}>
           <AtendenteIA />
         </Suspense>
         <Suspense fallback={<SectionPlaceholder height="h-96" />}>
           <RAGSectionNew />
         </Suspense>
         <Suspense fallback={<SectionPlaceholder height="h-96" />}>
+          <TechStack />
+        </Suspense>
+        <Suspense fallback={<SectionPlaceholder height="h-96" />}>
           <AtendenteIAPlanos />
         </Suspense>
         <Suspense fallback={<SectionPlaceholder height="h-48" />}>
           <CTASection />
+        </Suspense>
+        <Suspense fallback={<SectionPlaceholder height="h-96" />}>
+          <Services />
         </Suspense>
       </main>
       <Suspense fallback={null}>
