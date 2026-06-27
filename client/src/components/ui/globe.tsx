@@ -45,7 +45,7 @@ export function Globe({
   className?: string;
   config?: COBEOptions;
 }) {
-  let phi = 0;
+  const phiRef = useRef(0); // persist rotation across mount/unmount so it resumes smoothly
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const widthRef = useRef(400); // Use ref to persist width across renders
   const pointerInteracting = useRef<number | null>(null);
@@ -124,47 +124,52 @@ export function Globe({
       return;
     }
 
+    const runtimeIsMobile = isMobile;
     let globeInstance: ReturnType<typeof createGlobe> | null = null;
 
-    try {
-      // compute per-device adjustments
-      const runtimeIsMobile = isMobile;
+    // cobe runs its own internal requestAnimationFrame loop with no pause API,
+    // so it keeps rendering a large canvas even after the Hero is scrolled away,
+    // stealing GPU from the rest of the page. We mount/unmount the instance based
+    // on viewport visibility; `phiRef` keeps the rotation continuous on re-entry.
+    const mount = () => {
+      if (globeInstance || !canvasRef.current) return;
+      try {
+        globeInstance = createGlobe(canvasRef.current, {
+          ...config,
+          width: widthRef.current * (runtimeIsMobile ? 1 : 2),
+          height: widthRef.current * (runtimeIsMobile ? 1 : 2),
+          devicePixelRatio: runtimeIsMobile ? 1 : config.devicePixelRatio ?? 2,
+          mapSamples: runtimeIsMobile ? 8000 : config.mapSamples ?? 16000,
+          onRender: (state) => {
+            try {
+              if (!pointerInteracting.current) phiRef.current += runtimeIsMobile ? 0.001 : 0.002; // Slower rotation on mobile
+              state.phi = phiRef.current + rs.get();
+              state.width = widthRef.current * (runtimeIsMobile ? 1 : 2);
+              state.height = widthRef.current * (runtimeIsMobile ? 1 : 2);
+            } catch (e) {
+              // protect render callback from throwing
+              // eslint-disable-next-line no-console
+              console.error('Error in globe onRender', e);
+            }
+          },
+        });
 
-      globeInstance = createGlobe(canvasRef.current!, {
-        ...config,
-        width: widthRef.current * (runtimeIsMobile ? 1 : 2),
-        height: widthRef.current * (runtimeIsMobile ? 1 : 2),
-        devicePixelRatio: runtimeIsMobile ? 1 : config.devicePixelRatio ?? 2,
-        mapSamples: runtimeIsMobile ? 8000 : config.mapSamples ?? 16000,
-        onRender: (state) => {
-          try {
-            if (!pointerInteracting.current) phi += runtimeIsMobile ? 0.001 : 0.002; // Slower rotation on mobile
-            state.phi = phi + rs.get();
-            state.width = widthRef.current * (runtimeIsMobile ? 1 : 2);
-            state.height = widthRef.current * (runtimeIsMobile ? 1 : 2);
-          } catch (e) {
-            // protect render callback from throwing
-            // eslint-disable-next-line no-console
-            console.error('Error in globe onRender', e);
+        setGlSupported(true);
+
+        setTimeout(() => {
+          if (canvasRef.current) {
+            canvasRef.current.style.opacity = "1";
           }
-        },
-      });
+        }, 0);
+      } catch (err) {
+        // Log and gracefully fallback
+        // eslint-disable-next-line no-console
+        console.error('Globe initialization failed:', err);
+        setGlSupported(false);
+      }
+    };
 
-      setGlSupported(true);
-
-      setTimeout(() => {
-        if (canvasRef.current) {
-          canvasRef.current.style.opacity = "1";
-        }
-      }, 0);
-    } catch (err) {
-      // Log and gracefully fallback
-      // eslint-disable-next-line no-console
-      console.error('Globe initialization failed:', err);
-      setGlSupported(false);
-    }
-    
-    return () => {
+    const unmount = () => {
       if (globeInstance && typeof globeInstance.destroy === 'function') {
         try {
           globeInstance.destroy();
@@ -172,6 +177,22 @@ export function Globe({
           // ignore
         }
       }
+      globeInstance = null;
+      if (canvasRef.current) canvasRef.current.style.opacity = "0";
+    };
+
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) mount();
+        else unmount();
+      },
+      { threshold: 0 },
+    );
+    visibilityObserver.observe(canvasRef.current!);
+
+    return () => {
+      visibilityObserver.disconnect();
+      unmount();
       window.removeEventListener("resize", onResize);
     };
   }, [rs, config]);

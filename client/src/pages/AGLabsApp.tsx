@@ -1,5 +1,6 @@
 import { Suspense, lazy, memo, useEffect } from "react";
 import { useLocation } from "wouter";
+import { useSeo } from "@/hooks/use-seo";
 
 // Critical above-fold component
 import AGLabsHero from "@/components/AGLabsHero";
@@ -37,37 +38,16 @@ export default function AGLabsApp() {
     }
   }, [location]);
 
-  // Update page title and meta for SEO
-  useEffect(() => {
-    document.title = "APP AGLabs - IA Generativa | Crie Imagens, Vídeos e Áudio com Inteligência Artificial";
-    
-    // Update meta description
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 
-        'APP AGLabs - Crie imagens, vídeos, áudios e conteúdo com mais de 15 modelos de IA generativa. Flux, DALL-E, Sora, ElevenLabs e muito mais. O poder da IA no seu bolso.'
-      );
-    }
-    
-    // Update OG tags
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) {
-      ogTitle.setAttribute('content', 'APP AGLabs - IA Generativa para Criação de Conteúdo');
-    }
-    
-    const ogDescription = document.querySelector('meta[property="og:description"]');
-    if (ogDescription) {
-      ogDescription.setAttribute('content', 
-        'Crie imagens, vídeos e áudio com inteligência artificial. Mais de 15 modelos de IA generativa em um só lugar.'
-      );
-    }
+  // Per-route SEO (title/description/canonical/og). Navigating away restores the
+  // home values because Home calls useSeo too.
+  useSeo({
+    title:
+      "APP AGLabs - IA Generativa | Crie Imagens, Vídeos e Áudio com Inteligência Artificial",
+    description:
+      "APP AGLabs - Crie imagens, vídeos, áudios e conteúdo com mais de 15 modelos de IA generativa. Flux, DALL-E, Sora, ElevenLabs e muito mais. O poder da IA no seu bolso.",
+    path: "/app",
+  });
 
-    // Cleanup - restore original title
-    return () => {
-      document.title = "AG LABS - Agência de IA e Automação em Rio Verde | Agentes de IA, Websites e Automações";
-    };
-  }, []);
-  
   return (
     <div className="min-h-screen bg-[#050505] text-foreground overflow-x-hidden selection:bg-[#00fff0]/30 relative">
       <div className="bg-noise" />

@@ -2,25 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://rag.aglabs.api.br/</loc>
-    <lastmod>2026-06-22</lastmod>
+    <lastmod>2026-06-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://rag.aglabs.api.br/app</loc>
-    <lastmod>2026-06-22</lastmod>
+    <lastmod>2026-06-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://rag.aglabs.api.br/terms</loc>
-    <lastmod>2026-06-22</lastmod>
+    <lastmod>2026-06-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://rag.aglabs.api.br/privacy</loc>
-    <lastmod>2026-06-22</lastmod>
+    <lastmod>2026-06-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

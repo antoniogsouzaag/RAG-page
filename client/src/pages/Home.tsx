@@ -1,5 +1,6 @@
 import { useEffect, Suspense, lazy, memo } from "react";
 import { useLocation } from "wouter";
+import { useSeo } from "@/hooks/use-seo";
 
 // Critical above-fold components loaded synchronously
 import Navbar from "@/components/Navbar";
@@ -32,6 +33,14 @@ SectionPlaceholder.displayName = "SectionPlaceholder";
 
 export default function Home() {
   const [location] = useLocation();
+
+  useSeo({
+    title:
+      "AG LABS - Agência de IA e Automação em Rio Verde | Agentes de IA, Atendente para WhatsApp e Automações",
+    description:
+      "AG LABS: agência de IA em Rio Verde-GO. Agentes de IA e Atendente para WhatsApp, sites de alta conversão, automações e RAG treinado com os dados do seu negócio.",
+    path: "/",
+  });
 
   // Handle hash navigation when coming from other pages
   useEffect(() => {
@@ -70,11 +79,11 @@ export default function Home() {
         <Suspense fallback={<SectionPlaceholder height="h-96" />}>
           <AtendenteIAPlanos />
         </Suspense>
-        <Suspense fallback={<SectionPlaceholder height="h-48" />}>
-          <CTASection />
-        </Suspense>
         <Suspense fallback={<SectionPlaceholder height="h-96" />}>
           <Services />
+        </Suspense>
+        <Suspense fallback={<SectionPlaceholder height="h-48" />}>
+          <CTASection />
         </Suspense>
       </main>
       <Suspense fallback={null}>

@@ -296,8 +296,22 @@ const LightPillar = ({
     const targetFPS = 60;
     const frameTime = 1000 / targetFPS;
 
+    // Pause the (expensive 60-iteration raymarch) render whenever the pillar is
+    // scrolled out of view or the tab is hidden. This frees the GPU/main thread
+    // for smooth scrolling once the user leaves the Hero.
+    let isVisible = true;
+
     const animate = (currentTime: number) => {
-      if (!materialRef.current || !rendererRef.current || !sceneRef.current || !cameraRef.current) return;
+      if (!materialRef.current || !rendererRef.current || !sceneRef.current || !cameraRef.current) {
+        rafRef.current = null;
+        return;
+      }
+
+      // Stop the loop entirely while offscreen/hidden; it is re-kicked below.
+      if (!isVisible || document.hidden) {
+        rafRef.current = null;
+        return;
+      }
 
       const deltaTime = currentTime - lastTime;
 
@@ -310,6 +324,26 @@ const LightPillar = ({
 
       rafRef.current = requestAnimationFrame(animate);
     };
+
+    const kick = () => {
+      if (rafRef.current === null && isVisible && !document.hidden) {
+        lastTime = performance.now();
+        rafRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) kick();
+      },
+      { threshold: 0 },
+    );
+    visibilityObserver.observe(container);
+
+    const onVisibilityChange = () => kick();
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
     rafRef.current = requestAnimationFrame(animate);
 
     // Handle resize with debouncing
@@ -333,6 +367,8 @@ const LightPillar = ({
     // Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      visibilityObserver.disconnect();
       if (interactive) {
         container.removeEventListener('mousemove', handleMouseMove);
       }

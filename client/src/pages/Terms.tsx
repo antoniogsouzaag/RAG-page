@@ -2,8 +2,17 @@ import { motion } from "framer-motion";
 import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useSeo } from "@/hooks/use-seo";
 
 export default function Terms() {
+  useSeo({
+    title: "Termos de Uso | AG LABS",
+    description:
+      "Termos de Uso da AG LABS — condições para utilização dos serviços de IA, automação e atendimento da agência em Rio Verde-GO.",
+    path: "/terms",
+    noindex: true,
+  });
+
   // Scroll ao topo quando a página carregar
   useEffect(() => {
     window.scrollTo(0, 0);

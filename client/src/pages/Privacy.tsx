@@ -2,8 +2,17 @@ import { motion } from "framer-motion";
 import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useSeo } from "@/hooks/use-seo";
 
 export default function Privacy() {
+  useSeo({
+    title: "Política de Privacidade | AG LABS",
+    description:
+      "Política de Privacidade da AG LABS — como coletamos, usamos e protegemos os dados dos clientes em nossos serviços de IA e automação.",
+    path: "/privacy",
+    noindex: true,
+  });
+
   // Scroll ao topo quando a página carregar
   useEffect(() => {
     window.scrollTo(0, 0);

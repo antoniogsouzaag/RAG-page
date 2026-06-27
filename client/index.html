@@ -84,7 +84,7 @@
       "@context": "https://schema.org",
       "@graph": [
         {
-          "@type": "Organization",
+          "@type": ["Organization", "ProfessionalService"],
           "@id": "https://rag.aglabs.api.br/#organization",
           "name": "AG LABS",
           "alternateName": "AG Labs - Agência de IA",
@@ -93,16 +93,38 @@
           "image": "https://rag.aglabs.api.br/opengraph.png",
           "description": "Agência de IA e automação em Rio Verde-GO. Criamos Agentes de IA, Atendentes para WhatsApp, sites de alta conversão, automações e assistentes RAG treinados com os dados do seu negócio.",
           "slogan": "Tecnologia que transforma resultados",
+          "priceRange": "$$",
           "address": {
             "@type": "PostalAddress",
             "addressLocality": "Rio Verde",
             "addressRegion": "GO",
             "addressCountry": "BR"
           },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": -17.7976,
+            "longitude": -50.9230
+          },
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "opens": "00:00",
+            "closes": "23:59",
+            "description": "Atendimento 24 horas por dia, 7 dias por semana, com Agentes de IA."
+          },
           "areaServed": [
             { "@type": "City", "name": "Rio Verde" },
             { "@type": "State", "name": "Goiás" },
             { "@type": "Country", "name": "Brasil" }
+          ],
+          "knowsAbout": [
+            "Inteligência Artificial",
+            "Agentes de IA",
+            "Atendente de IA para WhatsApp",
+            "RAG (Retrieval-Augmented Generation)",
+            "Automação de processos com n8n e Make",
+            "Criação de sites e landing pages de alta conversão",
+            "Chatbots e assistentes virtuais"
           ],
           "contactPoint": {
             "@type": "ContactPoint",

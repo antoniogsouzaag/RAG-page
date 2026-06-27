@@ -9,10 +9,9 @@ const isProduction = process.env.NODE_ENV === "production";
 
 export default defineConfig({
   plugins: [
-    react({
-      // Enable faster refresh in development
-      fastRefresh: true,
-    }),
+    // Fast Refresh is enabled by default in @vitejs/plugin-react; the explicit
+    // `fastRefresh` option was removed from its types, so we no longer pass it.
+    react(),
     runtimeErrorOverlay(),
     tailwindcss(),
     metaImagesPlugin(),

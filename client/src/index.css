@@ -226,11 +226,11 @@
       transform: none !important;
     }
     
-    /* Simplify transitions on mobile - shorter duration to reduce flicker window */
-    * {
-      transition-duration: 100ms !important;
-    }
-    
+    /* (Removed the universal `* { transition-duration: 100ms !important }` cap:
+       it forced a transition recalc onto every element on mobile. The framer
+       opacity flicker is already handled by the targeted `[style*="opacity"]`
+       rule above.) */
+
     /* Reduce shadow complexity on mobile */
     .shadow-2xl, .shadow-xl {
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -334,9 +334,14 @@ main {
 }
 
 section {
-  contain: layout paint;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 600px;
+  /* `layout` keeps each section an isolated layout scope (cheaper reflow) but,
+     unlike `paint`, does NOT clip the decorative glow/blur that overflow the
+     section bounds. `content-visibility: auto` + a single estimated
+     `contain-intrinsic-size` was removed: with sections of very different
+     heights (100vh hero, long pricing, etc.) the scrollbar kept resizing as
+     sections rendered/derendered during scroll, which is what made scrolling
+     feel janky. Deferral is already handled by lazy() + Suspense. */
+  contain: layout style;
 }
 
 /* Optimize Framer Motion elements during scroll */
@@ -344,11 +349,11 @@ section {
   contain: layout style;
 }
 
-/* Force hardware acceleration for motion elements but prevent over-use */
-[style*="transform"] {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
+/* NOTE: a global `[style*="transform"]` rule was removed here. It matched every
+   framer-motion element (they all carry an inline transform), was re-evaluated
+   on each scroll-driven style update, and promoted each one to its own
+   compositor layer — excessive layers cause GPU memory pressure and scroll
+   jank. Intentional acceleration is opt-in via `.transform-gpu` below. */
 
 /* Only use transform-gpu on elements that actually animate */
 .transform-gpu {
