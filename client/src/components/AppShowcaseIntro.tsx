@@ -29,7 +29,7 @@ function AppShowcaseIntro() {
         >
           <img 
             src="/favicon.png" 
-            alt="AG Labs Logo" 
+            alt="AG LABS Logo"
             className="w-16 h-16 object-contain"
             loading="lazy"
             width={64}

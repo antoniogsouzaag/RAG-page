@@ -74,7 +74,7 @@ function AtendenteIA() {
               Atendente IA
             </span>
             <span className="text-white/80 block text-xl sm:text-2xl md:text-3xl mt-2 font-medium">
-              AG Labs
+              AG LABS
             </span>
           </h2>
 
