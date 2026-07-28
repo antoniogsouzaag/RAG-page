@@ -2,6 +2,18 @@ import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
 
+// Caminhos que o cliente sabe renderizar (espelha as <Route> de
+// client/src/App.tsx). Qualquer outro caminho não existe — e precisa dizer
+// isso no status HTTP.
+//
+// Antes daqui, o `app.get("*")` abaixo respondia a home com 200 para
+// literalmente qualquer URL: /pagina-inventada devolvia byte a byte o mesmo
+// que /. Isso é um soft-404, e tem dois custos reais. O buscador indexa
+// URLs inexistentes como se fossem páginas e dilui o site em duplicatas; e
+// um link errado em produção nunca aparece como erro — foi assim que o link
+// do App na bio ficou apontando para /app deste host sem ninguém notar.
+const CLIENT_ROUTES = new Set(["/", "/app", "/aglabs", "/terms", "/privacy"]);
+
 export function serveStatic(app: Express) {
   // Try a few candidate locations for the built client files. Depending on
   // how the project is built and deployed, __dirname may differ from
@@ -40,10 +52,19 @@ export function serveStatic(app: Express) {
       ? path.resolve(distPath, safePath, "index.html")
       : shellIndex;
 
-    const fileToSend =
-      prerendered.startsWith(distPath) && fs.existsSync(prerendered)
-        ? prerendered
-        : shellIndex;
+    const hasSnapshot =
+      prerendered.startsWith(distPath) && fs.existsSync(prerendered);
+    const fileToSend = hasSnapshot ? prerendered : shellIndex;
+
+    // Normaliza a barra final para que /terms e /terms/ contem como a mesma
+    // rota conhecida.
+    const normalized = req.path.length > 1 ? req.path.replace(/\/+$/, "") : "/";
+    const conhecida = hasSnapshot || CLIENT_ROUTES.has(normalized);
+
+    // O corpo continua sendo o shell: o cliente monta e a <Route
+    // component={NotFound}> desenha a página de erro. O que muda é o status,
+    // que é o único sinal que crawler e monitoramento realmente leem.
+    if (!conhecida) res.status(404);
 
     res.sendFile(fileToSend, (err) => {
       if (err) return next(err);
