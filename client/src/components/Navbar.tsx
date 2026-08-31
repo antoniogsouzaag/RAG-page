@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 const navLinks = [
   { name: "Serviços", href: "#services" },
   { name: "RAG", href: "#rag" },
-  { name: "App AGLabs", href: "/app", isPage: true },
+  { name: "App AGLabs", href: "https://aglabs.app.br/", isExternal: true },
 ] as const;
 
 function Navbar() {
@@ -56,7 +56,10 @@ function Navbar() {
   }, []);
 
   const handleNavClick = useCallback((href: string, isPage?: boolean) => {
-    if (isPage) {
+    if (href.startsWith("http")) {
+      // External link (ex.: App AG LABS em aglabs.app.br)
+      window.open(href, "_blank", "noopener,noreferrer");
+    } else if (isPage) {
       // Navigate to the page directly
       setLocation(href);
     } else if (isHomePage) {
@@ -99,7 +102,7 @@ function Navbar() {
           {navLinks.map((link) => (
             <button
               key={link.name}
-              onClick={() => handleNavClick(link.href, 'isPage' in link ? link.isPage : undefined)}
+              onClick={() => handleNavClick(link.href, 'isPage' in link && link.isPage === true)}
               className="relative text-sm font-medium text-white/70 hover:text-white transition-colors cursor-pointer group"
             >
               {link.name}
@@ -167,7 +170,7 @@ function Navbar() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + index * 0.05 }}
-                  onClick={() => handleNavClick(link.href, 'isPage' in link ? link.isPage : undefined)}
+                  onClick={() => handleNavClick(link.href, 'isPage' in link && link.isPage === true)}
                   className="text-2xl font-display font-semibold text-white/80 hover:text-white transition-colors py-2"
                 >
                   {link.name}
